@@ -1342,27 +1342,23 @@ function isValidPhone(val){if(!val)return false;const d=val.replace(/[^\d]/g,'')
 
 // ═══ FUZZY DUPLICATE: 8+ consecutive digit match ═══
 function digitsOnly(s){return(s||'').replace(/[^\d]/g,'')}
-function hasCommonSequence(a,b,minLen=8){
-  if(!a||!b||a.length<minLen||b.length<minLen)return false;
-  for(let i=0;i<=a.length-minLen;i++){if(b.includes(a.slice(i,i+minLen)))return true}
-  return false;
-}
-// ═══ DIGIT INDEX (fast duplicate lookup — replaces the old O(n²) full-table scans) ═══
-// Maps every 8-digit substring found in any lead's phone/whatsapp -> list of {id,field}
+function last8(d){return d&&d.length>=8?d.slice(-8):null}
+// ═══ SUFFIX INDEX (fast + accurate duplicate lookup) ═══
+// Two numbers are considered duplicates only if their LAST 8 digits match exactly.
+// This avoids false positives on numbers that merely share the same country/network
+// prefix (e.g. 002010xxxxxxx vs 002012xxxxxxx) while staying just as fast — each
+// lead contributes at most 2 keys (phone + whatsapp) instead of many substrings.
 let _digitIndex=null;
 let _digitIndexLeadCount=-1;
 function buildDigitIndex(){
   const idx=new Map();
   for(const l of STATE.leads){
     for(const field of['phone','whatsapp']){
-      const d=digitsOnly(l[field]);
-      if(d.length<8)continue;
-      for(let i=0;i<=d.length-8;i++){
-        const key=d.slice(i,i+8);
-        let bucket=idx.get(key);
-        if(!bucket){bucket=[];idx.set(key,bucket)}
-        bucket.push({id:l.id,field});
-      }
+      const key=last8(digitsOnly(l[field]));
+      if(!key)continue;
+      let bucket=idx.get(key);
+      if(!bucket){bucket=[];idx.set(key,bucket)}
+      bucket.push({id:l.id,field});
     }
   }
   _digitIndex=idx;
@@ -1377,22 +1373,8 @@ function getDigitIndex(){
   return _digitIndex;
 }
 function findExactDuplicate(val,excludeId){
-  const d=digitsOnly(val);
-  if(d.length<8)return null;
-  const idx=getDigitIndex();
-  const seenIds=new Set();
-  for(let i=0;i<=d.length-8;i++){
-    const key=d.slice(i,i+8);
-    const bucket=idx.get(key);
-    if(!bucket)continue;
-    for(const entry of bucket){
-      if(excludeId&&entry.id===excludeId)continue;
-      if(seenIds.has(entry.id))continue;
-      seenIds.add(entry.id);
-      const lead=STATE.leads.find(l=>l.id===entry.id);
-      if(lead)return lead;
-    }
-  }
+  // Auto-blocking disabled by request — duplicates are now managed manually via Google Sheet.
+  // (scanAllDuplicates() below still works for anyone who wants to review the Duplicates page.)
   return null;
 }
 function scanAllDuplicates(){
@@ -1545,9 +1527,10 @@ function updateSyncStatus(){
   if(icnt)icnt.textContent=STATE.invoices.length;
 }
 function updateDupNavBadge(){
-  const suspects=scanAllDuplicates();
+  // Disabled by request — duplicate review is now manual (via Google Sheet), so we no
+  // longer run a full scan across all leads on every save/update/delete/sync/login.
   const badge=document.getElementById('dup-nav-badge');
-  if(badge){badge.style.display=suspects.length?'':'none';badge.textContent=suspects.length||''}
+  if(badge)badge.style.display='none';
 }
 setInterval(()=>syncNow(true),8*60*1000);
 
