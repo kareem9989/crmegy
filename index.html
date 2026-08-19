@@ -1347,24 +1347,72 @@ function hasCommonSequence(a,b,minLen=8){
   for(let i=0;i<=a.length-minLen;i++){if(b.includes(a.slice(i,i+minLen)))return true}
   return false;
 }
+// ═══ DIGIT INDEX (fast duplicate lookup — replaces the old O(n²) full-table scans) ═══
+// Maps every 8-digit substring found in any lead's phone/whatsapp -> list of {id,field}
+let _digitIndex=null;
+let _digitIndexLeadCount=-1;
+function buildDigitIndex(){
+  const idx=new Map();
+  for(const l of STATE.leads){
+    for(const field of['phone','whatsapp']){
+      const d=digitsOnly(l[field]);
+      if(d.length<8)continue;
+      for(let i=0;i<=d.length-8;i++){
+        const key=d.slice(i,i+8);
+        let bucket=idx.get(key);
+        if(!bucket){bucket=[];idx.set(key,bucket)}
+        bucket.push({id:l.id,field});
+      }
+    }
+  }
+  _digitIndex=idx;
+  _digitIndexLeadCount=STATE.leads.length;
+  return idx;
+}
+function invalidateDigitIndex(){_digitIndex=null}
+function getDigitIndex(){
+  // Cheap staleness check (lead count) so we don't rebuild on every keystroke; explicit
+  // invalidateDigitIndex() calls cover edits that don't change the count (e.g. updateLead).
+  if(!_digitIndex||_digitIndexLeadCount!==STATE.leads.length)buildDigitIndex();
+  return _digitIndex;
+}
 function findExactDuplicate(val,excludeId){
   const d=digitsOnly(val);
   if(d.length<8)return null;
-  for(const l of STATE.leads){
-    if(excludeId&&l.id===excludeId)continue;
-    if(hasCommonSequence(d,digitsOnly(l.phone),8)||hasCommonSequence(d,digitsOnly(l.whatsapp),8))return l;
+  const idx=getDigitIndex();
+  const seenIds=new Set();
+  for(let i=0;i<=d.length-8;i++){
+    const key=d.slice(i,i+8);
+    const bucket=idx.get(key);
+    if(!bucket)continue;
+    for(const entry of bucket){
+      if(excludeId&&entry.id===excludeId)continue;
+      if(seenIds.has(entry.id))continue;
+      seenIds.add(entry.id);
+      const lead=STATE.leads.find(l=>l.id===entry.id);
+      if(lead)return lead;
+    }
   }
   return null;
 }
 function scanAllDuplicates(){
-  const suspects=[],seen=new Set();
-  for(let i=0;i<STATE.leads.length;i++){
-    for(let j=i+1;j<STATE.leads.length;j++){
-      const a=STATE.leads[i],b=STATE.leads[j];
-      const key=[a.id,b.id].sort().join('|');
-      if(seen.has(key))continue;
-      const pairs=[[digitsOnly(a.phone),digitsOnly(b.phone),'Phone↔Phone'],[digitsOnly(a.phone),digitsOnly(b.whatsapp),'Phone↔WA'],[digitsOnly(a.whatsapp),digitsOnly(b.phone),'WA↔Phone'],[digitsOnly(a.whatsapp),digitsOnly(b.whatsapp),'WA↔WA']];
-      for(const[pa,pb,label]of pairs){if(hasCommonSequence(pa,pb,8)){seen.add(key);suspects.push({a,b,matchType:label});break}}
+  const idx=getDigitIndex();
+  const suspects=[],seenPairs=new Set(),leadById=new Map(STATE.leads.map(l=>[l.id,l]));
+  const labelMap={phone_phone:'Phone↔Phone',phone_whatsapp:'Phone↔WA',whatsapp_phone:'WA↔Phone',whatsapp_whatsapp:'WA↔WA'};
+  for(const bucket of idx.values()){
+    if(bucket.length<2)continue;
+    for(let i=0;i<bucket.length;i++){
+      for(let j=i+1;j<bucket.length;j++){
+        const e1=bucket[i],e2=bucket[j];
+        if(e1.id===e2.id)continue;
+        const key=[e1.id,e2.id].sort().join('|');
+        if(seenPairs.has(key))continue;
+        seenPairs.add(key);
+        const a=leadById.get(e1.id),b=leadById.get(e2.id);
+        if(!a||!b)continue;
+        const label=labelMap[e1.field+'_'+e2.field]||labelMap[e2.field+'_'+e1.field]||'Match';
+        suspects.push({a,b,matchType:label});
+      }
     }
   }
   return suspects;
@@ -1467,7 +1515,7 @@ async function syncNow(silent=false){
     const data=await gsGet('getAll');
     if(data.error)throw new Error(data.error);
     if(data.employees&&data.employees.length>1)STATE.employees=data.employees.slice(1).map(rowToEmployee).filter(Boolean);
-    if(data.leads&&data.leads.length>1)STATE.leads=data.leads.slice(1).map(rowToLead).filter(Boolean);
+    if(data.leads&&data.leads.length>1){STATE.leads=data.leads.slice(1).map(rowToLead).filter(Boolean);invalidateDigitIndex()}
     if(data.pairs&&data.pairs.length>1)STATE.pairs=data.pairs.slice(1).map(rowToPair).filter(Boolean);
     else if(!STATE.pairs.length)STATE.pairs=LS.get('pairs',[]);
     if(data.invoices&&data.invoices.length>1)STATE.invoices=data.invoices.slice(1).map(rowToInvoice).filter(Boolean);
@@ -1501,7 +1549,7 @@ function updateDupNavBadge(){
   const badge=document.getElementById('dup-nav-badge');
   if(badge){badge.style.display=suspects.length?'':'none';badge.textContent=suspects.length||''}
 }
-setInterval(()=>syncNow(true),3*60*1000);
+setInterval(()=>syncNow(true),8*60*1000);
 
 // ═══ COUNTRIES ═══
 const COUNTRIES=[{name:'Saudi Arabia',flag:'🇸🇦'},{name:'UAE',flag:'🇦🇪'},{name:'Kuwait',flag:'🇰🇼'},{name:'Qatar',flag:'🇶🇦'},{name:'Bahrain',flag:'🇧🇭'},{name:'Oman',flag:'🇴🇲'},{name:'Jordan',flag:'🇯🇴'},{name:'Egypt',flag:'🇪🇬'},{name:'Iraq',flag:'🇮🇶'},{name:'Yemen',flag:'🇾🇪'},{name:'Libya',flag:'🇱🇾'},{name:'Tunisia',flag:'🇹🇳'},{name:'Algeria',flag:'🇩🇿'},{name:'Morocco',flag:'🇲🇦'},{name:'Sudan',flag:'🇸🇩'},{name:'Syria',flag:'🇸🇾'},{name:'Lebanon',flag:'🇱🇧'},{name:'Palestine',flag:'🇵🇸'},{name:'Turkey',flag:'🇹🇷'},{name:'Iran',flag:'🇮🇷'},{name:'Pakistan',flag:'🇵🇰'},{name:'India',flag:'🇮🇳'},{name:'Nigeria',flag:'🇳🇬'},{name:'Kenya',flag:'🇰🇪'},{name:'United States',flag:'🇺🇸'},{name:'United Kingdom',flag:'🇬🇧'},{name:'Germany',flag:'🇩🇪'},{name:'China',flag:'🇨🇳'},{name:'Other',flag:'🌍'}];
@@ -1800,6 +1848,7 @@ async function updateLead(){
   if(wa){const dupWa=findExactDuplicate(wa,id);if(dupWa){toast('🚫 '+dupWa.name,'error');return}}
   const i=STATE.leads.findIndex(l=>l.id===id);if(i<0)return;
   STATE.leads[i]={...STATE.leads[i],name,phone,company:document.getElementById('el-company').value.trim(),phone2:document.getElementById('el-phone2').value.trim(),whatsapp:wa,email:document.getElementById('el-email').value.trim(),country:document.getElementById('el-country').value.trim(),city:document.getElementById('el-city').value.trim(),btype:document.getElementById('el-btype').value,product:document.getElementById('el-product').value,deal:parseFloat(document.getElementById('el-deal').value)||STATE.leads[i].deal||0,source:document.getElementById('el-source').value,status:document.getElementById('el-status').value,priority:document.getElementById('el-priority').value,salesEmp:document.getElementById('el-sales').value,socialEmp:document.getElementById('el-social').value,notes:document.getElementById('el-notes').value,samples:document.getElementById('el-samples').value,sampleResult:document.getElementById('el-sample-result').value,followup:document.getElementById('el-followup').value,response:document.getElementById('el-response').value,updated:new Date().toISOString()};
+  invalidateDigitIndex();
   await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i])});
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
