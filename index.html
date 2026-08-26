@@ -8,6 +8,8 @@
 <meta name="theme-color" content="#060918">
 <title>EgyGulf Foods — CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -398,6 +400,55 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .admin-only{display:none}
 body.is-admin .admin-only{display:flex}
 body:not(.is-admin) .deal-cell{display:none!important}
+
+/* ═══ INVOICE GENERATOR (scoped .invgen) ═══ */
+.invgen-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9990;display:none;overflow:hidden}
+.invgen-overlay.open{display:block}
+.invgen-shell{position:absolute;inset:0;background:#0f1623;display:flex;flex-direction:column}
+.invgen-top{background:#1a2233;border-bottom:2px solid rgba(245,166,35,.3);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.invgen-top .ttl{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff}
+.invgen-top .sub{font-size:10.5px;color:#94a3b8}
+.invgen-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.invgen-body{flex:1;overflow:hidden;display:grid;grid-template-columns:420px 1fr;min-height:0}
+.invgen-form{background:#131c2b;border-right:1px solid rgba(255,255,255,.08);padding:16px;overflow-y:auto;min-height:0}
+.invgen-preview{padding:18px;background:#0f1623;overflow-y:auto;min-height:0}
+.invgen-card{background:#1a2233;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-bottom:12px}
+.invgen-sec{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.invgen-g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.invgen-fg{margin-bottom:9px}
+.invgen-fg:last-child{margin-bottom:0}
+.invgen-fl{display:block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#94a3b8;margin-bottom:4px}
+.invgen-fi{width:100%;background:#fff;border:2px solid #d1d5db;border-radius:9px;padding:9px 12px;color:#111827;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;outline:none;min-height:40px}
+.invgen-fi:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,166,35,.2)}
+.invgen-hdr{display:grid;grid-template-columns:1fr 62px 52px 58px 66px 30px;gap:5px;padding:0 2px;margin-bottom:6px}
+.invgen-hdr span{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;text-align:center}
+.invgen-hdr span:first-child{text-align:left}
+.invgen-row{display:grid;grid-template-columns:1fr 62px 52px 58px 66px 30px;gap:5px;margin-bottom:8px;align-items:start}
+.invgen-ii{width:100%;background:#fff;border:2px solid #d1d5db;border-radius:8px;padding:7px 5px;color:#111827;font-size:12px;font-weight:500;outline:none;text-align:center;min-height:36px}
+.invgen-ii.left{text-align:left;padding-left:8px}
+.invgen-rb{background:#fee2e2;border:2px solid #fca5a5;color:#dc2626;width:30px;height:36px;border-radius:8px;cursor:pointer;font-size:15px}
+.invgen-ftags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.invgen-ftag{display:inline-flex;align-items:center;gap:3px;background:rgba(245,166,35,.13);border:1px solid rgba(245,166,35,.3);color:var(--gold);font-size:9px;font-weight:700;padding:2px 6px;border-radius:12px}
+.invgen-ftag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;line-height:1}
+.invgen-faddrow{display:flex;gap:4px;margin-top:4px}
+.invgen-faddinp{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 8px;color:#fff;font-size:11px;outline:none}
+.invgen-faddbtn{background:rgba(245,166,35,.2);border:1px solid rgba(245,166,35,.4);color:var(--gold);border-radius:6px;width:24px;cursor:pointer;font-size:13px}
+.invgen-totals{display:flex;justify-content:flex-end;gap:16px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.invgen-totals .ti{font-size:12px;color:#94a3b8}
+.invgen-totals .ti strong{color:#fff;font-size:13px}
+.inv-doc{background:#fff;color:#111;max-width:820px;margin:0 auto;font-family:'DM Sans',Arial,sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.4);border-radius:4px;overflow:hidden}
+.inv-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.inv-table th{background:#f0f0f8;color:#2d2a76;padding:6px 8px;font-size:9px;text-transform:uppercase;border:1px solid #e5e7eb;text-align:center}
+.inv-table td{padding:6px 8px;border:1px solid #e5e7eb;text-align:center;font-size:11px;color:#111}
+.inv-total-row td{background:#fff7e6;font-weight:800;color:#2d2a76}
+.invgen-lead-pick{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:10px;padding:10px;margin-bottom:12px}
+.invgen-meta-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.invgen-badge{font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.06);color:#94a3b8;border:1px solid rgba(255,255,255,.12)}
+.invoice-card-meta{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+@media (max-width:900px){
+  .invgen-body{grid-template-columns:1fr;overflow-y:auto}
+  .invgen-form{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+}
 body:not(.is-admin) .deal-th{display:none!important}
 body:not(.is-admin) .deal-kpi{display:none!important}
 body:not(.is-admin) .admin-only-card{display:none!important}
@@ -930,9 +981,87 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="page" id="page-invoices">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
           <div class="section-title" style="margin-bottom:0">🧾 Invoices</div>
-          <button class="btn btn-gold btn-sm" onclick="openRequestInvoice()">+ Request Invoice</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="openRequestInvoice()">+ Request Invoice</button>
+            <button class="btn btn-gold btn-sm" onclick="openCreateInvoice()">🧾 Create Invoice</button>
+          </div>
         </div>
         <div id="invoice-list"></div>
+      </div>
+
+      <!-- INVOICE GENERATOR (full screen overlay) -->
+      <div class="invgen-overlay" id="gen-invoice-modal">
+        <div class="invgen-shell">
+          <div class="invgen-top">
+            <div>
+              <div class="ttl">🧾 Create Invoice</div>
+              <div class="sub">EgyGulf Foods — Commercial Invoice Generator</div>
+            </div>
+            <div class="invgen-btns">
+              <button class="btn btn-outline btn-sm" onclick="closeGenInvoice()">✕ Close</button>
+              <button class="btn btn-outline btn-sm" onclick="downloadPDFGen()" id="invgen-dl-btn">⬇️ Download PDF</button>
+              <button class="btn btn-gold btn-sm" onclick="saveGeneratedInvoice()">💾 Save Invoice</button>
+            </div>
+          </div>
+          <div class="invgen-body">
+            <div class="invgen-form">
+
+              <div class="invgen-lead-pick">
+                <label class="invgen-fl">Link to Lead (optional — auto-fills client info)</label>
+                <select class="invgen-fi" id="ig-lead-select" onchange="onGenLeadPick()">
+                  <option value="">-- No lead / manual entry --</option>
+                </select>
+                <div class="invgen-meta-badges" id="ig-meta-badges"></div>
+              </div>
+
+              <div class="invgen-card">
+                <div class="invgen-sec">Invoice Info</div>
+                <div class="invgen-g2">
+                  <div class="invgen-fg"><label class="invgen-fl">Invoice No.</label><input class="invgen-fi" id="ig-invnum" oninput="renderPreviewGen()"></div>
+                  <div class="invgen-fg"><label class="invgen-fl">Invoice Date</label><input class="invgen-fi" id="ig-invdate" type="date" oninput="renderPreviewGen()"></div>
+                </div>
+                <div class="invgen-g2" style="margin-top:9px">
+                  <div class="invgen-fg"><label class="invgen-fl">Loading Point</label><input class="invgen-fi" id="ig-portload" placeholder="Alexandria Port" oninput="renderPreviewGen()"></div>
+                  <div class="invgen-fg"><label class="invgen-fl">Discharge Point</label><input class="invgen-fi" id="ig-port" placeholder="Jebel Ali" oninput="renderPreviewGen()"></div>
+                </div>
+              </div>
+
+              <div class="invgen-card">
+                <div class="invgen-sec">Client Info</div>
+                <div class="invgen-fg"><label class="invgen-fl">Company Name</label><input class="invgen-fi" id="ig-company" oninput="renderPreviewGen()"></div>
+                <div class="invgen-g2">
+                  <div class="invgen-fg"><label class="invgen-fl">Country</label><input class="invgen-fi" id="ig-country" oninput="renderPreviewGen()"></div>
+                  <div class="invgen-fg"><label class="invgen-fl">Website</label><input class="invgen-fi" id="ig-website" oninput="renderPreviewGen()"></div>
+                </div>
+                <div class="invgen-g2" style="margin-top:9px">
+                  <div class="invgen-fg"><label class="invgen-fl">Email</label><input class="invgen-fi" id="ig-email" oninput="renderPreviewGen()"></div>
+                  <div class="invgen-fg"><label class="invgen-fl">Phone</label><input class="invgen-fi" id="ig-phone" oninput="renderPreviewGen()"></div>
+                </div>
+                <div class="invgen-fg" style="margin-top:9px"><label class="invgen-fl">Address</label><input class="invgen-fi" id="ig-address" oninput="renderPreviewGen()"></div>
+              </div>
+
+              <div class="invgen-card">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <div class="invgen-sec" style="margin-bottom:0">Line Items</div>
+                  <button class="btn btn-outline btn-sm" onclick="addRowGen()">+ Add Row</button>
+                </div>
+                <div class="invgen-hdr"><span>Product</span><span>Pack</span><span>U/Ctn</span><span>Qty</span><span>Price $</span><span></span></div>
+                <div id="ig-items-wrap"></div>
+                <div class="invgen-g2" style="margin-top:12px">
+                  <div class="invgen-fg"><label class="invgen-fl">Notes</label><input class="invgen-fi" id="ig-notes" oninput="renderPreviewGen()"></div>
+                  <div class="invgen-fg"><label class="invgen-fl">Discount %</label><input class="invgen-fi" id="ig-disc" type="number" min="0" max="100" value="0" oninput="renderPreviewGen()"></div>
+                </div>
+                <div class="invgen-totals">
+                  <div class="ti">Subtotal: <strong id="ig-t-sub">$0.00</strong></div>
+                  <div class="ti">Total: <strong id="ig-t-total">$0.00</strong></div>
+                </div>
+              </div>
+            </div>
+            <div class="invgen-preview">
+              <div class="inv-doc" id="ig-invoice-doc"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- NOTIFICATIONS -->
@@ -1486,7 +1615,7 @@ function rowToLead(row){
 }
 function leadToRow(l){return[l.id,l.name,l.company||'',l.phone||'',l.phone2||'',l.whatsapp||'',l.email||'',l.country||'',l.city||'',l.btype||'',l.product||'',l.source||'',empName(l.socialEmp),empName(l.salesEmp),l.status||'New',l.response||'No Response',l.priority||'Medium',l.deal||0,l.notes||'',l.followup||'',l.samples||'no',l.sampleResult||'',l.added||new Date().toISOString(),l.updated||new Date().toISOString()]}
 function rowToPair(row){if(!row||!row[0])return null;return{id:String(row[0]),socialId:String(row[1]||''),salesId:String(row[2]||''),date:String(row[3]||'')}}
-function rowToInvoice(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),leadName:String(row[2]||''),requestedBy:String(row[3]||''),requestedByID:String(row[4]||''),requestText:String(row[5]||''),pdfUrl:String(row[6]||''),status:String(row[7]||'pending'),date:String(row[8]||''),adminNote:String(row[9]||'')}}
+function rowToInvoice(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),leadName:String(row[2]||''),requestedBy:String(row[3]||''),requestedByID:String(row[4]||''),requestText:String(row[5]||''),pdfUrl:String(row[6]||''),status:String(row[7]||'pending'),date:String(row[8]||''),adminNote:String(row[9]||''),kind:String(row[10]||'request'),invoiceNumber:String(row[11]||''),salesEmpName:String(row[12]||''),socialEmpName:String(row[13]||''),total:parseFloat(row[14])||0,clientJson:String(row[15]||''),itemsJson:String(row[16]||'')}}
 function rowToVisit(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),leadName:String(row[2]||''),visitDate:String(row[3]||''),visited:String(row[4]||'no'),addedBy:String(row[5]||''),date:String(row[6]||'')}}
 function rowToComment(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),authorId:String(row[2]||''),authorName:String(row[3]||''),text:String(row[4]||''),date:String(row[5]||'')}}
 
@@ -1849,7 +1978,263 @@ function openRequestInvoice(){const myLeads=getMyLeads(STATE.leads);const sel=do
 async function submitInvoiceRequest(){const leadId=document.getElementById('ri-lead-select').value;const text=document.getElementById('ri-text').value.trim();if(!leadId){toast('Select a lead','error');return}if(!text){toast('Write request details','error');return}const lead=STATE.leads.find(l=>l.id===leadId);if(!lead)return;const inv={id:genId('INV'),leadId,leadName:lead.name,requestedBy:SESSION.user,requestedByID:SESSION.empId||'admin',requestText:text,pdfUrl:'',status:'pending',date:new Date().toISOString(),adminNote:''};STATE.invoices.push(inv);await gsPost({action:'requestInvoice',id:inv.id,leadId,leadName:lead.name,requestedBy:inv.requestedBy,requestedByID:inv.requestedByID,requestText:text,date:inv.date});closeModal('req-invoice-modal');addNotification('warn','Invoice Requested','Lead: '+lead.name);toast('✅ Invoice requested','success');renderInvoicesPage()}
 function openUploadPDF(invId){if(!isAdmin()){toast('Admin only','error');return}const inv=STATE.invoices.find(i=>i.id===invId);if(!inv)return;document.getElementById('upload-inv-id').value=invId;document.getElementById('pdf-url-input').value='';document.getElementById('pdf-admin-note').value='';document.getElementById('upload-inv-info').innerHTML=`<strong>Lead:</strong> ${inv.leadName}<br><strong>Requested by:</strong> ${inv.requestedBy}<br><strong>Request:</strong> ${inv.requestText}`;openModal('upload-pdf-modal')}
 async function uploadInvoicePDF(){const invId=document.getElementById('upload-inv-id').value;const pdfUrl=document.getElementById('pdf-url-input').value.trim();const adminNote=document.getElementById('pdf-admin-note').value.trim();if(!pdfUrl){toast('Enter PDF link','error');return}const idx=STATE.invoices.findIndex(i=>i.id===invId);if(idx<0)return;STATE.invoices[idx].pdfUrl=pdfUrl;STATE.invoices[idx].status='uploaded';STATE.invoices[idx].adminNote=adminNote;await gsPost({action:'uploadInvoicePDF',id:invId,pdfUrl,adminNote});closeModal('upload-pdf-modal');addNotification('success','Invoice Uploaded','PDF ready for: '+STATE.invoices[idx].leadName);toast('✅ PDF uploaded','success');renderInvoicesPage()}
-function renderInvoicesPage(){const list=document.getElementById('invoice-list');if(!list)return;let invs=isAdmin()?STATE.invoices:STATE.invoices.filter(i=>i.requestedByID===SESSION.empId);invs=[...invs].sort((a,b)=>new Date(b.date)-new Date(a.date));if(!invs.length){list.innerHTML=`<div class="table-empty">No invoices yet</div>`;return}list.innerHTML=invs.map(inv=>`<div class="invoice-card"><div class="invoice-card-header"><div><div class="invoice-card-lead">📋 ${inv.leadName}</div><div class="invoice-card-by">By: ${inv.requestedBy} · ${fmtDate(inv.date)}</div></div><span class="tag tag-${inv.status}">${inv.status}</span></div><div class="invoice-card-text">${inv.requestText}</div>${inv.pdfUrl?`<a href="${inv.pdfUrl}" target="_blank" class="btn btn-success btn-sm" style="text-decoration:none;margin-bottom:6px">📄 View PDF Invoice</a>`:''} ${inv.adminNote?`<div style="font-size:11px;color:var(--amber);margin-top:4px">📝 Admin: ${inv.adminNote}</div>`:''} ${isAdmin()&&inv.status==='pending'?`<button class="btn btn-gold btn-sm" onclick="openUploadPDF('${inv.id}')" style="margin-top:8px;width:100%;justify-content:center">📤 Upload PDF</button>`:''}</div>`).join('')}
+function renderInvoicesPage(){const list=document.getElementById('invoice-list');if(!list)return;let invs=isAdmin()?STATE.invoices:STATE.invoices.filter(i=>i.requestedByID===SESSION.empId);invs=[...invs].sort((a,b)=>new Date(b.date)-new Date(a.date));if(!invs.length){list.innerHTML=`<div class="table-empty">No invoices yet</div>`;return}
+list.innerHTML=invs.map(inv=>{
+  if(inv.kind==='generated'){
+    return `<div class="invoice-card"><div class="invoice-card-header"><div><div class="invoice-card-lead">🧾 ${inv.invoiceNumber||inv.id} — ${inv.leadName||'Manual Client'}</div><div class="invoice-card-by">Created by: ${inv.requestedBy} · ${fmtDateTime(inv.date)}</div></div><span class="tag tag-won">generated</span></div>
+    <div class="invoice-card-meta">
+      ${inv.salesEmpName?`<span class="tag tag-sales">Sales: ${inv.salesEmpName}</span>`:''}
+      ${inv.socialEmpName?`<span class="tag tag-social">Social: ${inv.socialEmpName}</span>`:''}
+      ${inv.total?`<span class="tag tag-Invoice">$${Number(inv.total).toFixed(2)}</span>`:''}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-outline btn-sm" onclick="viewGeneratedInvoice('${inv.id}')">👁️ View</button>
+      <button class="btn btn-success btn-sm" onclick="viewGeneratedInvoice('${inv.id}',true)">⬇️ Download PDF</button>
+    </div></div>`;
+  }
+  return `<div class="invoice-card"><div class="invoice-card-header"><div><div class="invoice-card-lead">📋 ${inv.leadName}</div><div class="invoice-card-by">By: ${inv.requestedBy} · ${fmtDate(inv.date)}</div></div><span class="tag tag-${inv.status}">${inv.status}</span></div><div class="invoice-card-text">${inv.requestText}</div>${inv.pdfUrl?`<a href="${inv.pdfUrl}" target="_blank" class="btn btn-success btn-sm" style="text-decoration:none;margin-bottom:6px">📄 View PDF Invoice</a>`:''} ${inv.adminNote?`<div style="font-size:11px;color:var(--amber);margin-top:4px">📝 Admin: ${inv.adminNote}</div>`:''} ${isAdmin()&&inv.status==='pending'?`<button class="btn btn-gold btn-sm" onclick="openUploadPDF('${inv.id}')" style="margin-top:8px;width:100%;justify-content:center">📤 Upload PDF</button>`:''}</div>`;
+}).join('')}
+
+// ═══ INVOICE GENERATOR (full document builder, embedded) ═══
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let IG_items=[];let IG_counter=0;const igUid=()=>'ig'+(++IG_counter);let IG_linkedLead=null;let IG_lastInvoice=null;
+const gvg=id=>(document.getElementById(id)||{}).value||'';
+
+function openCreateInvoice(){
+  IG_items=[];IG_counter=0;IG_linkedLead=null;
+  document.getElementById('ig-invnum').value=genId('INV');
+  document.getElementById('ig-invdate').value=new Date().toISOString().split('T')[0];
+  ['ig-port','ig-portload','ig-company','ig-country','ig-email','ig-phone','ig-address','ig-website','ig-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('ig-disc').value='0';
+  document.getElementById('ig-meta-badges').innerHTML='';
+  const sel=document.getElementById('ig-lead-select');
+  const myLeads=isAdmin()?STATE.leads:getMyLeads(STATE.leads);
+  sel.innerHTML='<option value="">-- No lead / manual entry --</option>'+myLeads.map(l=>`<option value="${l.id}">${l.name} · ${l.company||l.country||''}</option>`).join('');
+  sel.value='';
+  addRowGen();
+  document.getElementById('gen-invoice-modal').classList.add('open');
+}
+function closeGenInvoice(){document.getElementById('gen-invoice-modal').classList.remove('open')}
+
+function onGenLeadPick(){
+  const id=gvg('ig-lead-select');
+  const badges=document.getElementById('ig-meta-badges');
+  if(!id){IG_linkedLead=null;badges.innerHTML='';renderPreviewGen();return}
+  const lead=STATE.leads.find(l=>l.id===id);
+  if(!lead){IG_linkedLead=null;badges.innerHTML='';return}
+  IG_linkedLead=lead;
+  document.getElementById('ig-company').value=lead.company||'';
+  document.getElementById('ig-country').value=lead.country||'';
+  document.getElementById('ig-email').value=lead.email||'';
+  document.getElementById('ig-phone').value=lead.phone||lead.whatsapp||'';
+  document.getElementById('ig-address').value=lead.city||'';
+  const salesName=empName(lead.salesEmp),socialName=empName(lead.socialEmp);
+  badges.innerHTML=`${salesName!=='-'?`<span class="invgen-badge">👤 Sales: ${salesName}</span>`:''}${socialName!=='-'?`<span class="invgen-badge">📣 Social: ${socialName}</span>`:''}`;
+  renderPreviewGen();
+}
+
+function addRowGen(){IG_items.push({id:igUid(),name:'',flavours:[],pack:'',upc:'',qty:'',price:''});renderItemsGen();renderPreviewGen()}
+function removeRowGen(id){IG_items=IG_items.filter(x=>x.id!==id);renderItemsGen();renderPreviewGen()}
+function sfGen(id,field,val){const it=IG_items.find(x=>x.id===id);if(it){it[field]=val;renderPreviewGen()}}
+function addFlavourGen(id){const inp=document.getElementById('igfi-'+id);if(!inp)return;const val=inp.value.trim();if(!val)return;const it=IG_items.find(x=>x.id===id);if(it){it.flavours.push(val);inp.value=''}renderItemsGen();renderPreviewGen()}
+function removeFlavourGen(id,idx){const it=IG_items.find(x=>x.id===id);if(it)it.flavours.splice(idx,1);renderItemsGen();renderPreviewGen()}
+
+function renderItemsGen(){
+  const wrap=document.getElementById('ig-items-wrap');if(!wrap)return;
+  wrap.innerHTML=IG_items.map(it=>`
+    <div class="invgen-row" id="igrow-${it.id}">
+      <div style="min-width:0">
+        <input class="invgen-ii left" value="${esc(it.name)}" placeholder="Product name" oninput="sfGen('${it.id}','name',this.value)">
+        ${it.flavours.length?`<div class="invgen-ftags">${it.flavours.map((f,i)=>`<span class="invgen-ftag">${esc(f)}<button onclick="removeFlavourGen('${it.id}',${i})">×</button></span>`).join('')}</div>`:''}
+        <div class="invgen-faddrow">
+          <input id="igfi-${it.id}" class="invgen-faddinp" placeholder="+ flavour" onkeydown="if(event.key==='Enter'){event.preventDefault();addFlavourGen('${it.id}')}">
+          <button class="invgen-faddbtn" onclick="addFlavourGen('${it.id}')">+</button>
+        </div>
+      </div>
+      <input class="invgen-ii" value="${esc(it.pack)}" placeholder="30g" oninput="sfGen('${it.id}','pack',this.value)">
+      <input class="invgen-ii" type="number" value="${esc(it.upc)}" placeholder="24" oninput="sfGen('${it.id}','upc',this.value)">
+      <input class="invgen-ii" type="number" value="${esc(it.qty)}" placeholder="0" oninput="sfGen('${it.id}','qty',this.value)">
+      <input class="invgen-ii" type="number" step="0.01" value="${esc(it.price)}" placeholder="0.00" oninput="sfGen('${it.id}','price',this.value)">
+      <button class="invgen-rb" onclick="removeRowGen('${it.id}')">×</button>
+    </div>`).join('');
+}
+
+function buildInvoiceDocHTML(meta){
+  const {invNum,invDate,port,portLoad,company,country,email,phone,address,website,notes,discPct,items}=meta;
+  let subtotal=0,totalQty=0,rows='';
+  items.forEach((it,i)=>{
+    const qty=parseInt(it.qty)||0,price=parseFloat(it.price)||0,line=qty*price;
+    subtotal+=line;totalQty+=qty;
+    const bg=i%2?'#f0f4ff':'#ffffff';
+    const flav=it.flavours.length?`<div style="margin-top:4px;line-height:1.8"><span style="font-size:9px;color:#555;font-style:italic">Flavours: </span>${it.flavours.map(f=>`<span style="display:inline-block;background:#f0eeff;border:1px solid #2d2a76;color:#2d2a76;font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;margin:1px 2px">${esc(f)}</span>`).join('')}</div>`:'';
+    rows+=`<tr style="background:${bg}"><td>${i+1}</td><td style="text-align:left"><div style="font-weight:700">${esc(it.name)||'—'}</div>${flav}</td><td>${esc(it.pack)||'—'}</td><td>${it.upc||'—'}</td><td>${qty||'—'}</td><td>${price>0?'$'+price.toFixed(2):'—'}</td><td>${line>0?'$'+line.toFixed(2):'—'}</td></tr>`;
+  });
+  const discAmt=subtotal*discPct/100,total=subtotal-discAmt;
+  const discRow=discPct>0?`<tr><td colspan="6" style="text-align:right;font-weight:700;color:#b91c1c;background:#fef2f2">Discount (${discPct}%) / خصم</td><td style="color:#b91c1c;font-weight:700;background:#fef2f2">−$${discAmt.toFixed(2)}</td></tr>`:'';
+  const fmtD=invDate?new Date(invDate+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+  return {total,subtotal,discAmt,totalQty,html:`
+  <div style="background:#fff;border-bottom:1px solid #e5e7eb;display:grid;grid-template-columns:1fr auto">
+    <div style="padding:10px 14px;border-right:1px solid #e5e7eb;font-size:10px;color:#374151;line-height:1.9">
+      <b style="color:#2d2a76">Address:</b> Cairo – Alexandria Agricultural Road, Km 90, Tanta, Egypt<br>
+      <b style="color:#2d2a76">Website:</b> www.egygulf-foods.com &nbsp; <b style="color:#2d2a76">E-Mail:</b> export@egygulf-foods.com
+    </div>
+    <div style="padding:10px 14px;display:flex;flex-direction:column;gap:5px;justify-content:center;min-width:195px">
+      <div style="display:flex;justify-content:space-between;gap:14px"><span style="font-size:9.5px;font-weight:700;color:#2d2a76;text-transform:uppercase">Invoice No:</span><span style="font-size:12px;font-weight:800;font-family:monospace;color:#1e3a8a">${esc(invNum)||'—'}</span></div>
+      <div style="display:flex;justify-content:space-between;gap:14px"><span style="font-size:9.5px;font-weight:700;color:#2d2a76;text-transform:uppercase">Invoice Date:</span><span style="font-size:12px;font-weight:700;color:#111">${fmtD}</span></div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,#2d2a76,#3d3a96);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <div style="display:flex;align-items:center;gap:14px">
+      <svg width="140" height="52" viewBox="0 0 140 52" xmlns="http://www.w3.org/2000/svg"><text x="3" y="38" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="34" fill="#ffffff" letter-spacing="-1">egygulf</text><text x="78" y="50" font-family="Arial Black,Arial,sans-serif" font-weight="700" font-size="13" fill="#ffb607" letter-spacing="0.5">Foods</text><ellipse cx="49" cy="7" rx="5" ry="6.5" fill="#ffb607" transform="rotate(-15,49,7)"/></svg>
+      <div><div style="color:#fff;font-size:13px;font-weight:800">Egyptian Gulf International</div><div style="color:rgba(255,255,255,.8);font-size:9.5px">For Snacks &amp; Food Industries</div><div style="color:rgba(255,255,255,.5);font-size:8.5px;margin-top:1px">الشركة المصرية الخليجية الدولية للصناعات والأغذية الخفيفة</div></div>
+    </div>
+  </div>
+  <div style="background:#2d2a76;color:#ffb607;font-size:13px;font-weight:800;text-align:center;padding:8px;letter-spacing:2px;text-transform:uppercase;border-bottom:3px solid #ffb607;-webkit-print-color-adjust:exact;print-color-adjust:exact">فاتورة تجارية — COMMERCIAL INVOICE</div>
+  <div style="border:1px solid #e5e7eb;border-top:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #e5e7eb">
+      <div style="padding:8px 11px;border-right:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Website:</div><div style="font-size:11px;font-weight:600;color:#111">${esc(website)||'—'}</div></div>
+      <div style="padding:8px 11px;border-right:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Country / البلد:</div><div style="font-size:11px;font-weight:600;color:#111">${esc(country)||'—'}</div></div>
+      <div style="padding:8px 11px"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Phone / الموبايل:</div><div style="font-size:11px;font-weight:600;color:#111">${esc(phone)||'—'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+      <div style="padding:8px 11px;border-right:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Company Name / اسم الشركة:</div><div style="font-size:12px;font-weight:700;color:#111">${esc(company)||'—'}</div></div>
+      <div style="padding:8px 11px;border-right:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Address / العنوان:</div><div style="font-size:11px;font-weight:600;color:#111">${esc(address)||'—'}</div></div>
+      <div style="padding:8px 11px"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Email / الإيميل:</div><div style="font-size:11px;font-weight:600;color:#111">${esc(email)||'—'}</div></div>
+    </div>
+  </div>
+  <table class="inv-table">
+    <thead><tr><th style="width:34px">NO</th><th style="text-align:left">Product Description<br><span style="font-weight:500;opacity:.8;font-size:8.5px">وصف المنتج</span></th><th>Pack Size<br><span style="font-weight:500;opacity:.8;font-size:8.5px">حجم العبوة</span></th><th>Units/Carton<br><span style="font-weight:500;opacity:.8;font-size:8.5px">عدد الوحدات</span></th><th>Qty (Cartons)<br><span style="font-weight:500;opacity:.8;font-size:8.5px">الكمية</span></th><th>Unit Price (USD)<br><span style="font-weight:500;opacity:.8;font-size:8.5px">سعر الوحدة</span></th><th>Total Value (USD)<br><span style="font-weight:500;opacity:.8;font-size:8.5px">الإجمالي</span></th></tr></thead>
+    <tbody>${rows}${discRow}<tr class="inv-total-row"><td colspan="4" style="text-align:right;font-size:11px">Total Quantity (Cartons) / إجمالي الكمية</td><td style="font-size:13px">${totalQty} cartons</td><td style="text-align:right;font-size:11px">TOTAL VALUE (USD)</td><td style="font-size:14px">$${total.toFixed(2)}</td></tr></tbody>
+  </table>
+  <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #e5e7eb;border-top:none">
+    <div style="padding:8px 13px;border-right:1px solid #e5e7eb;font-size:12px;color:#111"><b style="color:#2d2a76">Loading Point / نقطة الشحن:–</b> &nbsp;${esc(portLoad)||'—'}</div>
+    <div style="padding:8px 13px;font-size:12px;color:#111"><b style="color:#2d2a76">Discharge Point / نقطة الوصول:–</b> &nbsp;${esc(port)||'—'}</div>
+  </div>
+  <div style="margin-top:10px;background:#2d2a76;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <div style="background:#ffb607;color:#2d2a76;font-weight:800;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;padding:7px 14px;text-align:center">PAYMENT TERMS, DELIVERY &amp; LIABILITY — شروط السداد والتسليم والمسؤولية</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr">
+      <div style="padding:11px 14px;border-right:1px solid rgba(255,255,255,.12)">
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">PAYMENT TERMS</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:7px">.advance payment before starting production 50%<br>.before loading from factory 50%<br>.Production and shipment will not commence unless all due payments are fully received</p>
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">DELIVERY &amp; RISK TRANSFER</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:7px">Goods are delivered Ex-Works (Factory). All risks and responsibilities transfer to the buyer immediately upon loading.</p>
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">LIMITATION OF LIABILITY</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8">The exporter shall not be liable for any indirect or consequential damages once goods leave the factory.</p>
+      </div>
+      <div style="padding:11px 14px;direction:rtl;text-align:right">
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">شروط السداد</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:7px">%50 من إجمالي قيمة الفاتورة قبل بدء الإنتاج.<br>%50 قبل تحميل البضاعة من أرض المصنع.<br>لا يتم الإنتاج أو التحميل قبل استلام الدفعات كاملة.</p>
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">التسليم وتحمل المخاطر</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:7px">يتم تسليم البضاعة أرض المصنع، وتنتقل المسؤولية إلى المشتري فور التحميل.</p>
+        <div style="color:#ffb607;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">تحديد المسؤولية</div>
+        <p style="font-size:9.5px;color:rgba(255,255,255,.85);line-height:1.8">لا تتحمل الشركة المصدرة أي مسؤولية عن إضرار غير مباشرة بعد مغادرة البضاعة للمصنع.</p>
+      </div>
+    </div>
+  </div>
+  <div style="background:#ffb607;padding:6px 14px;font-size:10px;color:#1e3a8a;text-align:center;font-weight:700;margin-top:8px;-webkit-print-color-adjust:exact;print-color-adjust:exact">The quotation / invoice is valid for two weeks (14 days) from the date of issue — مدة صلاحية عرض السعر أو الفاتورة (14 يوماً) من تاريخ الإصدار</div>
+  <div style="background:#dcfce7;border:1px solid #86efac;padding:6px 14px;font-size:10px;color:#14532d;text-align:center;font-weight:700;margin-top:4px">This invoice is issued for commercial and customs purposes only — تم إصدار هذه الفاتورة لأغراض تجارية وجمركية فقط</div>
+  ${notes?`<div style="background:#fffbeb;border:1px solid #fcd34d;padding:8px 14px;font-size:11px;color:#78350f;margin-top:4px;border-radius:4px"><b>Notes / ملاحظات:</b> ${esc(notes)}</div>`:''}
+  <div style="margin-top:10px">
+    <div style="background:#2d2a76;color:#fff;font-weight:800;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;padding:7px 14px;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">BANK DETAILS (FOR PAYMENT PURPOSES ONLY)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #e5e7eb;border-top:none">
+      <div style="padding:8px 14px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Bank</div><div style="font-size:11.5px;font-weight:600;color:#111">Faisal Islamic Bank of Egypt – Tanta Branch</div></div>
+      <div style="padding:8px 14px;border-bottom:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Beneficiary</div><div style="font-size:11.5px;font-weight:600;color:#111">Egyptian Gulf International for Industries and Light Foods</div></div>
+      <div style="padding:8px 14px;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">Account No</div><div style="font-size:12px;font-weight:600;color:#111;font-family:monospace">900820803</div></div>
+      <div style="padding:8px 14px;border-bottom:1px solid #e5e7eb"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">IBAN (USD)</div><div style="font-size:11px;font-weight:600;color:#111;font-family:monospace">EG420059000900000100015847812</div></div>
+      <div style="padding:8px 14px;grid-column:1/-1"><div style="font-size:9px;font-weight:700;color:#2d2a76;text-transform:uppercase;margin-bottom:2px">SWIFT / BIC</div><div style="font-size:12px;font-weight:600;color:#111;font-family:monospace">FIEGEGCXXXX</div></div>
+    </div>
+  </div>
+  <div style="height:16px"></div>`};
+}
+
+function collectGenMeta(){
+  return{invNum:gvg('ig-invnum'),invDate:gvg('ig-invdate'),port:gvg('ig-port'),portLoad:gvg('ig-portload'),company:gvg('ig-company'),country:gvg('ig-country'),email:gvg('ig-email'),phone:gvg('ig-phone'),address:gvg('ig-address'),website:gvg('ig-website'),notes:gvg('ig-notes'),discPct:parseFloat(gvg('ig-disc'))||0,items:IG_items};
+}
+function renderPreviewGen(){
+  const meta=collectGenMeta();
+  const built=buildInvoiceDocHTML(meta);
+  document.getElementById('ig-invoice-doc').innerHTML=built.html;
+  document.getElementById('ig-t-sub').textContent='$'+built.subtotal.toFixed(2);
+  document.getElementById('ig-t-total').textContent='$'+built.total.toFixed(2);
+  return built;
+}
+async function downloadPDFGen(){
+  const btn=document.getElementById('invgen-dl-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Generating…'}
+  try{
+    const el=document.getElementById('ig-invoice-doc');
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();
+    const imgH=(canvas.height*pw)/canvas.width;let y=0;
+    while(y<imgH){if(y>0)pdf.addPage();pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,-y,pw,imgH);y+=ph}
+    pdf.save('invoice-'+(gvg('ig-invnum')||'draft')+'.pdf');
+  }catch(e){toast('PDF failed — try again','error')}
+  finally{if(btn){btn.disabled=false;btn.textContent='⬇️ Download PDF'}}
+}
+
+async function saveGeneratedInvoice(){
+  const meta=collectGenMeta();
+  if(!meta.invNum){toast('Enter invoice number','error');return}
+  if(!IG_items.some(it=>it.name&&(parseFloat(it.qty)>0))){toast('Add at least one product line','error');return}
+  const built=buildInvoiceDocHTML(meta);
+  const salesName=IG_linkedLead?empName(IG_linkedLead.salesEmp):'';
+  const socialName=IG_linkedLead?empName(IG_linkedLead.socialEmp):'';
+  const inv={
+    id:genId('INV'),
+    leadId:IG_linkedLead?IG_linkedLead.id:'',
+    leadName:IG_linkedLead?IG_linkedLead.name:(meta.company||'Manual Client'),
+    requestedBy:SESSION.user,
+    requestedByID:SESSION.empId||'admin',
+    requestText:'',
+    pdfUrl:'',
+    status:'created',
+    date:new Date().toISOString(),
+    adminNote:'',
+    kind:'generated',
+    invoiceNumber:meta.invNum,
+    salesEmpName:salesName!=='-'?salesName:'',
+    socialEmpName:socialName!=='-'?socialName:'',
+    total:built.total,
+    clientJson:JSON.stringify({company:meta.company,country:meta.country,email:meta.email,phone:meta.phone,address:meta.address,website:meta.website,port:meta.port,portLoad:meta.portLoad,notes:meta.notes,discPct:meta.discPct,invDate:meta.invDate}),
+    itemsJson:JSON.stringify(IG_items)
+  };
+  STATE.invoices.unshift(inv);
+  LS.set&&LS.set('invoices',STATE.invoices);
+  await gsPost({action:'createInvoice',id:inv.id,leadId:inv.leadId,leadName:inv.leadName,requestedBy:inv.requestedBy,requestedByID:inv.requestedByID,requestText:'',status:inv.status,date:inv.date,adminNote:'',kind:'generated',invoiceNumber:inv.invoiceNumber,salesEmpName:inv.salesEmpName,socialEmpName:inv.socialEmpName,total:inv.total,clientJson:inv.clientJson,itemsJson:inv.itemsJson});
+  addNotification&&addNotification('success','Invoice Created',inv.invoiceNumber+' · '+inv.leadName);
+  toast('✅ Invoice saved: '+inv.invoiceNumber,'success');
+  closeGenInvoice();
+  renderInvoicesPage();
+}
+
+function viewGeneratedInvoice(id,download){
+  const inv=STATE.invoices.find(i=>i.id===id);if(!inv)return;
+  let client={},items=[];
+  try{client=JSON.parse(inv.clientJson||'{}')}catch(e){}
+  try{items=JSON.parse(inv.itemsJson||'[]')}catch(e){}
+  IG_items=items;IG_linkedLead=null;
+  document.getElementById('ig-invnum').value=inv.invoiceNumber||inv.id;
+  document.getElementById('ig-invdate').value=client.invDate||'';
+  document.getElementById('ig-port').value=client.port||'';
+  document.getElementById('ig-portload').value=client.portLoad||'';
+  document.getElementById('ig-company').value=client.company||'';
+  document.getElementById('ig-country').value=client.country||'';
+  document.getElementById('ig-email').value=client.email||'';
+  document.getElementById('ig-phone').value=client.phone||'';
+  document.getElementById('ig-address').value=client.address||'';
+  document.getElementById('ig-website').value=client.website||'';
+  document.getElementById('ig-notes').value=client.notes||'';
+  document.getElementById('ig-disc').value=client.discPct||0;
+  document.getElementById('ig-lead-select').innerHTML='<option value="">-- No lead / manual entry --</option>'+STATE.leads.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+  document.getElementById('ig-lead-select').value=inv.leadId||'';
+  document.getElementById('ig-meta-badges').innerHTML=`${inv.salesEmpName?`<span class="invgen-badge">👤 Sales: ${inv.salesEmpName}</span>`:''}${inv.socialEmpName?`<span class="invgen-badge">📣 Social: ${inv.socialEmpName}</span>`:''}`;
+  renderItemsGen();
+  renderPreviewGen();
+  document.getElementById('gen-invoice-modal').classList.add('open');
+  if(download)setTimeout(downloadPDFGen,300);
+}
 
 // ═══ DASHBOARD ═══
 function renderDashboard(){
