@@ -830,7 +830,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           </div>
           <div class="modal-section">Assignment <span style="color:var(--red);font-size:10px">* Required</span></div>
           <div class="form-grid">
-            <div class="field field-required"><label>Social Media Emp. <span class="req">*</span></label><select id="nl-social-emp"><option value="">-- Select --</option></select></div>
+            <div class="field field-required"><label>Social Media Emp. <span class="req" id="nl-social-req">*</span></label><select id="nl-social-emp"><option value="">-- Select --</option></select></div>
             <div class="field field-required"><label>Sales Employee <span class="req">*</span></label><select id="nl-sales-emp"><option value="">-- Select --</option></select></div>
             <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
             <div class="field"><label>Status</label><select id="nl-status"><option>New</option><option>Contacted</option><option>Interested</option></select></div>
@@ -1886,13 +1886,14 @@ function resetDupBlock(){hideDupBlock();blockSaveBtn(false);['nl-phone','nl-what
 function getField(id){const e=document.getElementById(id);return e?e.value.trim():''}
 async function saveLead(){
   const name=getField('nl-name'),phone=getField('nl-phone'),country=getField('nl-country');
+  const branchVal=getField('nl-branch')||'tanta';
   const salesEmpId=getField('nl-sales-emp'),socialEmpId=getField('nl-social-emp');
   if(!name){toast('Name is required','error');return}
   if(!phone){toast('Phone is required','error');return}
   if(!isValidPhone(phone)){toast('❌ رقم الهاتف غير صحيح — يبدأ بـ 00 وأرقام فقط','error');return}
   if(!country){toast('Country is required','error');return}
   if(!salesEmpId){toast('Sales Employee is required ⚠️','error');return}
-  if(!socialEmpId){toast('Social Media Employee is required ⚠️','error');return}
+  if(!socialEmpId&&branchVal!=='cairo'){toast('Social Media Employee is required ⚠️','error');return}
   const dupPhone=findExactDuplicate(phone,null);
   if(dupPhone){showDupBlock(`"${phone}" → <strong>${dupPhone.name}</strong>`);blockSaveBtn(true);toast('🚫 رقم مكرر!','error');logDuplicate(name,dupPhone.name,'Fuzzy Phone Match');return}
   const wa=getField('nl-whatsapp');
@@ -2067,7 +2068,7 @@ async function updateLead(){
   await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i]),branch:STATE.leads[i].branch||'tanta'});
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
-function populateLeadFormSelects(){const branch=document.getElementById('nl-branch')?.value||'tanta';const sales=STATE.employees.filter(e=>e.role==='sales'&&(e.team||'tanta')===branch),social=STATE.employees.filter(e=>e.role==='social'&&(e.team||'tanta')===branch);const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}
+function populateLeadFormSelects(){const branch=document.getElementById('nl-branch')?.value||'tanta';let sales=STATE.employees.filter(e=>e.role==='sales'&&(e.team||'tanta')===branch),social=STATE.employees.filter(e=>e.role==='social'&&(e.team||'tanta')===branch);if(!sales.length)sales=STATE.employees.filter(e=>e.role==='sales');if(!social.length)social=STATE.employees.filter(e=>e.role==='social');const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');const req=document.getElementById('nl-social-req');if(req)req.style.display=branch==='cairo'?'none':''}
 
 // ═══ COMMENTS ═══
 function loadComments(leadId){const list=document.getElementById('comments-list');if(!list)return;const comments=STATE.comments.filter(c=>c.leadId===leadId).sort((a,b)=>new Date(b.date)-new Date(a.date));list.innerHTML=comments.length?comments.map(c=>`<div class="comment-box"><div><span class="comment-author">${c.authorName}</span><span class="comment-date">${fmtDate(c.date)}</span>${(isAdmin()||c.authorId===SESSION.empId)?`<button class="btn btn-ghost btn-xs" onclick="deleteComment('${c.id}')" style="float:right;color:var(--red)">✕</button>`:''}</div><div class="comment-text">${c.text}</div></div>`).join(''):`<div class="table-empty">No comments yet</div>`}
