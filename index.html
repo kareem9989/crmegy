@@ -710,6 +710,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <div class="nav-item" onclick="nav('sales',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="label">Sales Team</span></div>
       <div class="nav-item" onclick="nav('social',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="label">Social Media</span></div>
       <div class="nav-item" onclick="nav('teamlink',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span class="label">Team Linking</span></div>
+      <div class="nav-item admin-only" onclick="nav('attendance',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="label">Attendance</span></div>
       <div class="nav-section-label recruiter-section-label" style="display:none">Recruiters</div>
       <div class="nav-item recruiter-only" onclick="nav('recruiters',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="label">Recruiters</span></div>
       <div class="nav-item" onclick="nav('leaderboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span class="label">Leaderboard</span></div>
@@ -887,6 +888,15 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div id="social-cards" class="grid2"></div>
       </div>
 
+      <!-- ATTENDANCE -->
+      <div class="page" id="page-attendance">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div class="section-title" style="margin-bottom:0">Attendance — الحضور اليومي</div>
+          <input id="att-date" type="date" class="btn btn-outline btn-sm" style="cursor:pointer" onchange="renderAttendance()">
+        </div>
+        <div class="table-wrap"><table class="admin-table"><thead><tr><th>Employee</th><th>Branch</th><th>Role</th><th>First Check-in</th><th>Location</th></tr></thead><tbody id="attendance-tbody"></tbody></table></div>
+      </div>
+
       <!-- TEAM LINK -->
       <div class="page" id="page-teamlink">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
@@ -896,6 +906,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div class="alert alert-info" style="margin-bottom:14px">Leads pass automatically from Social Media → Sales.</div>
         <div id="team-pairs"></div>
       </div>
+
 
       <!-- RECRUITERS -->
       <div class="page" id="page-recruiters">
@@ -1537,7 +1548,7 @@ const REC_URL='https://script.google.com/macros/s/AKfycbw9zY_9NF1zzjIZM-Pt3pBL1m
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
-let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[]};
+let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[],attendance:[]};
 const LS={get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('eg_'+k))||d}catch{return d}},set:(k,v)=>localStorage.setItem('eg_'+k,JSON.stringify(v))};
 let SESSION={user:null,role:null,empId:null};
 function getSession(){try{return JSON.parse(sessionStorage.getItem('eg_sess'))||null}catch{return null}}
@@ -1715,6 +1726,7 @@ function rowToPair(row){if(!row||!row[0])return null;return{id:String(row[0]),so
 function rowToInvoice(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),leadName:String(row[2]||''),requestedBy:String(row[3]||''),requestedByID:String(row[4]||''),requestText:String(row[5]||''),pdfUrl:String(row[6]||''),status:String(row[7]||'pending'),date:String(row[8]||''),adminNote:String(row[9]||''),kind:String(row[10]||'request'),invoiceNumber:String(row[11]||''),salesEmpName:String(row[12]||''),socialEmpName:String(row[13]||''),total:parseFloat(row[14])||0,clientJson:String(row[15]||''),itemsJson:String(row[16]||'')}}
 function rowToVisit(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),leadName:String(row[2]||''),visitDate:String(row[3]||''),visited:String(row[4]||'no'),addedBy:String(row[5]||''),date:String(row[6]||'')}}
 function rowToComment(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),authorId:String(row[2]||''),authorName:String(row[3]||''),text:String(row[4]||''),date:String(row[5]||'')}}
+function rowToAttendance(row){if(!row||!row[0])return null;return{id:String(row[0]),empId:String(row[1]||''),empName:String(row[2]||''),date:String(row[3]||''),time:String(row[4]||''),branch:String(row[5]||'tanta'),lat:row[6]!==undefined&&row[6]!==''?parseFloat(row[6]):null,lng:row[7]!==undefined&&row[7]!==''?parseFloat(row[7]):null}}
 
 // ═══ SYNC ═══
 async function syncNow(silent=false){
@@ -1733,6 +1745,7 @@ async function syncNow(silent=false){
     if(data.invoices&&data.invoices.length>1)STATE.invoices=data.invoices.slice(1).map(rowToInvoice).filter(Boolean);
     if(data.visits&&data.visits.length>1)STATE.visits=data.visits.slice(1).map(rowToVisit).filter(Boolean);
     if(data.comments&&data.comments.length>1)STATE.comments=data.comments.slice(1).map(rowToComment).filter(Boolean);
+    if(data.attendance&&data.attendance.length>1)STATE.attendance=data.attendance.slice(1).map(rowToAttendance).filter(Boolean);
     STATE.notifications=LS.get('notifications',[]);
     STATE.dupLog=LS.get('dupLog',[]);
     STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
@@ -1787,12 +1800,31 @@ function enterApp(){
   if(av){av.textContent=initials;av.style.background=isAdmin()?'linear-gradient(135deg,var(--gold),#e09500)':actualRole==='recruiter'?'linear-gradient(135deg,var(--cyan),#008fa6)':'linear-gradient(135deg,#7c3aed,#5b21b6)'}
   if(nm)nm.textContent=SESSION.user;
   if(rl)rl.textContent=isAdmin()?'🔐 Admin':actualRole==='recruiter'?'👥 Recruiter':'👤 Employee';
+  recordAttendanceIfNeeded();
   if(actualRole==='recruiter'){
     document.body.classList.add('is-recruiter');
     nav('recruiters',null);
     return;
   }
   renderDashboard();updateNotifBadge();updateDupNavBadge();
+}
+function recordAttendanceIfNeeded(){
+  if(isAdmin()||!SESSION.empId)return;
+  const emp=STATE.employees.find(e=>e.id===SESSION.empId);if(!emp)return;
+  const today=new Date().toISOString().slice(0,10);
+  const already=STATE.attendance.find(a=>a.empId===SESSION.empId&&a.date===today);
+  if(already)return;
+  const now=new Date();
+  const rec={id:genId('ATT'),empId:emp.id,empName:emp.name,date:today,time:now.toISOString(),branch:emp.team||'tanta',lat:null,lng:null};
+  STATE.attendance.push(rec);
+  const sendIt=()=>gsPost({action:'appendAttendance',row:[rec.id,rec.empId,rec.empName,rec.date,rec.time,rec.branch,rec.lat??'',rec.lng??'']});
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{rec.lat=pos.coords.latitude;rec.lng=pos.coords.longitude;sendIt()},
+      ()=>{sendIt()},
+      {timeout:8000,maximumAge:60000}
+    );
+  } else { sendIt() }
 }
 function doLogout(){clearSession();const ls=document.getElementById('login-screen');ls.classList.remove('hidden');ls.style.opacity='0';setTimeout(()=>{ls.style.opacity='1';ls.style.transition='opacity .4s'},10);document.body.classList.remove('is-admin')}
 function getMyLeads(leads){if(isAdmin())return leads;return leads.filter(l=>l.salesEmp===SESSION.empId||l.socialEmp===SESSION.empId)}
@@ -1824,7 +1856,7 @@ function closeMobMore(){document.getElementById('mob-more-overlay').classList.re
 function setMobNav(page){document.querySelectorAll('.mob-nav-item').forEach(n=>n.classList.remove('active'));const el=document.getElementById('mobnav-'+page);if(el)el.classList.add('active')}
 
 // ═══ NAV ═══
-const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',recruiters:'Recruiters',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Weekly Report'};
+const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',attendance:'Attendance',recruiters:'Recruiters',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Weekly Report'};
 var currentPage='dashboard';
 function nav(page,el){
   currentPage=page;
@@ -1843,6 +1875,7 @@ function renderPage(p){
   if(p==='sales')renderSalesCards();
   if(p==='social')renderSocialCards();
   if(p==='teamlink')renderTeamPairs();
+  if(p==='attendance')renderAttendance();
   if(p==='recruiters')renderRecruiters();
   if(p==='leaderboard')renderLeaderboard();
   if(p==='reports')renderReports();
@@ -2455,6 +2488,22 @@ function renderSocialCards(){
 
 // ═══ TEAM PAIRS ═══
 function renderTeamPairs(){const pairs=STATE.pairs,leads=STATE.leads,emps=STATE.employees;const el=document.getElementById('team-pairs');if(!pairs.length){el.innerHTML=`<div class="table-empty">No team pairs yet.</div>`;return}el.innerHTML=pairs.map(pair=>{const soc=emps.find(e=>e.id===pair.socialId)||{name:'Unknown',color:'#888'};const sal=emps.find(e=>e.id===pair.salesId)||{name:'Unknown',color:'#888'};const passed=leads.filter(l=>l.socialEmp===pair.socialId&&l.salesEmp===pair.salesId);const conv=passed.filter(l=>l.status==='Closed Won');const rate=passed.length?Math.round(conv.length/passed.length*100):0;return`<div class="pair-card"><div class="pair-avatar" style="background:${soc.color}">${empInitials(soc.name)}</div><div><div class="pair-name">${soc.name}</div><div class="pair-role">Social</div></div><div class="pair-arrow">→</div><div class="pair-avatar" style="background:${sal.color}">${empInitials(sal.name)}</div><div style="flex:1"><div class="pair-name">${sal.name}</div><div class="pair-role">Sales</div></div><div style="display:flex;gap:12px;margin-left:auto"><div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text)">${passed.length}</div><div style="font-size:9px;color:var(--text3)">Leads</div></div><div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--green)">${conv.length}</div><div style="font-size:9px;color:var(--text3)">Won</div></div><div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--amber)">${rate}%</div><div style="font-size:9px;color:var(--text3)">Rate</div></div></div>${isAdmin()?`<button class="btn btn-danger btn-xs" onclick="deletePair('${pair.id}')">✕</button>`:''}</div>`}).join('')}
+function renderAttendance(){
+  if(!isAdmin())return;
+  const dateEl=document.getElementById('att-date');
+  if(dateEl&&!dateEl.value)dateEl.value=new Date().toISOString().slice(0,10);
+  const day=dateEl?dateEl.value:new Date().toISOString().slice(0,10);
+  const emps=STATE.employees.filter(e=>e.role==='sales'||e.role==='social');
+  const tbody=document.getElementById('attendance-tbody');if(!tbody)return;
+  if(!emps.length){tbody.innerHTML=`<tr><td colspan="4" class="table-empty">No employees yet.</td></tr>`;return}
+  tbody.innerHTML=emps.map(e=>{
+    const rec=STATE.attendance.find(a=>a.empId===e.id&&a.date===day);
+    const branchLabel=e.team==='cairo'?'🏙️ القاهرة':'🏢 طنطا';
+    const checkin=rec?`<span class="tag tag-active">✅ ${new Date(rec.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`:`<span class="tag tag-inactive">— لسه ما وصلش</span>`;
+    const loc=rec&&rec.lat&&rec.lng?`<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:var(--gold);font-size:11px;text-decoration:underline">📍 شوف على الخريطة</a>`:rec?`<span style="font-size:11px;color:var(--text3)">مفيش موقع</span>`:'<span style="font-size:11px;color:var(--text3)">—</span>';
+    return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong></div></td><td style="font-size:12px">${branchLabel}</td><td style="font-size:11px;color:var(--text3);text-transform:capitalize">${e.role}</td><td>${checkin}</td><td>${loc}</td></tr>`;
+  }).join('');
+}
 function openLinkModal(){if(!isAdmin()){toast('Admin only','error');return}const emps=STATE.employees;const soc=emps.filter(e=>e.role==='social'),sal=emps.filter(e=>e.role==='sales');document.getElementById('link-social').innerHTML='<option value="">Select</option>'+soc.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');document.getElementById('link-sales').innerHTML='<option value="">Select</option>'+sal.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');openModal('link-modal')}
 async function savePair(){const sId=document.getElementById('link-social').value,salId=document.getElementById('link-sales').value;if(!sId||!salId){toast('Select both','error');return}if(STATE.pairs.find(p=>p.socialId===sId&&p.salesId===salId)){toast('Pair already exists','warn');return}const pair={id:genId('P'),socialId:sId,salesId:salId,date:new Date().toISOString()};STATE.pairs.push(pair);await gsPost({action:'appendPair',row:[pair.id,pair.socialId,pair.salesId,pair.date]});LS.set('pairs',STATE.pairs);closeModal('link-modal');toast('✅ Pair created','success');renderTeamPairs()}
 async function deletePair(id){if(!isAdmin()){toast('Admin only','error');return}confirmDialog('Remove Pair','This team link will be removed.',async()=>{STATE.pairs=STATE.pairs.filter(p=>p.id!==id);await gsPost({action:'deletePair',id});LS.set('pairs',STATE.pairs);renderTeamPairs();toast('Pair removed','error')},'🔗')}
