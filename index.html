@@ -1444,6 +1444,19 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
 </div>
 
 <!-- MERGE MODAL -->
+<!-- LOCATION CHECK-IN MODAL -->
+<div class="modal-overlay" id="loc-checkin-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header"><div class="modal-title">📍 تسجيل الحضور</div></div>
+    <div class="alert alert-info" style="font-size:12px" id="loc-checkin-info"></div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">دوس الزرار وهيفتحلك واتساب برسالة جاهزة — بس افتح 📎 (المرفقات) جوه الشات واختار "الموقع الحالي" وابعته.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('loc-checkin-modal')">لاحقًا</button>
+      <a class="btn btn-gold" id="loc-checkin-wa-btn" target="_blank" rel="noopener" onclick="closeModal('loc-checkin-modal')">📍 افتح واتساب وابعت الموقع</a>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="merge-modal">
   <div class="modal" style="max-width:480px">
     <div class="modal-header"><div class="modal-title">🔗 Merge Leads</div><button class="modal-close" onclick="closeModal('merge-modal')">✕</button></div>
@@ -1817,14 +1830,20 @@ function recordAttendanceIfNeeded(){
   const now=new Date();
   const rec={id:genId('ATT'),empId:emp.id,empName:emp.name,date:today,time:now.toISOString(),branch:emp.team||'tanta',lat:null,lng:null};
   STATE.attendance.push(rec);
-  const sendIt=()=>gsPost({action:'appendAttendance',row:[rec.id,rec.empId,rec.empName,rec.date,rec.time,rec.branch,rec.lat??'',rec.lng??'']});
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      pos=>{rec.lat=pos.coords.latitude;rec.lng=pos.coords.longitude;sendIt()},
-      ()=>{sendIt()},
-      {timeout:8000,maximumAge:60000}
-    );
-  } else { sendIt() }
+  gsPost({action:'appendAttendance',row:[rec.id,rec.empId,rec.empName,rec.date,rec.time,rec.branch,'','']});
+  showLocationCheckinModal(emp,now);
+}
+const ATTENDANCE_WA_NUMBER='201115682000';
+function showLocationCheckinModal(emp,now){
+  const branchLabel=emp.team==='cairo'?'القاهرة':'طنطا';
+  const dateStr=now.toLocaleDateString('en-GB');
+  const timeStr=now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  const info=document.getElementById('loc-checkin-info');
+  if(info)info.textContent=`${emp.name} — فرع ${branchLabel} — ${dateStr} الساعة ${timeStr}`;
+  const msg=`تسجيل حضور 📍\nالاسم: ${emp.name}\nالفرع: ${branchLabel}\nالتاريخ: ${dateStr}\nالوقت: ${timeStr}`;
+  const waBtn=document.getElementById('loc-checkin-wa-btn');
+  if(waBtn)waBtn.href=`https://wa.me/${ATTENDANCE_WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  openModal('loc-checkin-modal');
 }
 function doLogout(){clearSession();const ls=document.getElementById('login-screen');ls.classList.remove('hidden');ls.style.opacity='0';setTimeout(()=>{ls.style.opacity='1';ls.style.transition='opacity .4s'},10);document.body.classList.remove('is-admin')}
 function getMyLeads(leads){if(isAdmin())return leads;return leads.filter(l=>l.salesEmp===SESSION.empId||l.socialEmp===SESSION.empId)}
