@@ -834,7 +834,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
             <div class="field field-required"><label>Sales Employee <span class="req">*</span></label><select id="nl-sales-emp"><option value="">-- Select --</option></select></div>
             <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
             <div class="field"><label>Status</label><select id="nl-status"><option>New</option><option>Contacted</option><option>Interested</option></select></div>
-            <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
+            <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch" onchange="populateLeadFormSelects()"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
           </div>
           <div class="modal-section">Notes</div>
           <div class="form-grid"><div class="field form-full"><label>Notes</label><textarea id="nl-notes" placeholder="Any notes..."></textarea></div></div>
@@ -1849,7 +1849,7 @@ function renderPage(p){
   if(p==='notifications')renderNotifications();
   if(p==='admin')renderAdmin();
   if(p==='duplicates')renderDuplicates();
-  if(p==='addlead'){populateLeadFormSelects();resetDupBlock();const b=document.getElementById('nl-branch');if(b){const me=STATE.employees.find(e=>e.id===SESSION.empId);b.value=me&&me.team==='cairo'?'cairo':'tanta'}}
+  if(p==='addlead'){resetDupBlock();const b=document.getElementById('nl-branch');if(b){const me=STATE.employees.find(e=>e.id===SESSION.empId);b.value=me&&me.team==='cairo'?'cairo':'tanta'}populateLeadFormSelects()}
   if(p==='invoices')renderInvoicesPage();
   if(p==='weeklyreport')initWeeklyReport();
 }
@@ -1908,7 +1908,7 @@ async function saveLead(){
   clearLeadForm();updateDupNavBadge();nav('leads',null);setMobNav('leads');
 }
 function logDuplicate(blocked,matches,reason){const entry={date:new Date().toLocaleString(),blocked,matches,reason};STATE.dupLog.unshift(entry);LS.set('dupLog',STATE.dupLog);const s=STATE.dupStats;s.total++;s.today++;s.pending++;LS.set('dupStats',s)}
-function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const b=document.getElementById('nl-branch');if(b)b.value='tanta';resetDupBlock()}
+function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const b=document.getElementById('nl-branch');if(b)b.value='tanta';populateLeadFormSelects();resetDupBlock()}
 
 // ═══ LEAD TABLE ═══
 let leadPage=1;const PER_PAGE=15;
@@ -2067,7 +2067,7 @@ async function updateLead(){
   await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i]),branch:STATE.leads[i].branch||'tanta'});
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
-function populateLeadFormSelects(){const sales=STATE.employees.filter(e=>e.role==='sales'),social=STATE.employees.filter(e=>e.role==='social');const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}
+function populateLeadFormSelects(){const branch=document.getElementById('nl-branch')?.value||'tanta';const sales=STATE.employees.filter(e=>e.role==='sales'&&(e.team||'tanta')===branch),social=STATE.employees.filter(e=>e.role==='social'&&(e.team||'tanta')===branch);const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}
 
 // ═══ COMMENTS ═══
 function loadComments(leadId){const list=document.getElementById('comments-list');if(!list)return;const comments=STATE.comments.filter(c=>c.leadId===leadId).sort((a,b)=>new Date(b.date)-new Date(a.date));list.innerHTML=comments.length?comments.map(c=>`<div class="comment-box"><div><span class="comment-author">${c.authorName}</span><span class="comment-date">${fmtDate(c.date)}</span>${(isAdmin()||c.authorId===SESSION.empId)?`<button class="btn btn-ghost btn-xs" onclick="deleteComment('${c.id}')" style="float:right;color:var(--red)">✕</button>`:''}</div><div class="comment-text">${c.text}</div></div>`).join(''):`<div class="table-empty">No comments yet</div>`}
