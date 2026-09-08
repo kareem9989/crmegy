@@ -792,7 +792,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           <input id="lead-search" placeholder="Search name, phone, company..." oninput="debouncedRenderLeads()">
         </div>
         <div class="filter-row">
-          <select id="f-branch" onchange="renderLeadTable()"><option value="">All Branches</option><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select>
+          <select id="f-branch" onchange="renderLeadTable()"><option value="">All Branches</option><option value="tanta">🏢 Tanta</option><option value="cairo">🏙️ Cairo</option></select>
           <select id="f-status" onchange="renderLeadTable()"><option value="">All Statuses</option><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select>
           <select id="f-country" onchange="renderLeadTable()"><option value="">All Countries</option></select>
           <select id="f-sales" onchange="renderLeadTable()"><option value="">All Sales</option></select>
@@ -835,7 +835,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
             <div class="field field-required"><label>Sales Employee <span class="req">*</span></label><select id="nl-sales-emp"><option value="">-- Select --</option></select></div>
             <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
             <div class="field"><label>Status</label><select id="nl-status"><option>New</option><option>Contacted</option><option>Interested</option></select></div>
-            <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch" onchange="populateLeadFormSelects()"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
+            <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch" onchange="populateLeadFormSelects()"><option value="tanta">🏢 Tanta</option><option value="cairo">🏙️ Cairo</option></select></div>
           </div>
           <div class="modal-section">Notes</div>
           <div class="form-grid"><div class="field form-full"><label>Notes</label><textarea id="nl-notes" placeholder="Any notes..."></textarea></div></div>
@@ -891,7 +891,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <!-- ATTENDANCE -->
       <div class="page" id="page-attendance">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-          <div class="section-title" style="margin-bottom:0">Attendance — الحضور اليومي</div>
+          <div class="section-title" style="margin-bottom:0">Attendance</div>
           <input id="att-date" type="date" class="btn btn-outline btn-sm" style="cursor:pointer" onchange="renderAttendance()">
         </div>
         <div class="table-wrap"><table class="admin-table"><thead><tr><th>Employee</th><th>Branch</th><th>Role</th><th>First Check-in</th><th>Location</th></tr></thead><tbody id="attendance-tbody"></tbody></table></div>
@@ -1254,7 +1254,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         </select>
       </div>
       <div class="field"><label>سنين الخبرة</label><input id="rec-exp" type="number" min="0" placeholder="0" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
-      <div class="field"><label>المحافظة</label><input id="rec-gov" placeholder="القاهرة، الجيزة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+      <div class="field"><label>Governorate</label><input id="rec-gov" placeholder="Cairo, Giza..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
       <div class="field"><label>سنة التخرج</label><input id="rec-gradyear" type="number" min="1980" max="2030" placeholder="2020" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
       <div class="field"><label>الكلية</label><input id="rec-college" placeholder="كلية التجارة، الهندسة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
       <div class="field"><label>مستوى الإنجليزي</label>
@@ -1313,7 +1313,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           </select>
         </div>
         <div class="field"><label>سنين الخبرة</label><input id="rec-edit-exp" type="number" min="0" placeholder="0" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
-        <div class="field"><label>المحافظة</label><input id="rec-edit-gov" placeholder="القاهرة، الجيزة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+        <div class="field"><label>Governorate</label><input id="rec-edit-gov" placeholder="Cairo, Giza..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
         <div class="field"><label>سنة التخرج</label><input id="rec-edit-gradyear" type="number" min="1980" max="2030" placeholder="2020" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
         <div class="field"><label>الكلية</label><input id="rec-edit-college" placeholder="كلية التجارة، الهندسة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
         <div class="field"><label>مستوى الإنجليزي</label>
@@ -1447,12 +1447,12 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
 <!-- LOCATION CHECK-IN MODAL -->
 <div class="modal-overlay" id="loc-checkin-modal">
   <div class="modal" style="max-width:420px">
-    <div class="modal-header"><div class="modal-title">📍 تسجيل الحضور</div></div>
+    <div class="modal-header"><div class="modal-title">📍 Check-in</div></div>
     <div class="alert alert-info" style="font-size:12px" id="loc-checkin-info"></div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">دوس الزرار وهيفتحلك واتساب برسالة جاهزة — بس افتح 📎 (المرفقات) جوه الشات واختار "الموقع الحالي" وابعته.</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px">Tap the button to open WhatsApp with a ready message — just tap 📎 (attachment) in the chat, pick "Current Location", and send it.</div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('loc-checkin-modal')">لاحقًا</button>
-      <a class="btn btn-gold" id="loc-checkin-wa-btn" target="_blank" rel="noopener" onclick="closeModal('loc-checkin-modal')">📍 افتح واتساب وابعت الموقع</a>
+      <button class="btn btn-outline" onclick="closeModal('loc-checkin-modal')">Later</button>
+      <a class="btn btn-gold" id="loc-checkin-wa-btn" target="_blank" rel="noopener" onclick="closeModal('loc-checkin-modal')">📍 Send Location via WhatsApp</a>
     </div>
   </div>
 </div>
@@ -1479,7 +1479,8 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <div class="field"><label>Email *</label><input id="ae-email" placeholder="email@egygulf.com" type="email"></div>
       <div class="field"><label>Password *</label><input id="ae-pass" placeholder="Password" type="text" style="font-family:'DM Mono',monospace"></div>
       <div class="field"><label>Role *</label><select id="ae-role"><option value="sales">Sales Rep</option><option value="social">Social Media</option><option value="recruiter">Recruiter</option></select></div>
-      <div class="field"><label>Team / Branch</label><select id="ae-team"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
+      <div class="field"><label>Team / Branch</label><select id="ae-team"><option value="tanta">🏢 Tanta</option><option value="cairo">🏙️ Cairo</option></select></div>
+      <div class="field"><label>Job Title (optional)</label><input id="ae-title" placeholder="e.g. Export Manager"></div>
       <div class="field"><label>Phone</label><input id="ae-phone" placeholder="+20..." type="tel"></div>
       <div class="field"><label>Avatar Color</label><select id="ae-color"><option value="#1a2455">Navy</option><option value="#7c3aed">Purple</option><option value="#16a34a">Green</option><option value="#2563eb">Blue</option><option value="#e1306c">Pink</option><option value="#d97706">Amber</option></select></div>
     </div>
@@ -1727,8 +1728,8 @@ async function gsPostRec(params){
 }
 
 // ═══ ROW MAPPERS ═══
-function rowToEmployee(row){if(!row||!row[0])return null;return{id:String(row[0]),name:String(row[1]||''),email:String(row[2]||''),password:String(row[3]||''),role:String(row[4]||'sales'),team:String(row[5]||''),phone:String(row[6]||''),color:String(row[7]||'#1a2455'),status:String(row[8]||'active')}}
-function employeeToRow(e){return[e.id,e.name,e.email,e.password,e.role,e.team||'',e.phone||'',e.color||'#1a2455',e.status||'active']}
+function rowToEmployee(row){if(!row||!row[0])return null;return{id:String(row[0]),name:String(row[1]||''),email:String(row[2]||''),password:String(row[3]||''),role:String(row[4]||'sales'),team:String(row[5]||''),phone:String(row[6]||''),color:String(row[7]||'#1a2455'),status:String(row[8]||'active'),title:String(row[9]||'')}}
+function employeeToRow(e){return[e.id,e.name,e.email,e.password,e.role,e.team||'',e.phone||'',e.color||'#1a2455',e.status||'active',e.title||'']}
 function rowToLead(row){
   if(!row||!row[0])return null;
   function fbn(name){if(!name)return'';const e=STATE.employees.find(x=>x.name===String(name));return e?e.id:''}
@@ -1842,12 +1843,12 @@ function recordAttendanceIfNeeded(){
 }
 const ATTENDANCE_WA_NUMBER='201115682000';
 function showLocationCheckinModal(emp,now){
-  const branchLabel=emp.team==='cairo'?'القاهرة':'طنطا';
+  const branchLabel=emp.team==='cairo'?'Cairo':'Tanta';
   const dateStr=now.toLocaleDateString('en-GB');
-  const timeStr=now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  const timeStr=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
   const info=document.getElementById('loc-checkin-info');
-  if(info)info.textContent=`${emp.name} — فرع ${branchLabel} — ${dateStr} الساعة ${timeStr}`;
-  const msg=`تسجيل حضور 📍\nالاسم: ${emp.name}\nالفرع: ${branchLabel}\nالتاريخ: ${dateStr}\nالوقت: ${timeStr}`;
+  if(info)info.textContent=`${emp.name} — ${branchLabel} branch — ${dateStr} at ${timeStr}`;
+  const msg=`Hey, it's ${emp.name} — just got in at the ${branchLabel} office, ${dateStr} ${timeStr}.`;
   const waBtn=document.getElementById('loc-checkin-wa-btn');
   if(waBtn)waBtn.href=`https://wa.me/${ATTENDANCE_WA_NUMBER}?text=${encodeURIComponent(msg)}`;
   openModal('loc-checkin-modal');
@@ -2035,7 +2036,7 @@ function _renderLeadTableInner(){
         return`<tr style="animation:staggerIn .3s forwards;animation-delay:${i*.03}s;opacity:0">
           <td><div style="font-weight:600;font-size:13px;color:var(--text)">${l.name}</div><div style="font-size:10px;color:var(--text3)">${l.phone}</div><div style="font-size:10px;color:var(--text3)">${fmtDate(l.added)}</div></td>
           <td style="font-size:12px">${l.company||'—'}</td>
-          <td style="font-size:12px">${l.country||'—'} <span title="${l.branch==='cairo'?'القاهرة':'طنطا'}" style="font-size:10px">${l.branch==='cairo'?'🏙️':'🏢'}</span></td>
+          <td style="font-size:12px">${l.country||'—'} <span title="${l.branch==='cairo'?'Cairo':'Tanta'}" style="font-size:10px">${l.branch==='cairo'?'🏙️':'🏢'}</span></td>
           <td style="font-size:11px;color:var(--text3)">${l.source||'—'}</td>
           <td style="font-size:11.5px">${empName(l.salesEmp)}</td>
           <td><span class="tag ${STATUS_TAG[l.status]||'tag-new'}">${l.status}</span></td>
@@ -2524,9 +2525,9 @@ function renderAttendance(){
   if(!emps.length){tbody.innerHTML=`<tr><td colspan="4" class="table-empty">No employees yet.</td></tr>`;return}
   tbody.innerHTML=emps.map(e=>{
     const rec=STATE.attendance.find(a=>a.empId===e.id&&a.date===day);
-    const branchLabel=e.team==='cairo'?'🏙️ القاهرة':'🏢 طنطا';
-    const checkin=rec?`<span class="tag tag-active">✅ ${new Date(rec.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`:`<span class="tag tag-inactive">— لسه ما وصلش</span>`;
-    const loc=rec&&rec.lat&&rec.lng?`<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:var(--gold);font-size:11px;text-decoration:underline">📍 شوف على الخريطة</a>`:rec?`<span style="font-size:11px;color:var(--text3)">مفيش موقع</span>`:'<span style="font-size:11px;color:var(--text3)">—</span>';
+    const branchLabel=e.team==='cairo'?'🏙️ Cairo':'🏢 Tanta';
+    const checkin=rec?`<span class="tag tag-active">✅ ${new Date(rec.time).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</span>`:`<span class="tag tag-inactive">— Not yet</span>`;
+    const loc=rec&&rec.lat&&rec.lng?`<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:var(--gold);font-size:11px;text-decoration:underline">📍 View on map</a>`:rec?`<span style="font-size:11px;color:var(--text3)">No location</span>`:'<span style="font-size:11px;color:var(--text3)">—</span>';
     return`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong></div></td><td style="font-size:12px">${branchLabel}</td><td style="font-size:11px;color:var(--text3);text-transform:capitalize">${e.role}</td><td>${checkin}</td><td>${loc}</td></tr>`;
   }).join('');
 }
@@ -2656,9 +2657,10 @@ async function doMerge(){
 }
 
 // ═══ ADMIN ═══
-function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'القاهرة':'طنطا'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}">${e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
-function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-phone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-team').value='tanta';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
-async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active'};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
+function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'Cairo':'Tanta'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}" style="cursor:pointer" onclick="editEmployeeTitle('${e.id}')" title="Click to set job title">${e.title||e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
+function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-phone','ae-title'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-team').value='tanta';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
+async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active',title:getField('ae-title')};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
+async function editEmployeeTitle(id){if(!isAdmin())return;const emp=STATE.employees.find(e=>e.id===id);if(!emp)return;const val=prompt('Job title for '+emp.name+':',emp.title||'');if(val===null)return;emp.title=val.trim();await gsPost({action:'updateEmployee',id:emp.id,row:employeeToRow(emp)});renderAdmin();renderSalesCards();renderSocialCards()}
 async function deleteEmployee(id){if(!isAdmin()){toast('Admin only','error');return}confirmDialog('Remove Employee','This employee will be removed.',async()=>{STATE.employees=STATE.employees.filter(e=>e.id!==id);await gsPost({action:'deleteEmployee',id});populateLoginSelect();renderAdmin();renderSalesCards();renderSocialCards();toast('Employee removed','error')},'👤')}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed')}
 function exportCSV(){
