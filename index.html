@@ -791,6 +791,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           <input id="lead-search" placeholder="Search name, phone, company..." oninput="debouncedRenderLeads()">
         </div>
         <div class="filter-row">
+          <select id="f-branch" onchange="renderLeadTable()"><option value="">All Branches</option><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select>
           <select id="f-status" onchange="renderLeadTable()"><option value="">All Statuses</option><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select>
           <select id="f-country" onchange="renderLeadTable()"><option value="">All Countries</option></select>
           <select id="f-sales" onchange="renderLeadTable()"><option value="">All Sales</option></select>
@@ -833,6 +834,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
             <div class="field field-required"><label>Sales Employee <span class="req">*</span></label><select id="nl-sales-emp"><option value="">-- Select --</option></select></div>
             <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
             <div class="field"><label>Status</label><select id="nl-status"><option>New</option><option>Contacted</option><option>Interested</option></select></div>
+            <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
           </div>
           <div class="modal-section">Notes</div>
           <div class="form-grid"><div class="field form-full"><label>Notes</label><textarea id="nl-notes" placeholder="Any notes..."></textarea></div></div>
@@ -1453,7 +1455,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <div class="field"><label>Email *</label><input id="ae-email" placeholder="email@egygulf.com" type="email"></div>
       <div class="field"><label>Password *</label><input id="ae-pass" placeholder="Password" type="text" style="font-family:'DM Mono',monospace"></div>
       <div class="field"><label>Role *</label><select id="ae-role"><option value="sales">Sales Rep</option><option value="social">Social Media</option><option value="recruiter">Recruiter</option></select></div>
-      <div class="field"><label>Team</label><input id="ae-team" placeholder="e.g. Team A"></div>
+      <div class="field"><label>Team / Branch</label><select id="ae-team"><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select></div>
       <div class="field"><label>Phone</label><input id="ae-phone" placeholder="+20..." type="tel"></div>
       <div class="field"><label>Avatar Color</label><select id="ae-color"><option value="#1a2455">Navy</option><option value="#7c3aed">Purple</option><option value="#16a34a">Green</option><option value="#2563eb">Blue</option><option value="#e1306c">Pink</option><option value="#d97706">Amber</option></select></div>
     </div>
@@ -1721,7 +1723,11 @@ async function syncNow(silent=false){
     const data=await gsGet('getAll');
     if(data.error)throw new Error(data.error);
     if(data.employees&&data.employees.length>1)STATE.employees=data.employees.slice(1).map(rowToEmployee).filter(Boolean);
-    if(data.leads&&data.leads.length>1){STATE.leads=data.leads.slice(1).map(rowToLead).filter(Boolean);invalidateDigitIndex()}
+    if((data.leads&&data.leads.length>1)||(data.leadsCairo&&data.leadsCairo.length>1)){
+      const tanta=(data.leads&&data.leads.length>1)?data.leads.slice(1).map(rowToLead).filter(Boolean).map(l=>{l.branch='tanta';return l}):[];
+      const cairo=(data.leadsCairo&&data.leadsCairo.length>1)?data.leadsCairo.slice(1).map(rowToLead).filter(Boolean).map(l=>{l.branch='cairo';return l}):[];
+      STATE.leads=tanta.concat(cairo);invalidateDigitIndex()
+    }
     if(data.pairs&&data.pairs.length>1)STATE.pairs=data.pairs.slice(1).map(rowToPair).filter(Boolean);
     else if(!STATE.pairs.length)STATE.pairs=LS.get('pairs',[]);
     if(data.invoices&&data.invoices.length>1)STATE.invoices=data.invoices.slice(1).map(rowToInvoice).filter(Boolean);
@@ -1843,7 +1849,7 @@ function renderPage(p){
   if(p==='notifications')renderNotifications();
   if(p==='admin')renderAdmin();
   if(p==='duplicates')renderDuplicates();
-  if(p==='addlead'){populateLeadFormSelects();resetDupBlock()}
+  if(p==='addlead'){populateLeadFormSelects();resetDupBlock();const b=document.getElementById('nl-branch');if(b){const me=STATE.employees.find(e=>e.id===SESSION.empId);b.value=me&&me.team==='cairo'?'cairo':'tanta'}}
   if(p==='invoices')renderInvoicesPage();
   if(p==='weeklyreport')initWeeklyReport();
 }
@@ -1892,16 +1898,17 @@ async function saveLead(){
   const wa=getField('nl-whatsapp');
   if(wa&&!isValidPhone(wa)){toast('❌ رقم الواتساب غير صحيح — يبدأ بـ 00','error');return}
   if(wa){const dupWa=findExactDuplicate(wa,null);if(dupWa){showDupBlock(`"${wa}" → <strong>${dupWa.name}</strong>`);blockSaveBtn(true);toast('🚫 رقم واتساب مكرر!','error');logDuplicate(name,dupWa.name,'Fuzzy WA Match');return}}
-  const lead={id:genId('EG'),name,company:getField('nl-company'),phone,phone2:'',whatsapp:wa,email:getField('nl-email'),country,city:'',btype:'',product:'',source:getField('nl-source'),socialEmp:socialEmpId,salesEmp:salesEmpId,status:getField('nl-status')||'New',response:'No Response',priority:'Medium',deal:0,notes:getField('nl-notes'),samples:'no',sampleResult:'',followup:'',added:new Date().toISOString(),updated:new Date().toISOString()};
+  const branch=getField('nl-branch')||'tanta';
+  const lead={id:genId('EG'),name,company:getField('nl-company'),phone,phone2:'',whatsapp:wa,email:getField('nl-email'),country,city:'',btype:'',product:'',source:getField('nl-source'),socialEmp:socialEmpId,salesEmp:salesEmpId,status:getField('nl-status')||'New',response:'No Response',priority:'Medium',deal:0,notes:getField('nl-notes'),samples:'no',sampleResult:'',followup:'',added:new Date().toISOString(),updated:new Date().toISOString(),branch};
   STATE.leads.unshift(lead);
   toast('Saving...','');
-  await gsPost({action:'appendLead',row:leadToRow(lead)});
+  await gsPost({action:'appendLead',row:leadToRow(lead),branch});
   addNotification('success','New Lead: '+name,'Country: '+country);
   toast('✅ Lead saved: '+name,'success');
   clearLeadForm();updateDupNavBadge();nav('leads',null);setMobNav('leads');
 }
 function logDuplicate(blocked,matches,reason){const entry={date:new Date().toLocaleString(),blocked,matches,reason};STATE.dupLog.unshift(entry);LS.set('dupLog',STATE.dupLog);const s=STATE.dupStats;s.total++;s.today++;s.pending++;LS.set('dupStats',s)}
-function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});resetDupBlock()}
+function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const b=document.getElementById('nl-branch');if(b)b.value='tanta';resetDupBlock()}
 
 // ═══ LEAD TABLE ═══
 let leadPage=1;const PER_PAGE=15;
@@ -1923,6 +1930,7 @@ function isInDateRange(isoDate,range){
 
 function getFiltered(){
   const q=(document.getElementById('lead-search')||{value:''}).value.toLowerCase();
+  const fb=document.getElementById('f-branch')?.value||'';
   const fs=document.getElementById('f-status')?.value||'';
   const fc=document.getElementById('f-country')?.value||'';
   const fsa=document.getElementById('f-sales')?.value||'';
@@ -1937,7 +1945,7 @@ function getFiltered(){
     const sn=empName(l.salesEmp);
     const sampleMatch=!fsamp||l.samples===fsamp;
     const updatedMatch=!fu||isInDateRange(l.updated||l.added,fu);
-    return(!q||text.includes(q))&&(!fs||l.status===fs)&&(!fc||l.country===fc)&&(!fsa||sn===fsa)&&(!fp||l.priority===fp)&&(!fd||isInDateRange(l.added,fd))&&updatedMatch&&sampleMatch;
+    return(!q||text.includes(q))&&(!fb||l.branch===fb)&&(!fs||l.status===fs)&&(!fc||l.country===fc)&&(!fsa||sn===fsa)&&(!fp||l.priority===fp)&&(!fd||isInDateRange(l.added,fd))&&updatedMatch&&sampleMatch;
   });
   if(sortMode===0)filtered.sort((a,b)=>new Date(b.added)-new Date(a.added));
   else if(sortMode===1)filtered.sort((a,b)=>new Date(a.added)-new Date(b.added));
@@ -1967,7 +1975,7 @@ function _renderLeadTableInner(){
         return`<tr style="animation:staggerIn .3s forwards;animation-delay:${i*.03}s;opacity:0">
           <td><div style="font-weight:600;font-size:13px;color:var(--text)">${l.name}</div><div style="font-size:10px;color:var(--text3)">${l.phone}</div><div style="font-size:10px;color:var(--text3)">${fmtDate(l.added)}</div></td>
           <td style="font-size:12px">${l.company||'—'}</td>
-          <td style="font-size:12px">${l.country||'—'}</td>
+          <td style="font-size:12px">${l.country||'—'} <span title="${l.branch==='cairo'?'القاهرة':'طنطا'}" style="font-size:10px">${l.branch==='cairo'?'🏙️':'🏢'}</span></td>
           <td style="font-size:11px;color:var(--text3)">${l.source||'—'}</td>
           <td style="font-size:11.5px">${empName(l.salesEmp)}</td>
           <td><span class="tag ${STATUS_TAG[l.status]||'tag-new'}">${l.status}</span></td>
@@ -2016,8 +2024,8 @@ function _renderLeadTableInner(){
   if(pg)pg.innerHTML=html;
 }
 function goPage(p){leadPage=p;renderLeadTable()}
-function clearFilters(){['f-status','f-country','f-sales','f-priority','f-date','f-updated','f-sample'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const s=document.getElementById('lead-search');if(s)s.value='';clearEmpFilter();leadPage=1;renderLeadTable()}
-async function deleteLead(id){confirmDialog('Delete Lead','This lead will be permanently removed.',async()=>{STATE.leads=STATE.leads.filter(l=>l.id!==id);await gsPost({action:'deleteLead',id});renderLeadTable();updateDupNavBadge();toast('Lead deleted','error')},'🗑️')}
+function clearFilters(){['f-branch','f-status','f-country','f-sales','f-priority','f-date','f-updated','f-sample'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const s=document.getElementById('lead-search');if(s)s.value='';clearEmpFilter();leadPage=1;renderLeadTable()}
+async function deleteLead(id){confirmDialog('Delete Lead','This lead will be permanently removed.',async()=>{const l=STATE.leads.find(x=>x.id===id);const branch=l?.branch||'tanta';STATE.leads=STATE.leads.filter(l=>l.id!==id);await gsPost({action:'deleteLead',id,branch});renderLeadTable();updateDupNavBadge();toast('Lead deleted','error')},'🗑️')}
 
 // ═══ EDIT LEAD ═══
 let _editingLeadId=null;
@@ -2056,7 +2064,7 @@ async function updateLead(){
   const i=STATE.leads.findIndex(l=>l.id===id);if(i<0)return;
   STATE.leads[i]={...STATE.leads[i],name,phone,company:document.getElementById('el-company').value.trim(),phone2:document.getElementById('el-phone2').value.trim(),whatsapp:wa,email:document.getElementById('el-email').value.trim(),country:document.getElementById('el-country').value.trim(),city:document.getElementById('el-city').value.trim(),btype:document.getElementById('el-btype').value,product:document.getElementById('el-product').value,deal:parseFloat(document.getElementById('el-deal').value)||STATE.leads[i].deal||0,source:document.getElementById('el-source').value,status:document.getElementById('el-status').value,priority:document.getElementById('el-priority').value,salesEmp:document.getElementById('el-sales').value,socialEmp:document.getElementById('el-social').value,notes:document.getElementById('el-notes').value,samples:document.getElementById('el-samples').value,sampleResult:document.getElementById('el-sample-result').value,followup:document.getElementById('el-followup').value,response:document.getElementById('el-response').value,updated:new Date().toISOString()};
   invalidateDigitIndex();
-  await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i])});
+  await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i]),branch:STATE.leads[i].branch||'tanta'});
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
 function populateLeadFormSelects(){const sales=STATE.employees.filter(e=>e.role==='sales'),social=STATE.employees.filter(e=>e.role==='social');const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}
@@ -2562,8 +2570,9 @@ function openMergeModal(keepId,deleteId){
 }
 async function doMerge(){
   if(!_mergeKeepId||!_mergeDeleteId)return;
+  const delBranch=STATE.leads.find(l=>l.id===_mergeDeleteId)?.branch||'tanta';
   STATE.leads=STATE.leads.filter(l=>l.id!==_mergeDeleteId);
-  await gsPost({action:'deleteLead',id:_mergeDeleteId});
+  await gsPost({action:'deleteLead',id:_mergeDeleteId,branch:delBranch});
   const s=STATE.dupStats;s.merged++;LS.set('dupStats',s);
   closeModal('merge-modal');
   toast('✅ تم الدمج','success');
@@ -2571,8 +2580,8 @@ async function doMerge(){
 }
 
 // ═══ ADMIN ═══
-function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}">${e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
-function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-team','ae-phone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
+function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'القاهرة':'طنطا'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}">${e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
+function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-phone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-team').value='tanta';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
 async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active'};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
 async function deleteEmployee(id){if(!isAdmin()){toast('Admin only','error');return}confirmDialog('Remove Employee','This employee will be removed.',async()=>{STATE.employees=STATE.employees.filter(e=>e.id!==id);await gsPost({action:'deleteEmployee',id});populateLoginSelect();renderAdmin();renderSalesCards();renderSocialCards();toast('Employee removed','error')},'👤')}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('collapsed')}
