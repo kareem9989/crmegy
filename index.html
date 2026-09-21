@@ -833,7 +833,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           <div class="form-grid">
             <div class="field field-required"><label>Social Media Emp. <span class="req" id="nl-social-req">*</span></label><select id="nl-social-emp"><option value="">-- Select --</option></select></div>
             <div class="field field-required"><label>Sales Employee <span class="req">*</span></label><select id="nl-sales-emp"><option value="">-- Select --</option></select></div>
-            <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
+            <div class="field"><label>Lead Source</label><select id="nl-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option value="Trade Show">🎪 Trade Show (معرض)</option><option>Cold Call</option></select></div>
             <div class="field"><label>Status</label><select id="nl-status"><option>New</option><option>Contacted</option><option>Interested</option></select></div>
             <div class="field"><label>Branch <span class="req">*</span></label><select id="nl-branch" onchange="populateLeadFormSelects()"><option value="tanta">🏢 Tanta</option><option value="cairo">🏙️ Cairo</option></select></div>
           </div>
@@ -1000,6 +1000,14 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="syncNow()">🔄</button><button class="btn btn-outline btn-sm" onclick="exportCSV()">📊 CSV</button></div>
         </div>
         <div class="kpi-grid" id="report-kpis"></div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-header"><div class="card-title">🆕 داتا جديدة (غير المعرض)</div><div style="font-size:11px;color:var(--text3)">كل الـ Leads بخلاف بيانات المعرض</div></div>
+          <div class="kpi-grid" id="new-data-kpis"></div>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-header"><div class="card-title">🎪 داتا المعرض</div><div style="font-size:11px;color:var(--text3)">Leads مصدرها Trade Show (معرض)</div></div>
+          <div class="kpi-grid" id="exhibition-kpis"></div>
+        </div>
         <div class="card" style="margin-bottom:14px">
           <div class="card-header"><div class="card-title">🔥 Interested Leads</div><div style="font-size:11px;color:var(--text3)">Interested + Invoice + Follow-up</div></div>
           <div class="interested-tabs">
@@ -1400,7 +1408,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div class="field"><label>Business Type</label><select id="el-btype"><option value="">Select</option><option>Distributor</option><option>Retailer</option><option>Wholesaler</option><option>Supermarket Chain</option><option>Import Company</option><option>Online Store</option></select></div>
         <div class="field"><label>Product</label><select id="el-product"><option value="">Select</option><option>Snacks</option><option>Candies</option><option>Gum</option><option>Lollipops</option><option>FMCG Mix</option><option>Custom Order</option></select></div>
         <div class="field deal-kpi"><label>Deal Value (USD)</label><input id="el-deal" type="number" inputmode="numeric"></div>
-        <div class="field"><label>Source</label><select id="el-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option>Trade Show</option><option>Cold Call</option></select></div>
+        <div class="field"><label>Source</label><select id="el-source"><option value="">Select</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>WhatsApp</option><option>Referral</option><option value="Trade Show">🎪 Trade Show (معرض)</option><option>Cold Call</option></select></div>
         <div class="field"><label>Priority</label><select id="el-priority"><option>High</option><option>Medium</option><option>Low</option></select></div>
       </div>
       <div class="modal-section">Status & Assignment</div>
@@ -2562,6 +2570,15 @@ function renderReports(){
   const revenue=won.reduce((s,l)=>s+(l.deal||0),0);
   const today=leads.filter(l=>new Date(l.added).toDateString()===new Date().toDateString());
   document.getElementById('report-kpis').innerHTML=`<div class="kpi-card"><div class="kpi-glow" style="background:var(--blue)"></div><div class="kpi-icon">📊</div><div class="kpi-label">Leads</div><div class="kpi-value">${leads.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--gold)"></div><div class="kpi-icon">🏆</div><div class="kpi-label">Won Deals</div><div class="kpi-value" style="color:var(--gold)">${won.length}</div></div><div class="kpi-card deal-kpi"><div class="kpi-glow" style="background:var(--green)"></div><div class="kpi-icon">💰</div><div class="kpi-label">Revenue</div><div class="kpi-value" style="color:var(--green);font-size:18px">${fmt(revenue)}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--purple)"></div><div class="kpi-icon">📅</div><div class="kpi-label">Today</div><div class="kpi-value" style="color:var(--purple)">${today.length}</div></div>`;
+  // New data (non-exhibition) vs Exhibition data breakdown + response counts
+  const exhLeads=leads.filter(l=>l.source==='Trade Show');
+  const exhReplied=exhLeads.filter(l=>l.response==='Replied');
+  const newDataLeads=leads.filter(l=>l.source!=='Trade Show');
+  const newDataReplied=newDataLeads.filter(l=>l.response==='Replied');
+  const newPct=newDataLeads.length?Math.round(newDataReplied.length/newDataLeads.length*100):0;
+  const exhPct=exhLeads.length?Math.round(exhReplied.length/exhLeads.length*100):0;
+  document.getElementById('new-data-kpis').innerHTML=`<div class="kpi-card"><div class="kpi-glow" style="background:var(--blue)"></div><div class="kpi-icon">📥</div><div class="kpi-label">اتضاف</div><div class="kpi-value">${newDataLeads.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--green)"></div><div class="kpi-icon">✅</div><div class="kpi-label">رد</div><div class="kpi-value" style="color:var(--green)">${newDataReplied.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--red)"></div><div class="kpi-icon">⏳</div><div class="kpi-label">لسه</div><div class="kpi-value" style="color:var(--red)">${newDataLeads.length-newDataReplied.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--purple)"></div><div class="kpi-icon">📈</div><div class="kpi-label">نسبة الرد</div><div class="kpi-value" style="color:var(--purple)">${newPct}%</div></div>`;
+  document.getElementById('exhibition-kpis').innerHTML=`<div class="kpi-card"><div class="kpi-glow" style="background:var(--blue)"></div><div class="kpi-icon">📥</div><div class="kpi-label">اتضاف</div><div class="kpi-value">${exhLeads.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--green)"></div><div class="kpi-icon">✅</div><div class="kpi-label">رد</div><div class="kpi-value" style="color:var(--green)">${exhReplied.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--red)"></div><div class="kpi-icon">⏳</div><div class="kpi-label">لسه</div><div class="kpi-value" style="color:var(--red)">${exhLeads.length-exhReplied.length}</div></div><div class="kpi-card"><div class="kpi-glow" style="background:var(--purple)"></div><div class="kpi-icon">📈</div><div class="kpi-label">نسبة الرد</div><div class="kpi-value" style="color:var(--purple)">${exhPct}%</div></div>`;
   updateSyncStatus();renderInterestedStats();
   const statuses=['New','Contacted','Interested','Follow-up','Invoice','Closed Won','Closed Lost'];
   const colors=['#3d8eff','#3b82f6','#9d78ff','#ffb020','#fb923c','#00e5a0','#ff3d68'];
