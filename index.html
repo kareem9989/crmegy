@@ -1660,7 +1660,7 @@ function scanAllDuplicates(){
 }
 
 // ═══ GS API ═══
-async function gsGet(action,extra=''){
+function gsGetOnce(action,extra=''){
   return new Promise((resolve,reject)=>{
     const cbName='cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const url=`${GS_URL}?action=${action}${extra}&callback=${cbName}`;
@@ -1694,6 +1694,19 @@ async function gsGet(action,extra=''){
       }
     },15000);
   });
+}
+// بيحاول مرتين قبل ما يعتبر الطلب فشل نهائي — عشان بطء الشبكة أو الـ cold start بتاع Apps Script
+// ميضيعش أول طلب ويرجّع "لا يوجد موظفين" بدون داعي
+async function gsGet(action,extra=''){
+  try{
+    return await gsGetOnce(action,extra);
+  }catch(e){
+    try{
+      return await gsGetOnce(action,extra);
+    }catch(e2){
+      throw e2;
+    }
+  }
 }
 async function gsPost(body){
   try{await fetch(GS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
@@ -1751,16 +1764,45 @@ function rowToComment(row){if(!row||!row[0])return null;return{id:String(row[0])
 function rowToAttendance(row){if(!row||!row[0])return null;return{id:String(row[0]),empId:String(row[1]||''),empName:String(row[2]||''),date:String(row[3]||''),time:String(row[4]||''),branch:String(row[5]||'tanta'),lat:row[6]!==undefined&&row[6]!==''?parseFloat(row[6]):null,lng:row[7]!==undefined&&row[7]!==''?parseFloat(row[7]):null}}
 
 // ═══ SYNC ═══
+// بيحمّل نسخة محفوظة محليًا (آخر مزامنة ناجحة) فورًا، قبل ما نستنى الشبكة — عشان
+// شاشة الدخول تعرض أسماء الموظفين على طول بدل "لا يوجد موظفين" لو النت بطيء
+function loadCachedState(){
+  const empCache=LS.get('employeesCache',null);
+  if(empCache&&empCache.length)STATE.employees=empCache;
+  const leadsCache=LS.get('leadsCache',null);
+  if(leadsCache&&leadsCache.length)STATE.leads=leadsCache;
+  STATE.notifications=LS.get('notifications',[]);
+  STATE.dupLog=LS.get('dupLog',[]);
+  STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
+  STATE.recruiters=LS.get('recruiters',[]);
+}
+// نداء خفيف وسريع بيجيب أسماء الموظفين بس (من الكاش السريع في الباك إند)، عشان شاشة
+// الدخول تتحدث بسرعة من غير ما تستنى تحميل كل البيانات (Leads/Invoices/...)
+async function syncEmployeesOnly(){
+  try{
+    const data=await gsGet('getEmployees');
+    if(data&&data.employees&&data.employees.length>1){
+      STATE.employees=data.employees.slice(1).map(rowToEmployee).filter(Boolean);
+      LS.set('employeesCache',STATE.employees);
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
 async function syncNow(silent=false){
   setSyncIndicator('syncing');
   try{
     const data=await gsGet('getAll');
     if(data.error)throw new Error(data.error);
-    if(data.employees&&data.employees.length>1)STATE.employees=data.employees.slice(1).map(rowToEmployee).filter(Boolean);
+    if(data.employees&&data.employees.length>1){
+      STATE.employees=data.employees.slice(1).map(rowToEmployee).filter(Boolean);
+      LS.set('employeesCache',STATE.employees);
+    }
     if((data.leads&&data.leads.length>1)||(data.leadsCairo&&data.leadsCairo.length>1)){
       const tanta=(data.leads&&data.leads.length>1)?data.leads.slice(1).map(rowToLead).filter(Boolean).map(l=>{l.branch='tanta';return l}):[];
       const cairo=(data.leadsCairo&&data.leadsCairo.length>1)?data.leadsCairo.slice(1).map(rowToLead).filter(Boolean).map(l=>{l.branch='cairo';return l}):[];
-      STATE.leads=tanta.concat(cairo);invalidateDigitIndex()
+      STATE.leads=tanta.concat(cairo);invalidateDigitIndex();
+      LS.set('leadsCache',STATE.leads);
     }
     if(data.pairs&&data.pairs.length>1)STATE.pairs=data.pairs.slice(1).map(rowToPair).filter(Boolean);
     else if(!STATE.pairs.length)STATE.pairs=LS.get('pairs',[]);
@@ -1775,7 +1817,10 @@ async function syncNow(silent=false){
     setSyncIndicator('ok');updateSyncStatus();updateDupNavBadge();
     if(!silent)toast('✅ Synced — '+STATE.leads.length+' leads','success');
     return true;
-  }catch(e){setSyncIndicator('error');if(!silent)toast('Sync failed: '+e.message,'error');return false}
+  }catch(e){
+    // لو المزامنة فشلت وعندنا نسخة محفوظة من قبل، سيبها زي ما هي بدل ما نمسحها أو نعرض فاضي
+    if(!STATE.employees.length||!STATE.leads.length)loadCachedState();
+    setSyncIndicator('error');if(!silent)toast('Sync failed: '+e.message+' — showing cached data','error');return false}
 }
 function setSyncIndicator(state){
   const dot=document.getElementById('sync-dot'),label=document.getElementById('sync-label');
@@ -3330,12 +3375,25 @@ function toggleTheme(){
 // ═══ INIT ═══
 async function init() {
   document.getElementById('app-loading-msg').textContent = 'Loading data...';
-  await syncNow(true);
-  const appLoading = document.getElementById('app-loading'); appLoading.style.opacity = '0'; appLoading.style.transition = 'opacity .4s'; setTimeout(() => appLoading.style.display = 'none', 400);
+  // نحمّل النسخة المحفوظة محليًا فورًا (بدون ما ننتظر الشبكة) عشان أي شاشة تتفتح
+  // (خصوصًا شاشة الدخول) تلاقي أسماء الموظفين من أول لحظة، حتى لو النت بطيء
+  loadCachedState();
   const saved = getSession();
-  if (saved && saved.user) { SESSION = saved; enterApp(); return; }
+  if (saved && saved.user) {
+    // مستخدم مسجل دخول بالفعل: ادخل على طول بالبيانات المحفوظة، وزامن في الخلفية
+    SESSION = saved;
+    const appLoading = document.getElementById('app-loading'); appLoading.style.opacity = '0'; appLoading.style.transition = 'opacity .4s'; setTimeout(() => appLoading.style.display = 'none', 400);
+    enterApp();
+    syncNow(true);
+    return;
+  }
   populateLoginSelect();
+  const appLoading = document.getElementById('app-loading'); appLoading.style.opacity = '0'; appLoading.style.transition = 'opacity .4s'; setTimeout(() => appLoading.style.display = 'none', 400);
   const ls = document.getElementById('login-screen'); ls.classList.remove('hidden'); ls.style.opacity = '0'; setTimeout(() => { ls.style.opacity = '1'; ls.style.transition = 'opacity .4s'; }, 10);
+  // نجيب أسماء الموظفين بسرعة (نداء خفيف) ونحدّث القائمة أول ما توصل، من غير ما نستنى
+  // تحميل كل البيانات التانية، وبعدين نعمل مزامنة كاملة في الخلفية
+  syncEmployeesOnly().then(ok=>{ if(ok) populateLoginSelect(); });
+  syncNow(true).then(ok=>{ if(ok) populateLoginSelect(); });
 }
 init();
 </script>
