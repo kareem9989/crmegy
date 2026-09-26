@@ -20,7 +20,7 @@
  * وبعدين Deploy > Manage deployments > Edit > Version: New version > Deploy (نفس الـ URL).
  */
 
-// لو السكريبت مش مربوط بالشيت (standalone) حط الـ Spreadsheet ID هنا، غير كده سيبه فاضي
+// سيبه فاضي لو Code.gs فيه SHEET_ID (هو كده عندكم). غير كده حط الـ Spreadsheet ID هنا
 var RA_SPREADSHEET_ID = '';
 // أسماء شيتات الليدز لكل فرع
 var RA_LEAD_SHEETS = { tanta: ['Leads'], cairo: ['Leads_Cairo', 'LeadsCairo', 'Leads Cairo'] };
@@ -137,8 +137,13 @@ function raSetSetting(b) {
 }
 
 // ═══ HELPERS ═══
+var _raSS = null;
 function raSS() {
-  return RA_SPREADSHEET_ID ? SpreadsheetApp.openById(RA_SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  if (_raSS) return _raSS;
+  // بيستخدم SHEET_ID بتاع Code.gs لو موجود (السكريبت standalone)، أو RA_SPREADSHEET_ID، أو الشيت المفتوح
+  var id = RA_SPREADSHEET_ID || (typeof SHEET_ID !== 'undefined' ? SHEET_ID : '');
+  _raSS = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+  return _raSS;
 }
 
 function raEnsureSheet(ss, name) {
