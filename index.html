@@ -1413,11 +1413,13 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       </div>
       <div class="modal-section">Status & Assignment</div>
       <div class="form-grid">
-        <div class="field"><label>Status</label><select id="el-status"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
+        <div class="field"><label>Status</label><select id="el-status" onchange="toggleLostReason('el')"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
         <div class="field"><label>Response</label><select id="el-response"><option>No Response</option><option>Replied</option></select></div>
         <div class="field"><label>Sales Rep</label><select id="el-sales"><option value="">Unassigned</option></select></div>
         <div class="field"><label>Social Media Rep</label><select id="el-social"><option value="">Unassigned</option></select></div>
         <div class="field"><label>Next Follow-up</label><input id="el-followup" type="date"></div>
+        <div class="field" id="el-lost-wrap" style="display:none"><label>سبب الرفض <span style="color:var(--red)">*</span></label><select id="el-lost-reason"><option value="">-- اختر --</option><option>السعر</option><option>مش بيستورد</option><option>عنده مورد</option><option>رقم غلط</option><option>مفيش رد</option><option>أخرى</option></select></div>
+        <div class="field"><label>الكمية المطلوبة</label><input id="el-quantity" type="text" placeholder="مثال: 2 كونتينر / 500 كرتونة"></div>
         <div class="field"><label>📦 Samples</label><select id="el-samples" onchange="toggleSampleResult('el')"><option value="no">No</option><option value="yes">Yes</option></select></div>
         <div class="field" id="el-sample-result-wrap" style="display:none"><label>Sample Result</label><select id="el-sample-result"><option value="">--</option><option>اعجبته - جاهز للطلب</option><option>اعجبته - يحتاج وقت</option><option>لم يعجبه</option><option>لم يرد بعد</option><option>طلب عينات أخرى</option></select></div>
         <div class="field form-full"><label>Notes</label><textarea id="el-notes" rows="3"></textarea></div>
@@ -1570,7 +1572,7 @@ const REC_URL='https://script.google.com/macros/s/AKfycbw9zY_9NF1zzjIZM-Pt3pBL1m
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
-let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[],attendance:[]};
+let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[],attendance:[],activities:[],statusHistory:[],targets:{},snapshots:[],settings:{},leadExtras:{},addonOk:false};
 const LS={get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('eg_'+k))||d}catch{return d}},set:(k,v)=>localStorage.setItem('eg_'+k,JSON.stringify(v))};
 let SESSION={user:null,role:null,empId:null};
 function getSession(){try{return JSON.parse(sessionStorage.getItem('eg_sess'))||null}catch{return null}}
@@ -1775,6 +1777,7 @@ function loadCachedState(){
   STATE.dupLog=LS.get('dupLog',[]);
   STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
   STATE.recruiters=LS.get('recruiters',[]);
+  applyReportData(LS.get('reportCache',null));
 }
 // نداء خفيف وسريع بيجيب أسماء الموظفين بس (من الكاش السريع في الباك إند)، عشان شاشة
 // الدخول تتحدث بسرعة من غير ما تستنى تحميل كل البيانات (Leads/Invoices/...)
@@ -1814,6 +1817,7 @@ async function syncNow(silent=false){
     STATE.dupLog=LS.get('dupLog',[]);
     STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
     STATE.recruiters=LS.get('recruiters',[]);
+    await syncReportData();
     setSyncIndicator('ok');updateSyncStatus();updateDupNavBadge();
     if(!silent)toast('✅ Synced — '+STATE.leads.length+' leads','success');
     return true;
@@ -2017,6 +2021,8 @@ async function saveLead(){
   STATE.leads.unshift(lead);
   toast('Saving...','');
   await gsPost({action:'appendLead',row:leadToRow(lead),branch});
+  setLeadExtra(lead,{assignedAt:lead.added});
+  if(lead.status!=='New')logStatusChange(lead,'New',lead.status);
   addNotification('success','New Lead: '+name,'Country: '+country);
   toast('✅ Lead saved: '+name,'success');
   clearLeadForm();updateDupNavBadge();nav('leads',null);setMobNav('leads');
@@ -2160,6 +2166,9 @@ function openEditLead(id){
   document.getElementById('el-samples').value=lead.samples||'no';
   document.getElementById('el-sample-result').value=lead.sampleResult||'';
   toggleSampleResult('el');
+  document.getElementById('el-lost-reason').value=lead.lostReason||'';
+  document.getElementById('el-quantity').value=lead.quantity||'';
+  toggleLostReason('el');
   const salesSel=document.getElementById('el-sales');salesSel.innerHTML='<option value="">Unassigned</option>'+emps.filter(e=>e.role==='sales').map(e=>`<option value="${e.id}" ${lead.salesEmp===e.id?'selected':''}>${e.name}</option>`).join('');
   const socSel=document.getElementById('el-social');socSel.innerHTML='<option value="">Unassigned</option>'+emps.filter(e=>e.role==='social').map(e=>`<option value="${e.id}" ${lead.socialEmp===e.id?'selected':''}>${e.name}</option>`).join('');
   openModal('edit-lead-modal');
@@ -2176,16 +2185,24 @@ async function updateLead(){
   const wa=document.getElementById('el-whatsapp').value.trim();
   if(wa){const dupWa=findExactDuplicate(wa,id);if(dupWa){toast('🚫 '+dupWa.name,'error');return}}
   const i=STATE.leads.findIndex(l=>l.id===id);if(i<0)return;
+  const newStatus=document.getElementById('el-status').value,lostReason=document.getElementById('el-lost-reason').value;
+  if(newStatus==='Closed Lost'&&!lostReason){toast('اختر سبب الرفض ⚠️','error');return}
+  const old={...STATE.leads[i]};
   STATE.leads[i]={...STATE.leads[i],name,phone,company:document.getElementById('el-company').value.trim(),phone2:document.getElementById('el-phone2').value.trim(),whatsapp:wa,email:document.getElementById('el-email').value.trim(),country:document.getElementById('el-country').value.trim(),city:document.getElementById('el-city').value.trim(),btype:document.getElementById('el-btype').value,product:document.getElementById('el-product').value,deal:parseFloat(document.getElementById('el-deal').value)||STATE.leads[i].deal||0,source:document.getElementById('el-source').value,status:document.getElementById('el-status').value,priority:document.getElementById('el-priority').value,salesEmp:document.getElementById('el-sales').value,socialEmp:document.getElementById('el-social').value,notes:document.getElementById('el-notes').value,samples:document.getElementById('el-samples').value,sampleResult:document.getElementById('el-sample-result').value,followup:document.getElementById('el-followup').value,response:document.getElementById('el-response').value,updated:new Date().toISOString()};
   invalidateDigitIndex();
-  await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i]),branch:STATE.leads[i].branch||'tanta'});
+  const cur=STATE.leads[i];
+  await gsPost({action:'updateLead',id,row:leadToRow(cur),branch:cur.branch||'tanta'});
+  const extra={lostReason:cur.status==='Closed Lost'?lostReason:(old.lostReason||''),quantity:document.getElementById('el-quantity').value.trim()};
+  if(cur.salesEmp&&cur.salesEmp!==old.salesEmp)extra.assignedAt=new Date().toISOString();
+  if(extra.lostReason!==(old.lostReason||'')||extra.quantity!==(old.quantity||'')||extra.assignedAt)setLeadExtra(cur,extra);
+  if(cur.status!==old.status)logStatusChange(cur,old.status,cur.status);
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
 function populateLeadFormSelects(){const branch=document.getElementById('nl-branch')?.value||'tanta';const teamOf=e=>e.team==='cairo'?'cairo':'tanta';let sales=STATE.employees.filter(e=>e.role==='sales'&&teamOf(e)===branch);const social=STATE.employees.filter(e=>e.role==='social'&&teamOf(e)===branch);if(!sales.length)sales=STATE.employees.filter(e=>e.role==='sales');const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');const req=document.getElementById('nl-social-req');if(req)req.style.display=branch==='cairo'?'none':''}
 
 // ═══ COMMENTS ═══
 function loadComments(leadId){const list=document.getElementById('comments-list');if(!list)return;const comments=STATE.comments.filter(c=>c.leadId===leadId).sort((a,b)=>new Date(b.date)-new Date(a.date));list.innerHTML=comments.length?comments.map(c=>`<div class="comment-box"><div><span class="comment-author">${c.authorName}</span><span class="comment-date">${fmtDate(c.date)}</span>${(isAdmin()||c.authorId===SESSION.empId)?`<button class="btn btn-ghost btn-xs" onclick="deleteComment('${c.id}')" style="float:right;color:var(--red)">✕</button>`:''}</div><div class="comment-text">${c.text}</div></div>`).join(''):`<div class="table-empty">No comments yet</div>`}
-async function submitComment(){const text=document.getElementById('new-comment-text').value.trim();if(!text||!_editingLeadId){toast('Write a comment first','error');return}const c={id:genId('C'),leadId:_editingLeadId,authorId:SESSION.empId||'admin',authorName:SESSION.user,text,date:new Date().toISOString()};STATE.comments.push(c);await gsPost({action:'addComment',id:c.id,leadId:c.leadId,authorId:c.authorId,authorName:c.authorName,text:c.text,date:c.date});document.getElementById('new-comment-text').value='';loadComments(_editingLeadId);toast('✅ Comment added','success')}
+async function submitComment(){const text=document.getElementById('new-comment-text').value.trim();if(!text||!_editingLeadId){toast('Write a comment first','error');return}const c={id:genId('C'),leadId:_editingLeadId,authorId:SESSION.empId||'admin',authorName:SESSION.user,text,date:new Date().toISOString()};STATE.comments.push(c);const cl=STATE.leads.find(l=>l.id===c.leadId);if(cl)setLeadExtra(cl,{lastActivityAt:c.date});await gsPost({action:'addComment',id:c.id,leadId:c.leadId,authorId:c.authorId,authorName:c.authorName,text:c.text,date:c.date});document.getElementById('new-comment-text').value='';loadComments(_editingLeadId);toast('✅ Comment added','success')}
 async function deleteComment(id){confirmDialog('Delete Comment','This comment will be removed.',async()=>{STATE.comments=STATE.comments.filter(c=>c.id!==id);await gsPost({action:'deleteComment',id});loadComments(_editingLeadId);toast('Comment deleted','error')},'💬')}
 
 // ═══ INVOICES ═══
@@ -3373,6 +3390,95 @@ function toggleTheme(){
 })();
 
 // ═══ INIT ═══
+// ═══ REPORT DATA (Activities / StatusHistory / Targets / Snapshots / Settings) ═══
+// كل ده جاي من ملف apps-script/ReportsAddon.gs. لو الإضافة مش متركبة على Apps Script،
+// الـ CRM بيشتغل عادي والتقارير بتعتمد على بيانات تقديرية (added/updated/comments).
+const ACTIVITY_TYPES=[
+  {v:'call',l:'مكالمة',i:'📞'},{v:'whatsapp',l:'واتساب',i:'💬'},{v:'email',l:'إيميل',i:'✉️'},
+  {v:'meeting',l:'اجتماع',i:'🤝'},{v:'quote',l:'عرض سعر',i:'🧾'},{v:'sample',l:'عينة',i:'📦'},{v:'note',l:'ملاحظة',i:'📝'}
+];
+const CONTACT_TYPES=['call','whatsapp','email','meeting'];
+const LOST_REASONS=['السعر','مش بيستورد','عنده مورد','رقم غلط','مفيش رد','أخرى'];
+const DEFAULT_SETTINGS={stale1:7,stale2:14,stale3:30};
+function actType(v){return ACTIVITY_TYPES.find(t=>t.v===v)||{v,l:v,i:'•'}}
+function escH(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function leadBranch(l){return l&&l.branch==='cairo'?'cairo':'tanta'}
+function mySessionActor(){return{id:SESSION.empId||'admin',name:SESSION.user||'Admin'}}
+
+function applyReportData(d){
+  if(d&&d.ok){
+    STATE.addonOk=!!d.addon;
+    STATE.activities=(d.activities||[]).filter(r=>r&&r[0]).map(r=>({id:String(r[0]),leadId:String(r[1]||''),empId:String(r[2]||''),empName:String(r[3]||''),type:String(r[4]||'note'),at:String(r[5]||''),note:String(r[6]||''),team:String(r[7]||'')}));
+    STATE.statusHistory=(d.statusHistory||[]).filter(r=>r&&r[0]).map(r=>({id:String(r[0]),leadId:String(r[1]||''),from:String(r[2]||''),to:String(r[3]||''),at:String(r[4]||''),byId:String(r[5]||''),byName:String(r[6]||''),team:String(r[7]||'')}));
+    STATE.targets={};(d.targets||[]).forEach(r=>{if(r&&r[0])STATE.targets[String(r[0])]={contacts:+r[1]||0,interested:+r[2]||0,quotes:+r[3]||0}});
+    STATE.snapshots=(d.snapshots||[]).filter(r=>r&&r[0]).map(r=>{let data={};try{data=JSON.parse(r[3]||'{}')}catch{}return{weekStart:String(r[0]),empId:String(r[1]||''),team:String(r[2]||''),data,approvedBy:String(r[4]||''),approvedAt:String(r[5]||'')}});
+    STATE.settings={};(d.settings||[]).forEach(r=>{if(r&&r[0])STATE.settings[String(r[0])]=String(r[1]??'')});
+    STATE.leadExtras=d.leadExtras||{};
+  }
+  applyLeadExtras();
+}
+function applyLeadExtras(){
+  const ex=STATE.leadExtras||{};
+  for(const l of STATE.leads){
+    const e=ex[l.id]||{};
+    l.lastActivityAt=e.lastActivityAt||l.lastActivityAt||'';
+    l.lostReason=e.lostReason||l.lostReason||'';
+    l.quantity=e.quantity||l.quantity||'';
+    l.assignedAt=e.assignedAt||l.assignedAt||'';
+  }
+}
+async function syncReportData(){
+  try{
+    const d=await gsGet('getReportData');
+    if(d&&d.ok&&d.addon){applyReportData(d);LS.set('reportCache',d);return true}
+    STATE.addonOk=false;
+  }catch(e){}
+  applyLeadExtras();
+  return false;
+}
+function getSetting(k){const v=parseInt(STATE.settings[k],10);return isNaN(v)||v<=0?DEFAULT_SETTINGS[k]:v}
+// بيحدّث الكاش المحلي عشان التعديلات تفضل ظاهرة لحد المزامنة الجاية
+function persistReportCache(){
+  const c=LS.get('reportCache',null)||{ok:true,addon:STATE.addonOk?'1':'',activities:[],statusHistory:[],targets:[],snapshots:[],settings:[],leadExtras:{}};
+  c.activities=STATE.activities.map(a=>[a.id,a.leadId,a.empId,a.empName,a.type,a.at,a.note,a.team]);
+  c.statusHistory=STATE.statusHistory.map(h=>[h.id,h.leadId,h.from,h.to,h.at,h.byId,h.byName,h.team]);
+  c.targets=Object.entries(STATE.targets).map(([k,t])=>[k,t.contacts,t.interested,t.quotes]);
+  c.snapshots=STATE.snapshots.map(s=>[s.weekStart,s.empId,s.team,JSON.stringify(s.data),s.approvedBy,s.approvedAt]);
+  c.settings=Object.entries(STATE.settings).map(([k,v])=>[k,v]);
+  c.leadExtras=STATE.leadExtras;
+  LS.set('reportCache',c);
+}
+function setLeadExtra(lead,fields){
+  if(!lead)return;
+  Object.assign(lead,fields);
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},fields);
+  persistReportCache();
+  gsPost({action:'setLeadExtra',id:lead.id,branch:leadBranch(lead),fields});
+}
+function logActivity(lead,type,note,at){
+  if(!lead)return null;
+  const actor=mySessionActor();
+  const a={id:genId('ACT')+Math.random().toString(36).slice(2,5).toUpperCase(),leadId:lead.id,empId:actor.id,empName:actor.name,type,at:at||new Date().toISOString(),note:note||'',team:leadBranch(lead)};
+  STATE.activities.push(a);
+  lead.lastActivityAt=a.at;
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},{lastActivityAt:a.at});
+  persistReportCache();
+  gsPost({action:'addActivity',branch:a.team,row:[a.id,a.leadId,a.empId,a.empName,a.type,a.at,a.note,a.team]});
+  return a;
+}
+function logStatusChange(lead,from,to){
+  if(!lead||from===to)return null;
+  const actor=mySessionActor();
+  const h={id:genId('SH')+Math.random().toString(36).slice(2,5).toUpperCase(),leadId:lead.id,from:from||'',to,at:new Date().toISOString(),byId:actor.id,byName:actor.name,team:leadBranch(lead)};
+  STATE.statusHistory.push(h);
+  lead.lastActivityAt=h.at;
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},{lastActivityAt:h.at});
+  persistReportCache();
+  gsPost({action:'addStatusHistory',branch:h.team,row:[h.id,h.leadId,h.from,h.to,h.at,h.byId,h.byName,h.team]});
+  return h;
+}
+function toggleLostReason(prefix){const st=document.getElementById(prefix+'-status'),w=document.getElementById(prefix+'-lost-wrap');if(st&&w)w.style.display=st.value==='Closed Lost'?'':'none'}
+
 async function init() {
   document.getElementById('app-loading-msg').textContent = 'Loading data...';
   // نحمّل النسخة المحفوظة محليًا فورًا (بدون ما ننتظر الشبكة) عشان أي شاشة تتفتح
