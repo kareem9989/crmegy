@@ -348,6 +348,178 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .dup-lead-detail{font-size:10px;color:var(--text3);line-height:1.5}
 .dup-match-info{font-size:10px;color:var(--amber);background:rgba(255,176,32,.08);border-radius:6px;padding:4px 10px;display:inline-block;margin-bottom:8px}
 /* Employee Report */
+/* ═══ WEEKLY PERFORMANCE REPORT ═══ */
+.rp-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rp-controls .er-select{flex:1;min-width:150px}
+.rp-actions{display:flex;gap:6px;flex-wrap:wrap}
+.rp{display:flex;flex-direction:column;gap:12px;direction:rtl;text-align:right}
+.rp-head{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.rp-avatar{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0}
+.rp-head-main{flex:1;min-width:0}
+.rp-name{font-size:16px;font-weight:800;color:var(--text)}
+.rp-sub{font-size:11.5px;color:var(--text2);margin-top:2px}
+.rp-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.rp-badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid}
+.rp-b-amber{color:var(--amber);background:var(--amber-bg);border-color:rgba(255,176,32,.3)}
+.rp-b-green{color:var(--green);background:var(--green-bg);border-color:rgba(0,229,160,.3)}
+.rp-b-red{color:var(--red);background:var(--red-bg);border-color:rgba(255,61,104,.3)}
+.rp-b-gray{color:var(--text2);background:var(--surface2);border-color:var(--border2)}
+.rp-card{padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.rp-h{font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px;list-style:none;cursor:default}
+details.rp-card>summary.rp-h{cursor:pointer;margin-bottom:0}
+details.rp-card[open]>summary.rp-h{margin-bottom:10px}
+.rp-summary{display:flex;flex-direction:column;gap:7px}
+.rp-sum{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;line-height:1.55;color:var(--text)}
+.rp-dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex-shrink:0;background:var(--text3)}
+.rp-sum-red .rp-dot{background:var(--red)}.rp-sum-red{color:var(--red);font-weight:600}
+.rp-sum-amber .rp-dot{background:var(--amber)}
+.rp-sum-green .rp-dot{background:var(--green)}
+.rp-sum-info .rp-dot{background:var(--blue)}
+.rp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.rp-kpi{padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.rp-kpi-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.rp-kpi-l{font-size:11px;font-weight:700;color:var(--text2)}
+.rp-kpi-v{font-size:26px;font-weight:800;color:var(--text);font-family:'Syne',sans-serif;line-height:1.1;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.rp-kpi-avg{font-size:10.5px;color:var(--text3)}
+.rp-spark{flex-shrink:0}
+.rp-delta{font-size:11px;font-weight:800;font-family:'DM Sans',sans-serif}
+.rp-good{color:var(--green)}.rp-bad{color:var(--red)}.rp-flat{color:var(--text3);font-weight:600}
+.rp-tg{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--text2)}
+.rp-tg-bar,.rp-fn-bar{height:6px;border-radius:4px;background:var(--surface2);overflow:hidden;flex:1}
+.rp-tg-bar i,.rp-fn-bar i{display:block;height:100%;border-radius:4px;background:var(--gold)}
+.rp-funnel{display:flex;flex-direction:column;gap:7px}
+.rp-fn-row{display:grid;grid-template-columns:78px 1fr 34px 54px 44px;align-items:center;gap:8px;font-size:12px}
+.rp-fn-l{color:var(--text2);font-weight:600}
+.rp-fn-n{font-weight:800;color:var(--text);text-align:center}
+.rp-fn-c{font-size:11px;color:var(--text3)}
+.rp-note{font-size:10.5px;color:var(--text3);margin-top:8px;line-height:1.5}
+.rp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rp-stat{display:flex;flex-direction:column;align-items:center;gap:1px;padding:9px 4px;border-radius:12px;background:var(--surface2)}
+.rp-stat span{font-size:15px}.rp-stat b{font-size:17px;color:var(--text)}.rp-stat small{font-size:10px;color:var(--text2)}
+.rp-warn{margin-top:10px;font-size:12px;color:var(--red);font-weight:600}
+.rp-disc{display:flex;flex-direction:column;gap:6px}
+.rp-disc-row{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:11px;background:var(--surface2);font-size:12.5px;color:var(--text2)}
+.rp-disc-row b{font-size:18px;min-width:30px;text-align:center;color:var(--text)}
+.rp-disc-row span{flex:1}
+.rp-disc-row.is-bad b{color:var(--red)}.rp-disc-row.is-warn b{color:var(--amber)}
+.rp-more{margin:-2px 0 4px}
+.rp-more summary{font-size:11px;color:var(--gold);cursor:pointer;padding:3px 11px}
+.rp-list{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.rp-li{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:6px 10px;border-radius:9px;border:1px solid var(--border)}
+.rp-li span{color:var(--text3);white-space:nowrap}
+.rp-lead{color:var(--text);font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-color:var(--border2);text-underline-offset:3px}
+.rp-buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.rp-bucket{display:flex;flex-direction:column;align-items:center;padding:10px 6px;border-radius:12px;background:var(--surface2);gap:2px}
+.rp-bucket small{font-size:10.5px;color:var(--text3)}.rp-bucket b{font-size:22px;color:var(--text)}
+.rp-bucket.is-bad b{color:var(--red)}
+.rp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:0}
+.rp-table th{text-transform:none;letter-spacing:0}
+.rp-team-table{min-width:560px}
+.rp-table th{font-size:10.5px;color:var(--text3);font-weight:700;text-align:right;padding:6px 8px;border-bottom:1px solid var(--border2)}
+.rp-table td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+.rp-table small{color:var(--text3)}
+.rp-red{color:var(--red)}.rp-amber{color:var(--amber)}
+.rp-ok,.rp-empty{font-size:12px;color:var(--text3);padding:10px;text-align:center;border:1px dashed var(--border2);border-radius:10px}
+.rp-opp{display:flex;gap:10px;padding:9px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface3)}
+.rp-opp-n{width:22px;height:22px;border-radius:50%;background:rgba(255,182,7,.15);color:var(--gold);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rp-opp-b{flex:1;min-width:0;font-size:12.5px}
+.rp-opp-b small{color:var(--text3)}
+.rp-opp-s{margin-top:5px;font-size:11.5px;color:var(--text2);display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.rp-bars{display:flex;flex-direction:column;gap:6px}
+.rp-bar-row{display:grid;grid-template-columns:90px 1fr 30px;gap:8px;align-items:center;font-size:12px;color:var(--text2)}
+.rp-bar-row b{color:var(--text);text-align:center}
+.rp-targets{margin-top:10px;font-size:12px;color:var(--text2);padding:8px 11px;border-radius:10px;background:rgba(255,182,7,.07);border:1px solid rgba(255,182,7,.2)}
+@media(max-width:768px){
+  .rp-kpis{grid-template-columns:1fr 1fr}
+  .rp-controls .er-select{flex-basis:100%}
+  .rp-grid{grid-template-columns:repeat(4,1fr)}
+  .rp-kpi-v{font-size:23px}
+  .rp-fn-row{grid-template-columns:66px 1fr 28px 46px 36px;gap:6px}
+  .rp-stat b{font-size:15px}
+}
+@media(max-width:380px){.rp-grid{grid-template-columns:repeat(2,1fr)}}
+.rp-tscroll{overflow-x:auto;margin:0 -4px}
+.rp-team-table td,.rp-team-table th{text-align:center;white-space:nowrap}
+.rp-team-table td.rp-tn,.rp-team-table th:first-child{text-align:right}
+.rp-tn small{display:block;color:var(--text3);font-size:10px}
+.rp-cell-good{background:rgba(0,229,160,.1);color:var(--green)!important}
+.rp-cell-mid{background:rgba(255,176,32,.1);color:var(--amber)!important}
+.rp-cell-bad{background:rgba(255,61,104,.1);color:var(--red)!important}
+.rp-tot td{font-weight:800;color:var(--text);border-top:1px solid var(--border2)}
+.rp-avg td{color:var(--text3);font-size:11px}
+.tg-in{width:74px;padding:6px 8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px}
+/* ═══ REPORT PRINT (A4, light, RTL) ═══ */
+@media print{
+  @page{size:A4;margin:8mm}
+  body.rp-printing{background:#fff!important}
+  body.rp-printing::before,body.rp-printing::after{display:none!important}
+  #print-root .rp-print{
+    --text:#12122a;--text2:#3d3f55;--text3:#6b6f86;--surface:#fff;--surface2:#f2f3f7;--surface3:#fafafb;
+    --border:#e2e4ec;--border2:#c9cdd9;--green:#07845a;--red:#cc1d43;--amber:#a86400;--blue:#1d5fcf;--gold:#a87400;
+    --green-bg:#e7f6ef;--red-bg:#fbe9ee;--amber-bg:#fdf3e2;
+    color:var(--text);font-family:'DM Sans',Arial,sans-serif;direction:rtl;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10px}
+  #print-root .rp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;align-items:start}
+  #print-root .rp-head,#print-root .rp-summary,#print-root .rp-kpis,#print-root .p-appendix,#print-root .rp-team-sec{grid-column:1/-1}
+  #print-root .rp-card,#print-root .rp-head,#print-root .rp-kpi{padding:6px 8px;border-radius:8px;break-inside:avoid;background:#fff}
+  #print-root .rp-page2{break-before:page;margin-top:0}
+  #print-root .rp-page2 .rp-card{grid-column:auto}
+  #print-root .rp-page2 .p-appendix{grid-column:1/-1;break-inside:auto}
+  #print-root .rp-h{font-size:10.5px;margin-bottom:4px}
+  #print-root .rp-head{gap:8px}
+  #print-root .rp-avatar{width:30px;height:30px;font-size:11px;border-radius:8px}
+  #print-root .rp-name{font-size:13px}
+  #print-root .rp-sub{font-size:9.5px}
+  #print-root .rp-badges{margin-top:3px}
+  #print-root .rp-badge{font-size:8.5px;padding:1px 6px}
+  #print-root .rp-summary{gap:2px}
+  #print-root .rp-sum{font-size:10.5px;line-height:1.4}
+  #print-root .rp-dot{margin-top:4px;width:6px;height:6px}
+  #print-root .rp-kpis{gap:5px}
+  #print-root .rp-kpi{gap:2px}
+  #print-root .rp-kpi-v{font-size:17px}
+  #print-root .rp-kpi-l,#print-root .rp-tg,#print-root .rp-kpi-avg{font-size:8.5px}
+  #print-root .rp-funnel{gap:3px}
+  #print-root .rp-fn-row{grid-template-columns:50px minmax(0,1fr) 20px 48px 26px;gap:4px;font-size:9px}
+  #print-root .rp-fn-c{white-space:nowrap;font-size:8.5px}
+  #print-root .rp-note{font-size:8px;margin-top:3px}
+  #print-root .rp-disc{gap:3px}
+  #print-root .rp-disc-row{padding:3px 7px;font-size:9.5px}
+  #print-root .rp-disc-row b{font-size:12px}
+  #print-root .rp-buckets{gap:4px;margin-bottom:4px}
+  #print-root .rp-bucket{padding:3px}
+  #print-root .rp-bucket b{font-size:14px}
+  #print-root .rp-bucket small{font-size:8px}
+  #print-root .rp-table{font-size:8.5px;table-layout:fixed}
+  #print-root .rp-table td,#print-root .rp-table th{overflow-wrap:anywhere}
+  #print-root .rp-team-table td,#print-root .rp-team-table th{white-space:normal}
+  #print-root .rp-team-table th:first-child{width:22%}
+  #print-root .rp-team-table{min-width:0}
+  #print-root .rp-table th,#print-root .rp-table td{padding:2px 4px}
+  #print-root .rp-list{gap:3px}
+  #print-root .rp-opp{padding:3px 6px;gap:5px}
+  #print-root .rp-opp-b{font-size:9.5px}
+  #print-root .rp-opp-s{margin-top:1px;font-size:8.5px}
+  #print-root .rp-opp-n{width:16px;height:16px;font-size:9px}
+  #print-root .tag{font-size:8px;padding:1px 5px}
+  #print-root .rp-stat{padding:4px 2px}
+  #print-root .rp-stat b{font-size:12px}
+  #print-root .rp-print-foot{margin-top:5px;font-size:8px;color:#888;text-align:center}
+  #print-root .rp-cell-good{background:#e7f6ef!important}
+  #print-root .rp-cell-mid{background:#fdf3e2!important}
+  #print-root .rp-cell-bad{background:#fbe9ee!important}
+  #print-root .rp-tscroll{overflow:visible}
+}
+#print-root:not(:empty){display:none}
+.act-lead{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:12px;font-size:12px;color:var(--text2)}
+.act-lead b{color:var(--text);font-size:14px}
+.act-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px}
+.act-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.act-type{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;min-height:56px}
+.act-type span{font-size:18px}
+.act-type.active{border-color:var(--gold);background:rgba(255,182,7,.12);color:var(--gold)}
+.act-timeline{display:flex;flex-direction:column;gap:6px;max-height:170px;overflow-y:auto}
+.act-tl-item{display:flex;gap:8px;font-size:11.5px;color:var(--text2);padding:7px 10px;border-radius:9px;background:var(--surface3);border:1px solid var(--border)}
+.act-tl-item .when{color:var(--text3);font-size:10px;margin-inline-start:auto;white-space:nowrap}
 .er-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .er-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .er-select{padding:8px 12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none}
@@ -1036,9 +1208,10 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <!-- EMPLOYEE REPORT -->
       <div class="page" id="page-weeklyreport">
         <div class="er-topbar">
-          <div class="section-title" style="margin-bottom:0">&#128203; Employee Report</div>
+          <div class="section-title" style="margin-bottom:0">&#128203; تقرير الأداء الأسبوعي</div>
           <div class="er-controls">
-            <div class="er-print-wrap" id="er-print-wrap" style="position:relative">
+            <div id="rp-actions" class="rp-actions"></div>
+            <div class="er-print-wrap" id="er-print-wrap" style="position:relative;display:none">
               <button class="btn btn-gold btn-sm" onclick="togglePrintMenu(event)">&#128424;&#65039; طباعة <span style="font-size:9px;opacity:.8">&#9660;</span></button>
               <div id="er-print-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:linear-gradient(145deg,rgba(20,17,63,.98),rgba(6,9,24,.99));border:1px solid var(--border2);border-radius:12px;padding:6px;z-index:9999;min-width:210px;box-shadow:0 12px 40px rgba(0,0,0,.6);backdrop-filter:blur(20px)">
                 <div onclick="erPrint('all')" class="er-pmenu-item">&#128202; طباعة كل الليدز</div>
@@ -1050,12 +1223,16 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
           </div>
         </div>
         <div class="er-mode-tabs">
-          <button class="er-mode-tab active" onclick="erSetMode('single',this)">&#128100; موظف واحد</button>
-          <button class="er-mode-tab" onclick="erSetMode('pair',this)">&#128101; Pair Report</button>
+          <button class="er-mode-tab active" data-mode="single" onclick="erSetMode('single',this)">&#128100; تقرير موظف</button>
+          <button class="er-mode-tab admin-only" data-mode="team" onclick="erSetMode('team',this)">&#128202; تقرير الفريق</button>
+          <button class="er-mode-tab" data-mode="pair" onclick="erSetMode('pair',this)">&#128101; Pair Report</button>
         </div>
-        <div id="er-single-controls" style="margin-bottom:12px">
-          <select class="er-select" id="er-emp-select" onchange="erRender()" style="width:100%;max-width:320px"><option value="">-- اختر موظف --</option></select>
+        <div id="rp-controls" class="rp-controls">
+          <select class="er-select" id="er-emp-select" onchange="erRender()"><option value="">-- اختر موظف --</option></select>
+          <select class="er-select" id="rp-team" onchange="erRenderCurrent()" style="display:none"><option value="all">🌍 كل الفروع</option><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select>
+          <select class="er-select" id="rp-week" onchange="erRenderCurrent()"></select>
         </div>
+        <div id="er-single-controls" style="display:none"></div>
         <div id="er-pair-controls" style="display:none">
           <div class="er-pair-wrap">
             <div class="er-pair-field">
@@ -1069,7 +1246,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
             <button class="er-pair-btn" onclick="erRenderPair()">عرض التقرير &#8592;</button>
           </div>
         </div>
-        <div class="er-period-chips">
+        <div class="er-period-chips" id="er-period-chips" style="display:none">
           <div class="er-chip active" onclick="erSetPeriod('today',this)">&#128197; اليوم</div>
           <div class="er-chip" onclick="erSetPeriod('week',this)">&#128198; الأسبوع</div>
           <div class="er-chip" onclick="erSetPeriod('month',this)">&#128467; الشهر</div>
@@ -1089,7 +1266,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
             <input type="date" id="er-range-to" onchange="erRenderCurrent()">
           </div>
         </div>
-        <div id="er-body"><div class="er-empty">اختر موظف من القائمة لعرض التقرير</div></div>
+        <div id="er-body" dir="rtl"><div class="er-empty">اختر موظف من القائمة لعرض التقرير</div></div>
         <div id="print-root"></div>
       </div>
 
@@ -1203,6 +1380,10 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div class="section-title">Employee Roster</div>
         <div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Role</th><th>Password</th><th>Status</th><th>Action</th></tr></thead><tbody id="emp-roster-tbody"></tbody></table></div>
         <button class="btn btn-gold btn-sm" onclick="openAddEmployee()" style="margin-top:10px;width:100%;justify-content:center">+ Add Employee</button>
+        <div class="section-title" style="margin-top:22px">🎯 التارجت الأسبوعي</div>
+        <div id="admin-targets"></div>
+        <div class="section-title" style="margin-top:22px">🕸️ إعدادات الليدز المهملة</div>
+        <div class="card" id="admin-report-settings" dir="rtl"></div>
       </div>
     </div>
   </div>
@@ -1413,11 +1594,13 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       </div>
       <div class="modal-section">Status & Assignment</div>
       <div class="form-grid">
-        <div class="field"><label>Status</label><select id="el-status"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
+        <div class="field"><label>Status</label><select id="el-status" onchange="toggleLostReason('el')"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
         <div class="field"><label>Response</label><select id="el-response"><option>No Response</option><option>Replied</option></select></div>
         <div class="field"><label>Sales Rep</label><select id="el-sales"><option value="">Unassigned</option></select></div>
         <div class="field"><label>Social Media Rep</label><select id="el-social"><option value="">Unassigned</option></select></div>
         <div class="field"><label>Next Follow-up</label><input id="el-followup" type="date"></div>
+        <div class="field" id="el-lost-wrap" style="display:none"><label>سبب الرفض <span style="color:var(--red)">*</span></label><select id="el-lost-reason"><option value="">-- اختر --</option><option>السعر</option><option>مش بيستورد</option><option>عنده مورد</option><option>رقم غلط</option><option>مفيش رد</option><option>أخرى</option></select></div>
+        <div class="field"><label>الكمية المطلوبة</label><input id="el-quantity" type="text" placeholder="مثال: 2 كونتينر / 500 كرتونة"></div>
         <div class="field"><label>📦 Samples</label><select id="el-samples" onchange="toggleSampleResult('el')"><option value="no">No</option><option value="yes">Yes</option></select></div>
         <div class="field" id="el-sample-result-wrap" style="display:none"><label>Sample Result</label><select id="el-sample-result"><option value="">--</option><option>اعجبته - جاهز للطلب</option><option>اعجبته - يحتاج وقت</option><option>لم يعجبه</option><option>لم يرد بعد</option><option>طلب عينات أخرى</option></select></div>
         <div class="field form-full"><label>Notes</label><textarea id="el-notes" rows="3"></textarea></div>
@@ -1446,8 +1629,28 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
     <input type="hidden" id="el-id">
     <div class="modal-footer" id="edit-modal-footer">
       <button class="btn btn-outline" onclick="closeModal('edit-lead-modal')">Cancel</button>
+      <button class="btn btn-outline" onclick="openActivityModal(_editingLeadId)">⚡ تسجيل نشاط</button>
       <button class="btn btn-gold" onclick="updateLead()">💾 Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ACTIVITY QUICK LOG -->
+<div class="modal-overlay" id="act-modal">
+  <div class="modal" style="max-width:480px" dir="rtl">
+    <div class="modal-header"><div class="modal-title">⚡ تسجيل نشاط</div><button class="modal-close" onclick="closeModal('act-modal')">✕</button></div>
+    <div class="act-lead" id="act-lead-info"></div>
+    <div class="act-label">نوع النشاط</div>
+    <div class="act-types" id="act-types"></div>
+    <div class="field" style="margin-top:12px"><label>ملاحظة</label><textarea id="act-note" rows="3" placeholder="حصل إيه؟ العميل قال إيه؟"></textarea></div>
+    <div class="form-grid" style="margin-top:12px">
+      <div class="field"><label>الحالة</label><select id="act-status" onchange="toggleLostReason('act')"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
+      <div class="field"><label>المتابعة الجاية</label><input id="act-followup" type="date"></div>
+      <div class="field" id="act-lost-wrap" style="display:none"><label>سبب الرفض <span style="color:var(--red)">*</span></label><select id="act-lost-reason"><option value="">-- اختر --</option><option>السعر</option><option>مش بيستورد</option><option>عنده مورد</option><option>رقم غلط</option><option>مفيش رد</option><option>أخرى</option></select></div>
+    </div>
+    <div class="act-label" style="margin-top:14px">آخر نشاط على الليد</div>
+    <div class="act-timeline" id="act-timeline"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('act-modal')">إلغاء</button><button class="btn btn-gold" id="act-save-btn" onclick="saveActivity()">✅ حفظ النشاط</button></div>
   </div>
 </div>
 
@@ -1570,7 +1773,7 @@ const REC_URL='https://script.google.com/macros/s/AKfycbw9zY_9NF1zzjIZM-Pt3pBL1m
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
-let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[],attendance:[]};
+let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[],attendance:[],activities:[],statusHistory:[],targets:{},snapshots:[],settings:{},leadExtras:{},addonOk:false};
 const LS={get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('eg_'+k))||d}catch{return d}},set:(k,v)=>localStorage.setItem('eg_'+k,JSON.stringify(v))};
 let SESSION={user:null,role:null,empId:null};
 function getSession(){try{return JSON.parse(sessionStorage.getItem('eg_sess'))||null}catch{return null}}
@@ -1775,6 +1978,7 @@ function loadCachedState(){
   STATE.dupLog=LS.get('dupLog',[]);
   STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
   STATE.recruiters=LS.get('recruiters',[]);
+  applyReportData(LS.get('reportCache',null));
 }
 // نداء خفيف وسريع بيجيب أسماء الموظفين بس (من الكاش السريع في الباك إند)، عشان شاشة
 // الدخول تتحدث بسرعة من غير ما تستنى تحميل كل البيانات (Leads/Invoices/...)
@@ -1814,6 +2018,8 @@ async function syncNow(silent=false){
     STATE.dupLog=LS.get('dupLog',[]);
     STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
     STATE.recruiters=LS.get('recruiters',[]);
+    await syncReportData();
+    if(SESSION.user)autoSnapshotLastWeek();
     setSyncIndicator('ok');updateSyncStatus();updateDupNavBadge();
     if(!silent)toast('✅ Synced — '+STATE.leads.length+' leads','success');
     return true;
@@ -1874,6 +2080,7 @@ function enterApp(){
     return;
   }
   renderDashboard();updateNotifBadge();updateDupNavBadge();
+  autoSnapshotLastWeek();
 }
 function recordAttendanceIfNeeded(){
   if(isAdmin()||!SESSION.empId)return;
@@ -2017,6 +2224,8 @@ async function saveLead(){
   STATE.leads.unshift(lead);
   toast('Saving...','');
   await gsPost({action:'appendLead',row:leadToRow(lead),branch});
+  setLeadExtra(lead,{assignedAt:lead.added});
+  if(lead.status!=='New')logStatusChange(lead,'New',lead.status);
   addNotification('success','New Lead: '+name,'Country: '+country);
   toast('✅ Lead saved: '+name,'success');
   clearLeadForm();updateDupNavBadge();nav('leads',null);setMobNav('leads');
@@ -2099,6 +2308,7 @@ function _renderLeadTableInner(){
           <td>${visitBadge}</td>
           <td style="font-size:10px;color:var(--text3);white-space:nowrap">${updatedAgo}</td>
           <td><div style="display:flex;gap:4px">
+            <button class="btn btn-outline btn-xs" onclick="openActivityModal('${l.id}')" title="تسجيل نشاط">⚡</button>
             <button class="btn btn-outline btn-xs" onclick="openEditLead('${l.id}')">✏️</button>
             <button class="btn btn-outline btn-xs" onclick="window.open('https://wa.me/'+encodeURIComponent('${l.whatsapp||l.phone}'))">💬</button>
             <button class="btn btn-danger btn-xs" onclick="deleteLead('${l.id}')">🗑️</button>
@@ -2122,6 +2332,7 @@ function _renderLeadTableInner(){
           <div class="lead-card-meta"><span class="tag ${PRI_TAG[l.priority]||'tag-medium'}">${l.priority}</span>${l.source?`<span class="tag tag-noresponse">${l.source}</span>`:''}${visitBadge}${sampleBadge}${l.deal?`<span style="font-size:11px;font-weight:700;color:var(--green)">${fmt(l.deal)}</span>`:''}</div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:8px">🕐 Updated: ${updatedAgo}</div>
           <div class="lead-card-actions">
+            <button class="btn btn-gold btn-sm" onclick="openActivityModal('${l.id}')" style="flex:1;justify-content:center">⚡ نشاط</button>
             <button class="btn btn-outline btn-sm" onclick="openEditLead('${l.id}')" style="flex:1;justify-content:center">✏️ Edit</button>
             <button class="btn btn-outline btn-sm" onclick="window.open('https://wa.me/'+encodeURIComponent('${l.whatsapp||l.phone}'))">💬</button>
             <button class="btn btn-danger btn-sm" onclick="deleteLead('${l.id}')">🗑️</button>
@@ -2160,6 +2371,9 @@ function openEditLead(id){
   document.getElementById('el-samples').value=lead.samples||'no';
   document.getElementById('el-sample-result').value=lead.sampleResult||'';
   toggleSampleResult('el');
+  document.getElementById('el-lost-reason').value=lead.lostReason||'';
+  document.getElementById('el-quantity').value=lead.quantity||'';
+  toggleLostReason('el');
   const salesSel=document.getElementById('el-sales');salesSel.innerHTML='<option value="">Unassigned</option>'+emps.filter(e=>e.role==='sales').map(e=>`<option value="${e.id}" ${lead.salesEmp===e.id?'selected':''}>${e.name}</option>`).join('');
   const socSel=document.getElementById('el-social');socSel.innerHTML='<option value="">Unassigned</option>'+emps.filter(e=>e.role==='social').map(e=>`<option value="${e.id}" ${lead.socialEmp===e.id?'selected':''}>${e.name}</option>`).join('');
   openModal('edit-lead-modal');
@@ -2176,16 +2390,24 @@ async function updateLead(){
   const wa=document.getElementById('el-whatsapp').value.trim();
   if(wa){const dupWa=findExactDuplicate(wa,id);if(dupWa){toast('🚫 '+dupWa.name,'error');return}}
   const i=STATE.leads.findIndex(l=>l.id===id);if(i<0)return;
+  const newStatus=document.getElementById('el-status').value,lostReason=document.getElementById('el-lost-reason').value;
+  if(newStatus==='Closed Lost'&&!lostReason){toast('اختر سبب الرفض ⚠️','error');return}
+  const old={...STATE.leads[i]};
   STATE.leads[i]={...STATE.leads[i],name,phone,company:document.getElementById('el-company').value.trim(),phone2:document.getElementById('el-phone2').value.trim(),whatsapp:wa,email:document.getElementById('el-email').value.trim(),country:document.getElementById('el-country').value.trim(),city:document.getElementById('el-city').value.trim(),btype:document.getElementById('el-btype').value,product:document.getElementById('el-product').value,deal:parseFloat(document.getElementById('el-deal').value)||STATE.leads[i].deal||0,source:document.getElementById('el-source').value,status:document.getElementById('el-status').value,priority:document.getElementById('el-priority').value,salesEmp:document.getElementById('el-sales').value,socialEmp:document.getElementById('el-social').value,notes:document.getElementById('el-notes').value,samples:document.getElementById('el-samples').value,sampleResult:document.getElementById('el-sample-result').value,followup:document.getElementById('el-followup').value,response:document.getElementById('el-response').value,updated:new Date().toISOString()};
   invalidateDigitIndex();
-  await gsPost({action:'updateLead',id,row:leadToRow(STATE.leads[i]),branch:STATE.leads[i].branch||'tanta'});
+  const cur=STATE.leads[i];
+  await gsPost({action:'updateLead',id,row:leadToRow(cur),branch:cur.branch||'tanta'});
+  const extra={lostReason:cur.status==='Closed Lost'?lostReason:(old.lostReason||''),quantity:document.getElementById('el-quantity').value.trim()};
+  if(cur.salesEmp&&cur.salesEmp!==old.salesEmp)extra.assignedAt=new Date().toISOString();
+  if(extra.lostReason!==(old.lostReason||'')||extra.quantity!==(old.quantity||'')||extra.assignedAt)setLeadExtra(cur,extra);
+  if(cur.status!==old.status)logStatusChange(cur,old.status,cur.status);
   closeModal('edit-lead-modal');toast('✅ Lead updated','success');renderLeadTable();updateDupNavBadge();
 }
 function populateLeadFormSelects(){const branch=document.getElementById('nl-branch')?.value||'tanta';const teamOf=e=>e.team==='cairo'?'cairo':'tanta';let sales=STATE.employees.filter(e=>e.role==='sales'&&teamOf(e)===branch);const social=STATE.employees.filter(e=>e.role==='social'&&teamOf(e)===branch);if(!sales.length)sales=STATE.employees.filter(e=>e.role==='sales');const sse=document.getElementById('nl-sales-emp'),soe=document.getElementById('nl-social-emp');if(sse)sse.innerHTML='<option value="">-- Select --</option>'+sales.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');if(soe)soe.innerHTML='<option value="">-- Select --</option>'+social.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');const req=document.getElementById('nl-social-req');if(req)req.style.display=branch==='cairo'?'none':''}
 
 // ═══ COMMENTS ═══
 function loadComments(leadId){const list=document.getElementById('comments-list');if(!list)return;const comments=STATE.comments.filter(c=>c.leadId===leadId).sort((a,b)=>new Date(b.date)-new Date(a.date));list.innerHTML=comments.length?comments.map(c=>`<div class="comment-box"><div><span class="comment-author">${c.authorName}</span><span class="comment-date">${fmtDate(c.date)}</span>${(isAdmin()||c.authorId===SESSION.empId)?`<button class="btn btn-ghost btn-xs" onclick="deleteComment('${c.id}')" style="float:right;color:var(--red)">✕</button>`:''}</div><div class="comment-text">${c.text}</div></div>`).join(''):`<div class="table-empty">No comments yet</div>`}
-async function submitComment(){const text=document.getElementById('new-comment-text').value.trim();if(!text||!_editingLeadId){toast('Write a comment first','error');return}const c={id:genId('C'),leadId:_editingLeadId,authorId:SESSION.empId||'admin',authorName:SESSION.user,text,date:new Date().toISOString()};STATE.comments.push(c);await gsPost({action:'addComment',id:c.id,leadId:c.leadId,authorId:c.authorId,authorName:c.authorName,text:c.text,date:c.date});document.getElementById('new-comment-text').value='';loadComments(_editingLeadId);toast('✅ Comment added','success')}
+async function submitComment(){const text=document.getElementById('new-comment-text').value.trim();if(!text||!_editingLeadId){toast('Write a comment first','error');return}const c={id:genId('C'),leadId:_editingLeadId,authorId:SESSION.empId||'admin',authorName:SESSION.user,text,date:new Date().toISOString()};STATE.comments.push(c);const cl=STATE.leads.find(l=>l.id===c.leadId);if(cl)setLeadExtra(cl,{lastActivityAt:c.date});await gsPost({action:'addComment',id:c.id,leadId:c.leadId,authorId:c.authorId,authorName:c.authorName,text:c.text,date:c.date});document.getElementById('new-comment-text').value='';loadComments(_editingLeadId);toast('✅ Comment added','success')}
 async function deleteComment(id){confirmDialog('Delete Comment','This comment will be removed.',async()=>{STATE.comments=STATE.comments.filter(c=>c.id!==id);await gsPost({action:'deleteComment',id});loadComments(_editingLeadId);toast('Comment deleted','error')},'💬')}
 
 // ═══ INVOICES ═══
@@ -2719,7 +2941,7 @@ async function doMerge(){
 }
 
 // ═══ ADMIN ═══
-function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'Cairo':'Tanta'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}" style="cursor:pointer" onclick="editEmployeeTitle('${e.id}')" title="Click to set job title">${e.title||e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
+function renderAdmin(){renderAdminTargets();const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'Cairo':'Tanta'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}" style="cursor:pointer" onclick="editEmployeeTitle('${e.id}')" title="Click to set job title">${e.title||e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
 function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-phone','ae-title'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-team').value='tanta';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
 async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active',title:getField('ae-title')};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
 async function editEmployeeTitle(id){if(!isAdmin())return;const emp=STATE.employees.find(e=>e.id===id);if(!emp)return;const val=prompt('Job title for '+emp.name+':',emp.title||'');if(val===null)return;emp.title=val.trim();await gsPost({action:'updateEmployee',id:emp.id,row:employeeToRow(emp)});renderAdmin();renderSalesCards();renderSocialCards()}
@@ -2740,12 +2962,19 @@ function backupData(){const data={leads:STATE.leads,employees:STATE.employees,pa
 let erPeriod='week';
 let erMode='single'; // 'single' | 'pair'
 function erSetMode(m,el){
+  if(m==='team'&&!isAdmin())m='single';
   erMode=m;
-  document.querySelectorAll('.er-mode-tab').forEach(t=>t.classList.remove('active'));
-  if(el)el.classList.add('active');
-  document.getElementById('er-single-controls').style.display=m==='single'?'block':'none';
+  document.querySelectorAll('.er-mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));
+  document.getElementById('rp-controls').style.display=m==='pair'?'none':'flex';
+  document.getElementById('er-emp-select').style.display=m==='single'?'':'none';
+  document.getElementById('rp-team').style.display=m==='team'?'':'none';
   document.getElementById('er-pair-controls').style.display=m==='pair'?'block':'none';
-  document.getElementById('er-body').innerHTML='<div class="er-empty">'+(m==='pair'?'اختر Social وSales واضغط عرض التقرير':'اختر موظف من القائمة لعرض التقرير')+'</div>';
+  document.getElementById('er-period-chips').style.display=m==='pair'?'flex':'none';
+  document.getElementById('er-print-wrap').style.display=m==='pair'?'':'none';
+  if(m!=='pair'){document.getElementById('er-date-picker-wrap').style.display='none';document.getElementById('er-daterange-wrap').style.display='none'}
+  else erSetPeriod(erPeriod,document.querySelector('.er-chip.active'));
+  if(m==='pair')document.getElementById('er-body').innerHTML='<div class="er-empty">اختر Social وSales واضغط عرض التقرير</div>';
+  erRenderCurrent();
 }
 function erSetPeriod(p,el){
   erPeriod=p;
@@ -2756,9 +2985,19 @@ function erSetPeriod(p,el){
   erRenderCurrent();
 }
 function erRenderCurrent(){
-  if(erMode==='pair')erRenderPair();
-  else erRender();
+  _wkCache.clear();
+  if(erMode==='pair'){renderRpActions(null);const a=document.getElementById('er-pair-social').value,b=document.getElementById('er-pair-sales').value;if(a&&b)erRenderPair();return}
+  if(erMode==='team'){typeof rpRenderTeam==='function'?rpRenderTeam():null;return}
+  erRender();
 }
+function rpPopulateWeeks(){
+  const sel=document.getElementById('rp-week');if(!sel)return;
+  const cur=currentWeekKey(),prev=sel.value;
+  const keys=[];for(let i=0;i<=12;i++)keys.push(wkShift(cur,-i));
+  sel.innerHTML=keys.map(k=>`<option value="${k}">${k===cur?'⏳ الأسبوع الجاري ':'📅 '}${wkLabel(k)}${k===lastCompletedWeekKey()?' · آخر أسبوع مكتمل':''}</option>`).join('');
+  sel.value=prev&&keys.includes(prev)?prev:lastCompletedWeekKey();
+}
+function rpWeek(){const v=document.getElementById('rp-week')?.value;return v||lastCompletedWeekKey()}
 function erPopulateSelect(){
   const sel=document.getElementById('er-emp-select');if(!sel)return;
   if(!isAdmin()){
@@ -2767,8 +3006,9 @@ function erPopulateSelect(){
     sel.value=SESSION.empId||'';
     sel.disabled=true;sel.style.opacity='0.6';sel.style.cursor='not-allowed';
   }else{
-    const emps=STATE.employees.filter(e=>e.role==='sales'||e.role==='social');
-    sel.innerHTML='<option value="">-- اختر موظف --</option>'+emps.map(e=>`<option value="${e.id}">[${e.role==='sales'?'Sales':'Social'}] ${e.name}</option>`).join('');
+    const emps=STATE.employees.filter(e=>e.role==='sales'||e.role==='social');const prevVal=sel.value;
+    sel.innerHTML='<option value="">-- اختر موظف --</option>'+emps.map(e=>`<option value="${e.id}">[${e.role==='sales'?'Sales':'Social'}] ${e.name} ${e.team==='cairo'?'· القاهرة':'· طنطا'}</option>`).join('');
+    if(prevVal&&emps.some(e=>e.id===prevVal))sel.value=prevVal;
     sel.disabled=false;sel.style.opacity='';sel.style.cursor='';
   }
   // pair selects
@@ -2779,7 +3019,7 @@ function erPopulateSelect(){
   if(ps)ps.innerHTML='<option value="">-- اختر --</option>'+socialEmps.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   if(psa)psa.innerHTML='<option value="">-- اختر --</option>'+salesEmps.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
-function initWeeklyReport(){erPopulateSelect();erRender()}
+function initWeeklyReport(){erPopulateSelect();rpPopulateWeeks();erSetMode(erMode==='team'&&!isAdmin()?'single':erMode)}
 function erGetPeriodLeads(empId,role){
   const now=new Date();
   return STATE.leads.filter(l=>{
@@ -2822,13 +3062,20 @@ function erPeriodLabel(){
 function erRender(){
   const body=document.getElementById('er-body');if(!body)return;
   const sel=document.getElementById('er-emp-select');const empId=sel?sel.value:'';
-  if(!empId){body.innerHTML='<div class="er-empty">اختر موظف من القائمة لعرض التقرير</div>';return}
+  if(!empId){renderRpActions(null);body.innerHTML='<div class="er-empty">اختر موظف من القائمة لعرض التقرير</div>';return}
   if(!isAdmin() && empId !== SESSION.empId){body.innerHTML='<div class="er-empty" style="color:var(--red)">&#128274; مسموح بعرض تقريرك بس</div>';return}
   const emp=STATE.employees.find(e=>e.id===empId);
   if(!emp){body.innerHTML='<div class="er-empty">موظف غير موجود</div>';return}
-  body.innerHTML=erBuildHTML(emp);
+  const key=rpWeek();
+  renderRpActions({emp,key});
+  body.innerHTML=rpBuildEmpHTML(emp,key,{screen:true});
 }
-
+function openEmpReport(empId,key){
+  nav('weeklyreport',null);
+  const sel=document.getElementById('er-emp-select');if(sel)sel.value=empId;
+  if(key){const w=document.getElementById('rp-week');if(w)w.value=key}
+  erSetMode('single');
+}
 function erBuildHTML(emp){
   const leads=erGetPeriodLeads(emp.id,emp.role);
   const totalLeads=leads.length;
@@ -3373,6 +3620,668 @@ function toggleTheme(){
 })();
 
 // ═══ INIT ═══
+// ═══ REPORT DATA (Activities / StatusHistory / Targets / Snapshots / Settings) ═══
+// كل ده جاي من ملف apps-script/ReportsAddon.gs. لو الإضافة مش متركبة على Apps Script،
+// الـ CRM بيشتغل عادي والتقارير بتعتمد على بيانات تقديرية (added/updated/comments).
+const ACTIVITY_TYPES=[
+  {v:'call',l:'مكالمة',i:'📞'},{v:'whatsapp',l:'واتساب',i:'💬'},{v:'email',l:'إيميل',i:'✉️'},
+  {v:'meeting',l:'اجتماع',i:'🤝'},{v:'quote',l:'عرض سعر',i:'🧾'},{v:'sample',l:'عينة',i:'📦'},{v:'note',l:'ملاحظة',i:'📝'}
+];
+const CONTACT_TYPES=['call','whatsapp','email','meeting'];
+const LOST_REASONS=['السعر','مش بيستورد','عنده مورد','رقم غلط','مفيش رد','أخرى'];
+const DEFAULT_SETTINGS={stale1:7,stale2:14,stale3:30};
+function actType(v){return ACTIVITY_TYPES.find(t=>t.v===v)||{v,l:v,i:'•'}}
+function escH(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function leadBranch(l){return l&&l.branch==='cairo'?'cairo':'tanta'}
+function mySessionActor(){return{id:SESSION.empId||'admin',name:SESSION.user||'Admin'}}
+
+function applyReportData(d){
+  if(d&&d.ok){
+    STATE.addonOk=!!d.addon;
+    STATE.activities=(d.activities||[]).filter(r=>r&&r[0]).map(r=>({id:String(r[0]),leadId:String(r[1]||''),empId:String(r[2]||''),empName:String(r[3]||''),type:String(r[4]||'note'),at:String(r[5]||''),note:String(r[6]||''),team:String(r[7]||'')}));
+    STATE.statusHistory=(d.statusHistory||[]).filter(r=>r&&r[0]).map(r=>({id:String(r[0]),leadId:String(r[1]||''),from:String(r[2]||''),to:String(r[3]||''),at:String(r[4]||''),byId:String(r[5]||''),byName:String(r[6]||''),team:String(r[7]||'')}));
+    STATE.targets={};(d.targets||[]).forEach(r=>{if(r&&r[0])STATE.targets[String(r[0])]={contacts:+r[1]||0,interested:+r[2]||0,quotes:+r[3]||0}});
+    STATE.snapshots=(d.snapshots||[]).filter(r=>r&&r[0]).map(r=>{let data={};try{data=JSON.parse(r[3]||'{}')}catch{}return{weekStart:String(r[0]),empId:String(r[1]||''),team:String(r[2]||''),data,approvedBy:String(r[4]||''),approvedAt:String(r[5]||'')}});
+    STATE.settings={};(d.settings||[]).forEach(r=>{if(r&&r[0])STATE.settings[String(r[0])]=String(r[1]??'')});
+    STATE.leadExtras=d.leadExtras||{};
+  }
+  applyLeadExtras();
+}
+function applyLeadExtras(){
+  const ex=STATE.leadExtras||{};
+  for(const l of STATE.leads){
+    const e=ex[l.id]||{};
+    l.lastActivityAt=e.lastActivityAt||l.lastActivityAt||'';
+    l.lostReason=e.lostReason||l.lostReason||'';
+    l.quantity=e.quantity||l.quantity||'';
+    l.assignedAt=e.assignedAt||l.assignedAt||'';
+  }
+}
+async function syncReportData(){
+  try{
+    const d=await gsGet('getReportData');
+    if(d&&d.ok&&d.addon){applyReportData(d);LS.set('reportCache',d);return true}
+    STATE.addonOk=false;
+  }catch(e){}
+  applyLeadExtras();
+  return false;
+}
+function getSetting(k){const v=parseInt(STATE.settings[k],10);return isNaN(v)||v<=0?DEFAULT_SETTINGS[k]:v}
+// بيحدّث الكاش المحلي عشان التعديلات تفضل ظاهرة لحد المزامنة الجاية
+function persistReportCache(){
+  const c=LS.get('reportCache',null)||{ok:true,addon:STATE.addonOk?'1':'',activities:[],statusHistory:[],targets:[],snapshots:[],settings:[],leadExtras:{}};
+  c.activities=STATE.activities.map(a=>[a.id,a.leadId,a.empId,a.empName,a.type,a.at,a.note,a.team]);
+  c.statusHistory=STATE.statusHistory.map(h=>[h.id,h.leadId,h.from,h.to,h.at,h.byId,h.byName,h.team]);
+  c.targets=Object.entries(STATE.targets).map(([k,t])=>[k,t.contacts,t.interested,t.quotes]);
+  c.snapshots=STATE.snapshots.map(s=>[s.weekStart,s.empId,s.team,JSON.stringify(s.data),s.approvedBy,s.approvedAt]);
+  c.settings=Object.entries(STATE.settings).map(([k,v])=>[k,v]);
+  c.leadExtras=STATE.leadExtras;
+  LS.set('reportCache',c);
+}
+function setLeadExtra(lead,fields){
+  if(!lead)return;
+  Object.assign(lead,fields);
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},fields);
+  persistReportCache();
+  gsPost({action:'setLeadExtra',id:lead.id,branch:leadBranch(lead),fields});
+}
+function logActivity(lead,type,note,at){
+  if(!lead)return null;
+  const actor=mySessionActor();
+  const a={id:genId('ACT')+Math.random().toString(36).slice(2,5).toUpperCase(),leadId:lead.id,empId:actor.id,empName:actor.name,type,at:at||new Date().toISOString(),note:note||'',team:leadBranch(lead)};
+  STATE.activities.push(a);
+  lead.lastActivityAt=a.at;
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},{lastActivityAt:a.at});
+  persistReportCache();
+  gsPost({action:'addActivity',branch:a.team,row:[a.id,a.leadId,a.empId,a.empName,a.type,a.at,a.note,a.team]});
+  return a;
+}
+function logStatusChange(lead,from,to){
+  if(!lead||from===to)return null;
+  const actor=mySessionActor();
+  const h={id:genId('SH')+Math.random().toString(36).slice(2,5).toUpperCase(),leadId:lead.id,from:from||'',to,at:new Date().toISOString(),byId:actor.id,byName:actor.name,team:leadBranch(lead)};
+  STATE.statusHistory.push(h);
+  lead.lastActivityAt=h.at;
+  STATE.leadExtras[lead.id]=Object.assign({},STATE.leadExtras[lead.id]||{},{lastActivityAt:h.at});
+  persistReportCache();
+  gsPost({action:'addStatusHistory',branch:h.team,row:[h.id,h.leadId,h.from,h.to,h.at,h.byId,h.byName,h.team]});
+  return h;
+}
+function toggleLostReason(prefix){const st=document.getElementById(prefix+'-status'),w=document.getElementById(prefix+'-lost-wrap');if(st&&w)w.style.display=st.value==='Closed Lost'?'':'none'}
+
+// ═══ ACTIVITY QUICK LOG ═══
+let _actLeadId=null,_actType='';
+function leadTimeline(leadId){
+  const items=[];
+  STATE.activities.filter(a=>a.leadId===leadId).forEach(a=>{const t=actType(a.type);items.push({at:a.at,icon:t.i,text:t.l+(a.note?' — '+a.note:''),by:a.empName})});
+  STATE.statusHistory.filter(h=>h.leadId===leadId).forEach(h=>items.push({at:h.at,icon:'🔁',text:`${h.from||'—'} ← ${h.to}`,by:h.byName}));
+  STATE.comments.filter(c=>c.leadId===leadId).forEach(c=>items.push({at:c.date,icon:'💬',text:c.text,by:c.authorName}));
+  return items.filter(i=>i.at).sort((a,b)=>new Date(b.at)-new Date(a.at));
+}
+function openActivityModal(leadId){
+  const lead=STATE.leads.find(l=>l.id===leadId);if(!lead){toast('Lead not found','error');return}
+  _actLeadId=leadId;_actType='';
+  document.getElementById('act-lead-info').innerHTML=`<b>${escH(lead.name)}</b>${lead.company?' · '+escH(lead.company):''}<br><span class="tag ${STATUS_TAG[lead.status]||'tag-new'}" style="margin-top:6px;display:inline-block">${escH(lead.status)}</span> ${lead.followup?`<span style="font-size:11px;color:var(--text3)">· متابعة: ${fmtDate(lead.followup)}</span>`:''}`;
+  document.getElementById('act-types').innerHTML=ACTIVITY_TYPES.map(t=>`<button type="button" class="act-type" data-type="${t.v}" onclick="pickActType('${t.v}')"><span>${t.i}</span>${t.l}</button>`).join('');
+  document.getElementById('act-note').value='';
+  document.getElementById('act-status').value=lead.status||'New';
+  document.getElementById('act-followup').value=(lead.followup||'').slice(0,10);
+  document.getElementById('act-lost-reason').value=lead.lostReason||'';
+  toggleLostReason('act');
+  const tl=leadTimeline(leadId).slice(0,6);
+  document.getElementById('act-timeline').innerHTML=tl.length?tl.map(i=>`<div class="act-tl-item"><span>${i.icon}</span><span>${escH(i.text)}${i.by?` <span style="color:var(--text3)">· ${escH(i.by)}</span>`:''}</span><span class="when">${ago(i.at)}</span></div>`).join(''):'<div class="act-tl-item" style="justify-content:center;color:var(--text3)">مفيش نشاط مسجل لسه</div>';
+  openModal('act-modal');
+}
+function pickActType(v){
+  _actType=v;
+  document.querySelectorAll('#act-types .act-type').forEach(b=>b.classList.toggle('active',b.dataset.type===v));
+  // أول تواصل مع ليد جديد → نقترح Contacted تلقائيًا
+  const st=document.getElementById('act-status'),lead=STATE.leads.find(l=>l.id===_actLeadId);
+  if(lead&&lead.status==='New'&&CONTACT_TYPES.includes(v)&&st.value==='New'){st.value='Contacted';toggleLostReason('act')}
+  if(lead&&v==='quote'&&['New','Contacted','Interested','Follow-up','No Response'].includes(st.value)){st.value='Invoice';toggleLostReason('act')}
+}
+async function saveActivity(){
+  const lead=STATE.leads.find(l=>l.id===_actLeadId);if(!lead)return;
+  if(!_actType){toast('اختار نوع النشاط','error');return}
+  const note=document.getElementById('act-note').value.trim();
+  const newStatus=document.getElementById('act-status').value;
+  const followup=document.getElementById('act-followup').value;
+  const lostReason=document.getElementById('act-lost-reason').value;
+  if(newStatus==='Closed Lost'&&!lostReason){toast('اختر سبب الرفض ⚠️','error');return}
+  const btn=document.getElementById('act-save-btn');btn.disabled=true;
+  try{
+    logActivity(lead,_actType,note);
+    const oldStatus=lead.status;
+    const rowChanged=newStatus!==oldStatus||followup!==(lead.followup||'')||(_actType==='sample'&&lead.samples!=='yes');
+    if(rowChanged){
+      lead.status=newStatus;lead.followup=followup;
+      if(_actType==='sample')lead.samples='yes';
+      if(newStatus!=='New'&&lead.response!=='Replied'&&CONTACT_TYPES.includes(_actType)&&note)lead.response='Replied';
+      lead.updated=new Date().toISOString();
+      await gsPost({action:'updateLead',id:lead.id,row:leadToRow(lead),branch:leadBranch(lead)});
+    }
+    if(newStatus!==oldStatus)logStatusChange(lead,oldStatus,newStatus);
+    if(newStatus==='Closed Lost'&&lostReason!==lead.lostReason)setLeadExtra(lead,{lostReason});
+    closeModal('act-modal');
+    toast('✅ '+actType(_actType).l+' — '+lead.name,'success');
+    if(document.getElementById('edit-lead-modal').classList.contains('open'))openEditLead(lead.id);
+    renderPage(currentPage);
+  }finally{btn.disabled=false}
+}
+
+// ═══ WEEKLY REPORT ENGINE ═══
+// الأسبوع من السبت للجمعة (بتوقيت الجهاز). المفتاح = تاريخ السبت yyyy-mm-dd.
+const DAY_MS=86400000;
+const RANK={'New':0,'No Response':1,'Contacted':1,'Interested':2,'Follow-up':2,'Invoice':3,'Closed Won':5,'Closed Lost':-1};
+const INTERESTED_SET=['Interested','Follow-up','Invoice','Closed Won'];
+const CLOSED_SET=['Closed Won','Closed Lost'];
+function dkey(d){d=new Date(d);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function weekStartOf(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+1)%7));return x}
+function weekFromKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function wkShift(k,n){return dkey(addDays(weekFromKey(k),7*n))}
+function currentWeekKey(){return dkey(weekStartOf(new Date()))}
+function lastCompletedWeekKey(){return wkShift(currentWeekKey(),-1)}
+function isCurrentWeek(k){return k===currentWeekKey()}
+function wkLabel(k){const s=weekFromKey(k),e=addDays(s,6);const f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;return`${f(s)} – ${f(e)}`}
+function wkLabelFull(k){const s=weekFromKey(k),e=addDays(s,6);return`${fmtDate(s)} إلى ${fmtDate(e)}`}
+function tms(x){if(!x)return NaN;const t=new Date(x).getTime();return t}
+
+// فهرس الأنشطة/الحالات/التعليقات لكل ليد (بيتبني مرة لكل رسم)
+let _rIdx=null,_rIdxSig='';
+function rIdx(){
+  const sig=[STATE.leads.length,STATE.activities.length,STATE.statusHistory.length,STATE.comments.length].join('|');
+  if(_rIdx&&_rIdxSig===sig)return _rIdx;
+  const acts=new Map(),hist=new Map(),coms=new Map();
+  const push=(m,k,v)=>{let a=m.get(k);if(!a){a=[];m.set(k,a)}a.push(v)};
+  STATE.activities.forEach(a=>{const t=tms(a.at);if(!isNaN(t))push(acts,a.leadId,{...a,t})});
+  STATE.statusHistory.forEach(h=>{const t=tms(h.at);if(!isNaN(t))push(hist,h.leadId,{...h,t})});
+  STATE.comments.forEach(c=>{const t=tms(c.date);if(!isNaN(t))push(coms,c.leadId,{...c,t})});
+  for(const m of[acts,hist,coms])m.forEach(a=>a.sort((x,y)=>x.t-y.t));
+  _rIdx={acts,hist,coms};_rIdxSig=sig;return _rIdx;
+}
+function empLeads(emp){return STATE.leads.filter(l=>emp.role==='social'?l.socialEmp===emp.id:l.salesEmp===emp.id)}
+function reportEmployees(team){return STATE.employees.filter(e=>(e.role==='sales'||e.role==='social')&&e.status!=='inactive'&&(!team||team==='all'||(e.team||'tanta')===team))}
+
+// بيحسب كل أرقام الأسبوع لموظف. opts.lists=true بيرجّع كمان القوائم التفصيلية.
+function computeEmpWeek(emp,key,opts={}){
+  const idx=rIdx();
+  const s=weekFromKey(key).getTime(),e=addDays(weekFromKey(key),7).getTime();
+  const now=Date.now(),ref=Math.min(now,e);
+  const refDay=dkey(ref-(ref===e?1:0));
+  const inW=t=>t>=s&&t<e;
+  const s1=getSetting('stale1'),s2=getSetting('stale2'),s3=getSetting('stale3');
+  const leads=empLeads(emp);
+  const M={newLeads:0,contacted:0,interested:0,quotes:0,samples:0,won:0,lost:0,
+    act:{call:0,whatsapp:0,email:0,meeting:0,quote:0,sample:0,note:0},activities:0,followups:0,
+    firstRespH:null,firstRespN:0,overdue:0,noNote:0,incomplete:0,stale1:0,stale2:0,stale3:0,
+    lostReasons:{},sources:{},est:0,estStale:0,dueNext:0,openLeads:0};
+  const L={overdue:[],noNote:[],incomplete:[],stale:[],opps:[],changes:[],dueNext:[]};
+  const frs=[];
+  const nextS=e,nextE=e+7*DAY_MS;
+  // أنشطة الموظف نفسه (actor) في الأسبوع
+  STATE.activities.forEach(a=>{if(a.empId!==emp.id)return;const t=tms(a.at);if(!inW(t))return;M.activities++;if(M.act[a.type]!==undefined)M.act[a.type]++});
+  for(const l of leads){
+    const A=idx.acts.get(l.id)||[],H=idx.hist.get(l.id)||[],C=idx.coms.get(l.id)||[];
+    const added=tms(l.added),updated=tms(l.updated);
+    const legacyStatus=!H.length; // مفيش سجل حالات → نعتمد على updated
+    const updInW=!isNaN(updated)&&inW(updated);
+    let estLead=false;
+    const AW=A.filter(a=>inW(a.t)),HW=H.filter(h=>inW(h.t));
+    if(inW(added))M.newLeads++;
+    // تواصل
+    let contacted=AW.some(a=>CONTACT_TYPES.includes(a.type))||HW.some(h=>h.to!=='New');
+    if(!contacted&&legacyStatus&&!A.length&&updInW&&l.status!=='New'){contacted=true;estLead=true}
+    if(contacted)M.contacted++;
+    // مهتم / عرض سعر / صفقة / مرفوض
+    const reached=(set)=>HW.some(h=>set.includes(h.to)&&!set.includes(h.from));
+    let interested=reached(INTERESTED_SET),quote=HW.some(h=>h.to==='Invoice'&&h.from!=='Invoice')||AW.some(a=>a.type==='quote');
+    let won=HW.some(h=>h.to==='Closed Won'),lost=HW.some(h=>h.to==='Closed Lost');
+    let sample=AW.some(a=>a.type==='sample');
+    if(legacyStatus&&updInW){
+      if(!interested&&INTERESTED_SET.includes(l.status)){interested=true;estLead=true}
+      if(!quote&&l.status==='Invoice'){quote=true;estLead=true}
+      if(!won&&l.status==='Closed Won'){won=true;estLead=true}
+      if(!lost&&l.status==='Closed Lost'){lost=true;estLead=true}
+      if(!sample&&l.samples==='yes'&&!A.some(a=>a.type==='sample')){sample=true;estLead=true}
+    }
+    if(interested)M.interested++;
+    if(inW(added)){const so=M.sources[l.source||'غير محدد']||(M.sources[l.source||'غير محدد']={n:0,i:0});so.n++;if(interested||INTERESTED_SET.includes(l.status))so.i++}
+    if(quote)M.quotes++;if(sample)M.samples++;if(won)M.won++;
+    if(lost){M.lost++;const r=l.lostReason||'غير محدد';M.lostReasons[r]=(M.lostReasons[r]||0)+1}
+    if(estLead)M.est++;
+    // متابعات = أنشطة تواصل على ليد كان عليه تواصل قبل كده
+    AW.forEach(a=>{if(CONTACT_TYPES.includes(a.type)&&(A.some(b=>b.t<a.t)||H.some(h=>h.t<a.t&&h.to!=='New')))M.followups++});
+    // أول رد: أول لمسة (نشاط تواصل أو تغيير حالة) وقعت في الأسبوع
+    const firstA=A.find(a=>CONTACT_TYPES.includes(a.type)),firstH=H.find(h=>h.to!=='New');
+    const first=Math.min(firstA?firstA.t:Infinity,firstH?firstH.t:Infinity);
+    if(isFinite(first)&&inW(first)){const base=tms(l.assignedAt)||added;if(!isNaN(base)&&first>=base)frs.push((first-base)/3600000)}
+    // الحالة الحالية (كما في ref)
+    const open=!CLOSED_SET.includes(l.status);
+    if(!open)continue;
+    M.openLeads++;
+    const fu=(l.followup||'').slice(0,10);
+    if(fu&&fu<refDay){M.overdue++;if(opts.lists)L.overdue.push({l,fu})}
+    if(fu&&fu>=dkey(nextS)&&fu<dkey(nextE)){M.dueNext++;if(opts.lists)L.dueNext.push({l,fu})}
+    if(contacted&&l.status==='Contacted'&&!(l.notes||'').trim()&&!C.length&&!A.some(a=>(a.note||'').trim())){M.noNote++;if(opts.lists)L.noNote.push({l})}
+    const miss=[!l.company&&'الشركة',!l.country&&'البلد',!(l.phone||l.whatsapp)&&'الرقم'].filter(Boolean);
+    if(miss.length){M.incomplete++;if(opts.lists)L.incomplete.push({l,miss})}
+    // الإهمال: آخر لمسة قبل ref
+    let last=-Infinity,real=false;
+    for(const x of A)if(x.t<=ref){last=Math.max(last,x.t);real=true}
+    for(const x of H)if(x.t<=ref){last=Math.max(last,x.t);real=true}
+    for(const x of C)if(x.t<=ref){last=Math.max(last,x.t);real=true}
+    const la=tms(l.lastActivityAt);if(!isNaN(la)&&la<=ref){last=Math.max(last,la);real=true}
+    if(!isNaN(updated)&&updated<=ref)last=Math.max(last,updated);
+    if(!isNaN(added)&&added<=ref)last=Math.max(last,added);
+    if(!isFinite(last)||added>ref)continue;
+    const days=Math.floor((ref-last)/DAY_MS);
+    if(days>s1){M.stale1++;if(!real)M.estStale++;if(opts.lists)L.stale.push({l,days,est:!real})}
+    if(days>s2)M.stale2++;
+    if(days>s3)M.stale3++;
+    // الفرص
+    if(opts.lists&&(RANK[l.status]>=2||l.samples==='yes'))L.opps.push({l});
+  }
+  if(frs.length){M.firstRespH=Math.round(frs.reduce((a,b)=>a+b,0)/frs.length*10)/10;M.firstRespN=frs.length}
+  M.funnel=[M.newLeads,M.contacted,M.interested,M.quotes,M.samples,M.won];
+  if(opts.lists){
+    L.stale.sort((a,b)=>b.days-a.days);
+    L.overdue.sort((a,b)=>a.fu<b.fu?-1:1);
+    L.dueNext.sort((a,b)=>a.fu<b.fu?-1:1);
+    const oppScore=o=>(o.l.status==='Invoice'?30:0)+(o.l.samples==='yes'?20:0)+(RANK[o.l.status]||0)*5+(o.l.priority==='High'?3:0);
+    L.opps.sort((a,b)=>oppScore(b)-oppScore(a)||((a.l.followup||'9')<(b.l.followup||'9')?-1:1));
+    // الليدز اللي حالتها اتغيرت في الأسبوع (من سجل الحالات)
+    for(const l of leads){
+      const HW=(idx.hist.get(l.id)||[]).filter(h=>inW(h.t));if(!HW.length)continue;
+      const from=HW[0].from,to=HW[HW.length-1].to;if(from===to)continue;
+      const AW=(idx.acts.get(l.id)||[]).filter(a=>inW(a.t)&&a.note);
+      L.changes.push({l,from,to,at:HW[HW.length-1].t,note:AW.length?AW[AW.length-1].note:(l.notes||'')});
+    }
+    L.changes.sort((a,b)=>b.at-a.at);
+    M.lists=L;
+  }
+  return M;
+}
+const SNAP_FIELDS=['newLeads','contacted','interested','quotes','samples','won','lost','activities','followups','firstRespH','overdue','noNote','incomplete','stale1','stale2','stale3','est','dueNext','openLeads'];
+function snapshotData(M){const d={};SNAP_FIELDS.forEach(f=>d[f]=M[f]);d.act=M.act;d.funnel=M.funnel;d.lostReasons=M.lostReasons;d.sources=M.sources;d.stale=[getSetting('stale1'),getSetting('stale2'),getSetting('stale3')];return d}
+function findSnapshot(empId,key){return STATE.snapshots.find(s=>s.empId===empId&&s.weekStart===key)}
+// أرقام أسبوع: من الـ snapshot لو موجود، غير كده live
+const _wkCache=new Map();
+function weekMetrics(emp,key){
+  const snap=findSnapshot(emp.id,key);
+  if(snap&&snap.data&&snap.data.contacted!==undefined)return{...snap.data,_snap:snap};
+  rIdx();const ck=_rIdxSig+'|'+emp.id+'|'+key;
+  if(_wkCache.has(ck))return _wkCache.get(ck);
+  const m=computeEmpWeek(emp,key);m._live=true;_wkCache.set(ck,m);
+  if(_wkCache.size>400)_wkCache.clear();
+  return m;
+}
+function teamAvg(emp,key,field){
+  const peers=reportEmployees(emp.team||'tanta').filter(e=>e.role===emp.role);
+  if(!peers.length)return null;
+  const vals=peers.map(p=>weekMetrics(p,key)[field]).filter(v=>typeof v==='number');
+  return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10:null;
+}
+function snapshotRow(emp,key,M,by){return[key,emp.id,emp.team||'tanta',JSON.stringify(snapshotData(M)),by,new Date().toISOString()]}
+function saveSnapshotsFor(emps,key,by){
+  if(isCurrentWeek(key)||weekFromKey(key)>new Date())return 0;
+  const rows=emps.map(emp=>{const M=computeEmpWeek(emp,key);const row=snapshotRow(emp,key,M,by);
+    STATE.snapshots=STATE.snapshots.filter(s=>!(s.empId===emp.id&&s.weekStart===key));
+    STATE.snapshots.push({weekStart:key,empId:emp.id,team:row[2],data:JSON.parse(row[3]),approvedBy:by,approvedAt:row[5]});return row});
+  if(!rows.length)return 0;
+  persistReportCache();
+  gsPost({action:'saveSnapshots',rows});
+  return rows.length;
+}
+// أول ما أدمن يفتح بعد قفل الأسبوع: نحفظ نسخة ثابتة لأي موظف ملوش snapshot
+let _autoSnapDone='';
+function autoSnapshotLastWeek(){
+  if(!isAdmin()||!STATE.addonOk)return;
+  const key=lastCompletedWeekKey();if(_autoSnapDone===key)return;_autoSnapDone=key;
+  const missing=reportEmployees('all').filter(e=>!findSnapshot(e.id,key));
+  const n=saveSnapshotsFor(missing,key,'auto');
+  if(n)console.log('Auto snapshot saved for',n,'employees, week',key);
+}
+
+// ═══ WEEKLY REPORT UI ═══
+function rpNum(v){return v===null||v===undefined||v===''?'—':(typeof v==='number'?(Math.round(v*10)/10).toLocaleString('en'):v)}
+function rpHours(h){if(h===null||h===undefined)return'—';if(h<1)return Math.round(h*60)+' د';if(h<48)return(Math.round(h*10)/10)+' س';return(Math.round(h/24*10)/10)+' يوم'}
+function rpDelta(cur,prev,goodUp=true){
+  if(typeof cur!=='number'||typeof prev!=='number')return'';
+  const d=Math.round((cur-prev)*10)/10;
+  if(!d)return'<span class="rp-delta rp-flat" title="زي الأسبوع اللي فات">＝</span>';
+  const good=(d>0)===goodUp;
+  return`<span class="rp-delta ${good?'rp-good':'rp-bad'}">${d>0?'↑':'↓'}${Math.abs(d)}</span>`;
+}
+function rpArrow(cur,prev){if(typeof cur!=='number'||typeof prev!=='number')return'';const d=Math.round((cur-prev)*10)/10;return d?` (${d>0?'↑':'↓'}${Math.abs(d)})`:' (＝)'}
+function rpSpark(vals,goodUp=true){
+  const v=vals.map(x=>typeof x==='number'?x:0);if(v.length<2)return'';
+  const w=72,h=22,max=Math.max(...v,1),min=Math.min(...v,0),rng=max-min||1;
+  const pts=v.map((x,i)=>[Math.round(i*(w-4)/(v.length-1))+2,Math.round(h-3-(x-min)/rng*(h-6))]);
+  const up=v[v.length-1]>=v[v.length-2];const col=(up===goodUp)?'var(--green)':'var(--red)';
+  return`<svg class="rp-spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p.join(',')).join(' ')}"/><circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="2.6" fill="${col}"/></svg>`;
+}
+function rpTargetFor(emp){return STATE.targets[emp.id]||null}
+function rpKpiDefs(emp){
+  const t=rpTargetFor(emp)||{};
+  if(emp.role==='social')return[
+    {f:'newLeads',l:'ليدز جديدة',tg:t.contacts,up:true},
+    {f:'interested',l:'مهتمين',tg:t.interested,up:true},
+    {f:'incomplete',l:'ليدز ناقصة بيانات',up:false},
+    {f:'stale2',l:`مهملة +${getSetting('stale2')} يوم`,up:false}];
+  return[
+    {f:'contacted',l:'تواصل',tg:t.contacts,up:true},
+    {f:'interested',l:'مهتمين',tg:t.interested,up:true},
+    {f:'quotes',l:'عروض أسعار',tg:t.quotes,up:true},
+    {f:'stale2',l:`مهملة +${getSetting('stale2')} يوم`,up:false}];
+}
+// ملخص تلقائي: التنبيهات الحمرا الأول
+function rpSummary(emp,key,M,P){
+  const out=[],avgI=teamAvg(emp,key,'interested'),t=rpTargetFor(emp)||{};
+  const mainF=emp.role==='social'?'newLeads':'contacted',mainVal=M[mainF],mainTg=t.contacts;
+  if(emp.role!=='social'&&M.contacted>=10&&M.interested===0)out.push({lvl:'red',text:`تواصل مع ${M.contacted} ليد و<b>0 مهتم</b> ⚠️${avgI!==null?` — متوسط الفريق ${avgI}`:''}`});
+  if(M.overdue>=5)out.push({lvl:'red',text:`${M.overdue} متابعة متأخرة عن ميعادها`});
+  if(P&&typeof P.stale2==='number'&&M.stale2>P.stale2&&M.stale2>=5)out.push({lvl:'red',text:`الليدز المهملة +${getSetting('stale2')} يوم زادت لـ ${M.stale2} (↑${M.stale2-P.stale2})`});
+  if(mainTg&&mainVal/mainTg<.5)out.push({lvl:'red',text:`حقق ${Math.round(mainVal/mainTg*100)}% بس من تارجت ${emp.role==='social'?'الليدز الجديدة':'التواصل'} (${mainVal} من ${mainTg})`});
+  if(M.noNote>=5)out.push({lvl:'amber',text:`${M.noNote} ليد اتعملهم Contacted من غير أي ملاحظة`});
+  const base=emp.role==='social'
+    ?`أضاف ${M.newLeads} ليد جديد${P?rpArrow(M.newLeads,P.newLeads):''}، و${M.interested} مهتم${avgI!==null?` (متوسط الفريق ${avgI})`:''}.`
+    :`تواصل مع ${M.contacted} ليد${P?rpArrow(M.contacted,P.contacted):''}، و${M.interested} مهتم${avgI!==null?` (متوسط الفريق ${avgI})`:''}، و${M.quotes} عرض سعر.`;
+  out.push({lvl:'info',text:base});
+  if(mainTg&&mainVal>=mainTg)out.push({lvl:'green',text:`حقق تارجت ${emp.role==='social'?'الليدز الجديدة':'التواصل'} (${mainVal}/${mainTg}) 🎯`});
+  if(M.won)out.push({lvl:'green',text:`قفل ${M.won} صفقة الأسبوع ده 🎉`});
+  const order={red:0,amber:1,info:2,green:3};
+  return out.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,4);
+}
+function rpNextStep(l){
+  if(l.status==='Invoice')return'متابعة عرض السعر';
+  if(l.samples==='yes'&&!l.sampleResult)return'متابعة رأي العينة';
+  if(l.samples==='yes')return'تحويل العينة لطلب';
+  if(l.status==='Interested')return'إرسال عرض سعر';
+  if(l.status==='Follow-up')return'متابعة';
+  return'تواصل';
+}
+function rpLeadLink(l,screen){return screen?`<a class="rp-lead" onclick="openActivityModal('${l.id}')">${escH(l.name)}</a>`:`<b>${escH(l.name)}</b>`}
+function rpSection(title,inner,cls=''){return`<section class="rp-card ${cls}"><h3 class="rp-h">${title}</h3>${inner}</section>`}
+
+function rpBuildEmpHTML(emp,key,o={}){
+  const screen=!!o.screen;
+  const M=computeEmpWeek(emp,key,{lists:true}),L=M.lists;
+  const snap=findSnapshot(emp.id,key);
+  if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data); // الأرقام المعتمدة ثابتة
+  const prevKey=wkShift(key,-1),P=weekMetrics(emp,prevKey);
+  const cur=isCurrentWeek(key);
+  const roleLbl=emp.role==='sales'?'💼 Sales':'📱 Social Media',teamLbl=emp.team==='cairo'?'القاهرة':'طنطا';
+  const S=[getSetting('stale1'),getSetting('stale2'),getSetting('stale3')];
+  let h='';
+  // Header
+  const badges=[];
+  if(cur)badges.push('<span class="rp-badge rp-b-amber">⏳ أسبوع جاري — بيانات غير نهائية</span>');
+  if(snap)badges.push(`<span class="rp-badge rp-b-green">📌 معتمد${snap.approvedBy&&snap.approvedBy!=='auto'?' — '+escH(snap.approvedBy):' (تلقائي)'} · ${fmtDate(snap.approvedAt)}</span>`);
+  if(M.est)badges.push(`<span class="rp-badge rp-b-gray" title="ليدز قديمة ملهاش سجل نشاط — اتحسبت من تاريخ آخر تعديل">ⓘ ${M.est} ليد أرقامها تقديرية</span>`);
+  if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red" title="ركّب apps-script/ReportsAddon.gs">⚠️ سجل النشاط مش متوصل بالشيت — الأرقام تقديرية</span>');
+  h+=`<header class="rp-head"><div class="rp-avatar" style="background:${escH(emp.color||'#2d2a76')}">${escH(empInitials(emp.name))}</div><div class="rp-head-main"><div class="rp-name">${escH(emp.name)}</div><div class="rp-sub">${roleLbl} · فرع ${teamLbl} · ${wkLabelFull(key)}</div>${badges.length?`<div class="rp-badges">${badges.join('')}</div>`:''}</div></header>`;
+  // 1. Summary
+  const sum=rpSummary(emp,key,M,P);
+  h+=`<section class="rp-card rp-summary p-main">${sum.map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
+  // 2. KPI cards
+  const keys4=[wkShift(key,-3),wkShift(key,-2),prevKey,key];
+  h+=`<div class="rp-kpis p-main">${rpKpiDefs(emp).map(k=>{
+    const v=M[k.f],pv=P[k.f],avg=teamAvg(emp,key,k.f);
+    const trend=keys4.map(kk=>kk===key?v:weekMetrics(emp,kk)[k.f]);
+    let tg='';
+    if(k.tg){const pct=Math.round(v/k.tg*100);const c=pct>=100?'var(--green)':pct>=60?'var(--amber)':'var(--red)';tg=`<div class="rp-tg"><div class="rp-tg-bar"><i style="width:${Math.min(pct,100)}%;background:${c}"></i></div><span>التارجت ${k.tg} · <b style="color:${c}">${pct}%</b></span></div>`}
+    return`<div class="rp-kpi"><div class="rp-kpi-top"><span class="rp-kpi-l">${k.l}</span>${rpSpark(trend,k.up)}</div><div class="rp-kpi-v">${rpNum(v)} ${rpDelta(v,pv,k.up)}</div>${tg}<div class="rp-kpi-avg">متوسط الفريق: ${rpNum(avg)}</div></div>`}).join('')}</div>`;
+  // 3. Funnel
+  const FN=['جديد','تم التواصل','مهتم','عرض سعر','عينة','صفقة'];
+  const fmax=Math.max(...M.funnel,1),pf=P.funnel||[];
+  h+=rpSection('🔻 Funnel الأسبوع',`<div class="rp-funnel">${M.funnel.map((n,i)=>{
+    const conv=i&&M.funnel[i-1]?Math.round(n/M.funnel[i-1]*100)+'%':(i?'—':'');
+    return`<div class="rp-fn-row"><span class="rp-fn-l">${FN[i]}</span><div class="rp-fn-bar"><i style="width:${Math.max(n/fmax*100,n?4:0)}%"></i></div><span class="rp-fn-n">${n}</span><span class="rp-fn-c">${i?'← '+conv:''}</span><span class="rp-fn-d">${rpDelta(n,pf[i],true)}</span></div>`}).join('')}</div><div class="rp-note">النسبة = من المرحلة اللي قبلها. العدد = ليدز وصلت للمرحلة دي خلال الأسبوع.</div>`,'p-main');
+  // 4. Activity
+  const A=M.act||{};
+  h+=rpSection('⚡ النشاط',`<div class="rp-grid">${[['📞','مكالمات',A.call],['💬','واتساب',A.whatsapp],['✉️','إيميل',A.email],['🤝','اجتماعات',A.meeting],['🧾','عروض أسعار',A.quote],['📦','عينات',A.sample],['🔁','متابعات',M.followups],['⏱️','متوسط أول رد',rpHours(M.firstRespH)]].map(x=>`<div class="rp-stat"><span>${x[0]}</span><b>${rpNum(x[2]??0)}</b><small>${x[1]}</small></div>`).join('')}</div>${M.activities===0&&!cur?'<div class="rp-warn">🔴 مفيش ولا نشاط متسجل الأسبوع ده — لازم يتسجل كل تواصل من زرار ⚡</div>':''}`,'p-extra');
+  // 5. Discipline
+  const lst=(arr,fn)=>screen&&arr.length?`<details class="rp-more"><summary>عرض (${arr.length})</summary><div class="rp-list">${arr.slice(0,15).map(fn).join('')}</div></details>`:'';
+  h+=rpSection('✅ انضباط المتابعة',`<div class="rp-disc">
+    <div class="rp-disc-row ${M.overdue?'is-bad':''}"><b>${M.overdue}</b><span>متابعة متأخرة عن ميعادها</span>${rpDelta(M.overdue,P.overdue,false)}</div>${lst(L.overdue,x=>`<div class="rp-li">${rpLeadLink(x.l,screen)}<span>ميعادها ${fmtDate(x.fu)}</span></div>`)}
+    <div class="rp-disc-row ${M.noNote?'is-warn':''}"><b>${M.noNote}</b><span>Contacted من غير أي ملاحظة</span>${rpDelta(M.noNote,P.noNote,false)}</div>${lst(L.noNote,x=>`<div class="rp-li">${rpLeadLink(x.l,screen)}<span>${escH(x.l.status)}</span></div>`)}
+    <div class="rp-disc-row ${M.incomplete?'is-warn':''}"><b>${M.incomplete}</b><span>ليدز ناقصة بيانات (شركة/بلد/رقم)</span>${rpDelta(M.incomplete,P.incomplete,false)}</div>${lst(L.incomplete,x=>`<div class="rp-li">${rpLeadLink(x.l,screen)}<span>ناقص: ${x.miss.join('، ')}</span></div>`)}
+  </div>`,'p-main');
+  // 6. Stale
+  h+=rpSection('🕸️ ليدز مهملة (مفيش نشاط أو تحديث)',`<div class="rp-buckets">${[['stale1',S[0]],['stale2',S[1]],['stale3',S[2]]].map(([f,d])=>`<div class="rp-bucket ${M[f]?'is-bad':''}"><small>أكتر من ${d} يوم</small><b>${M[f]}</b>${rpDelta(M[f],P[f],false)}</div>`).join('')}</div>
+    ${L.stale.length?`<table class="rp-table"><thead><tr><th>العميل</th><th>الحالة</th><th>آخر نشاط</th></tr></thead><tbody>${L.stale.slice(0,10).map(x=>`<tr><td>${rpLeadLink(x.l,screen)}${x.l.company?`<small> · ${escH(x.l.company)}</small>`:''}</td><td>${escH(x.l.status)}</td><td><b class="${x.days>S[2]?'rp-red':x.days>S[1]?'rp-amber':''}">${x.days} يوم</b>${x.est?' <small title="تقديري">ⓘ</small>':''}</td></tr>`).join('')}</tbody></table>`:'<div class="rp-ok">👌 مفيش ليدز مهملة</div>'}
+    <div class="rp-note">مستبعد منها الليدز المقفولة (Closed Won / Closed Lost). ${M.estStale?`ⓘ ${M.estStale} منهم محسوبين من تاريخ آخر تعديل (مفيش سجل نشاط).`:''}</div>`,'p-main');
+  // 7. Opportunities
+  const opps=L.opps.slice(0,5),todayK=dkey(new Date());
+  h+=rpSection('⭐ أهم 5 فرص',opps.length?`<div class="rp-list">${opps.map((x,i)=>{const fu=(x.l.followup||'').slice(0,10);const late=fu&&fu<todayK;return`<div class="rp-opp"><span class="rp-opp-n">${i+1}</span><div class="rp-opp-b">${rpLeadLink(x.l,screen)}${x.l.company?` <small>· ${escH(x.l.company)}</small>`:''}${x.l.country?` <small>· ${escH(x.l.country)}</small>`:''}<div class="rp-opp-s"><span class="tag ${STATUS_TAG[x.l.status]||'tag-new'}">${escH(x.l.status)}</span>${x.l.samples==='yes'?' <span class="tag tag-Invoice">📦 عينة</span>':''} → ${rpNextStep(x.l)} ${fu?`<b class="${late?'rp-red':''}">${late?'⚠️ متأخر ':''}${fmtDate(fu)}</b>`:'<b class="rp-amber">مفيش ميعاد!</b>'}</div></div></div>`}).join('')}</div>`:'<div class="rp-empty">مفيش ليدز مهتمة أو في مرحلة عرض سعر/عينة</div>','p-main');
+  // 8. Lost reasons
+  const lr=Object.entries(M.lostReasons||{}).sort((a,b)=>b[1]-a[1]);
+  h+=rpSection(`❌ المرفوض وأسبابه (${M.lost})`,lr.length?`<div class="rp-bars">${lr.map(([r,n])=>`<div class="rp-bar-row"><span>${escH(r)}</span><div class="rp-fn-bar"><i style="width:${n/M.lost*100}%;background:var(--red)"></i></div><b>${n}</b></div>`).join('')}</div>`:'<div class="rp-empty">مفيش ليدز اترفضت الأسبوع ده</div>','p-extra');
+  // 9. Sources
+  const src=Object.entries(M.sources||{}).sort((a,b)=>b[1].n-a[1].n);
+  h+=rpSection('🎯 تحليل المصدر (ليدز الأسبوع)',src.length?`<table class="rp-table"><thead><tr><th>المصدر</th><th>ليدز</th><th>مهتم</th><th>%</th></tr></thead><tbody>${src.map(([k,v])=>`<tr><td>${k==='Trade Show'?'🎪 معرض':escH(k)}</td><td>${v.n}</td><td>${v.i}</td><td>${v.n?Math.round(v.i/v.n*100):0}%</td></tr>`).join('')}</tbody></table>`:'<div class="rp-empty">مفيش ليدز جديدة الأسبوع ده</div>','p-extra');
+  // 10. Next week
+  const t=rpTargetFor(emp);
+  h+=rpSection('📌 المطلوب الأسبوع الجاي',`<div class="rp-disc"><div class="rp-disc-row"><b>${M.dueNext}</b><span>متابعة مستحقة الأسبوع الجاي</span></div>${M.overdue?`<div class="rp-disc-row is-bad"><b>${M.overdue}</b><span>متابعة متأخرة لازم تتقفل الأول</span></div>`:''}</div>
+    ${L.dueNext.length?`<div class="rp-list">${L.dueNext.slice(0,8).map(x=>`<div class="rp-li">${rpLeadLink(x.l,screen)}<span>${fmtDate(x.fu)} · ${rpNextStep(x.l)}</span></div>`).join('')}</div>`:''}
+    <div class="rp-targets">🎯 تارجت الأسبوع: ${t?(emp.role==='social'?`${t.contacts} ليد جديد · `:`${t.contacts} تواصل · `)+`${t.interested} مهتم`+(emp.role==='social'?'':` · ${t.quotes} عرض سعر`):'<span class="rp-amber">مفيش تارجت متحدد — يتظبط من Admin Panel</span>'}</div>`,'p-extra');
+  // 11. Appendix
+  const app=`<table class="rp-table"><thead><tr><th>العميل</th><th>قبل</th><th>بعد</th><th>ملاحظة</th></tr></thead><tbody>${L.changes.map(x=>`<tr><td>${rpLeadLink(x.l,screen)}</td><td>${escH(x.from||'—')}</td><td><b>${escH(x.to)}</b></td><td>${escH(x.note||'—')}</td></tr>`).join('')}</tbody></table>`;
+  if(screen)h+=`<details class="rp-card rp-appendix"><summary class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</summary>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}<div class="rp-note">من سجل تغييرات الحالة بس (البيانات القديمة قبل تركيب السجل مش ظاهرة هنا).</div></details>`;
+  if(!screen){
+    // الطباعة: صفحة 1 = الأساسي بس. الأقسام الإضافية + الملحق في صفحات بعدها لو اتطلب الملحق
+    const extras=[];h=h.replace(/<section class="rp-card p-extra">[\s\S]*?<\/section>/g,m=>{extras.push(m);return''});
+    let p2='';
+    if(o.appendix)p2=`<div class="rp rp-page2">${extras.join('')}<section class="rp-card rp-appendix p-appendix"><h3 class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</h3>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}</section></div>`;
+    return`<div class="rp" data-week="${key}">${h}</div>${p2}`;
+  }
+  return`<div class="rp" data-week="${key}">${h}</div>`;
+}
+function renderRpActions(ctx){
+  const box=document.getElementById('rp-actions');if(!box)return;
+  if(!ctx){box.innerHTML='';return}
+  const {emp,key,team}=ctx;
+  let html='';
+  if(typeof rpPrint==='function'){
+    html+=team?`<button class="btn btn-gold btn-sm" onclick="rpPrintTeam()">🖨️ طباعة</button><button class="btn btn-outline btn-sm" onclick="rpCopyTeamWA()">📋 نسخ ملخص واتساب</button>`
+      :`<button class="btn btn-gold btn-sm" onclick="rpPrint(false)">🖨️ طباعة / PDF</button><button class="btn btn-outline btn-sm" onclick="rpPrint(true)">📎 مع الملحق</button><button class="btn btn-outline btn-sm" onclick="rpCopyWA()">📋 نسخ ملخص واتساب</button>`;
+  }
+  if(isAdmin()&&!isCurrentWeek(key)&&STATE.addonOk)html+=`<button class="btn btn-success btn-sm" onclick="rpApprove()">✅ اعتماد التقرير</button>`;
+  box.innerHTML=html;
+}
+function rpApprove(){
+  if(!isAdmin())return;
+  const key=rpWeek();if(isCurrentWeek(key)){toast('الأسبوع الجاري لسه مخلصش','error');return}
+  let emps;
+  if(erMode==='team')emps=reportEmployees(document.getElementById('rp-team').value);
+  else{const e=STATE.employees.find(x=>x.id===document.getElementById('er-emp-select').value);emps=e?[e]:[]}
+  if(!emps.length)return;
+  confirmDialog('اعتماد التقرير',`هيتحفظ نسخة ثابتة من أرقام أسبوع ${wkLabel(key)} لـ ${emps.length} موظف، ودي اللي هتستخدم في المقارنات بعد كده.`,()=>{
+    const n=saveSnapshotsFor(emps,key,SESSION.user||'Admin');toast(`✅ اتعتمد تقرير ${n} موظف`,'success');erRenderCurrent()},'📌');
+}
+
+// ═══ TEAM REPORT (admin) ═══
+function rpTeamRows(team,key){
+  return reportEmployees(team).map(emp=>{
+    const M=weekMetrics(emp,key),P=weekMetrics(emp,wkShift(key,-1)),t=rpTargetFor(emp);
+    const main=emp.role==='social'?M.newLeads:M.contacted;
+    const conv=main?Math.round(M.interested/main*100):0;
+    const pcts=[];
+    if(t){if(t.contacts)pcts.push(main/t.contacts);if(t.interested)pcts.push(M.interested/t.interested);if(emp.role!=='social'&&t.quotes)pcts.push(M.quotes/t.quotes)}
+    const tgPct=pcts.length?Math.round(pcts.reduce((a,b)=>a+Math.min(b,1.5),0)/pcts.length*100):null;
+    return{emp,M,P,main,conv,tgPct,t};
+  });
+}
+function rpTgClass(p){return p===null?'':p>=100?'rp-cell-good':p>=60?'rp-cell-mid':'rp-cell-bad'}
+function rpTeamTable(rows,role,key,screen){
+  if(!rows.length)return'';
+  const s2=getSetting('stale2');
+  const mainLbl=role==='social'?'ليدز جديدة':'تواصل';
+  const sum=f=>rows.reduce((a,r)=>a+(typeof r[f]==='number'?r[f]:0),0);
+  const sumM=f=>rows.reduce((a,r)=>a+(r.M[f]||0),0);
+  const tot={main:sum('main'),interested:sumM('interested'),quotes:sumM('quotes'),overdue:sumM('overdue'),stale2:sumM('stale2')};
+  const tgs=rows.map(r=>r.tgPct).filter(x=>x!==null);
+  const n=rows.length,avg=x=>Math.round(x/n*10)/10;
+  const convT=tot.main?Math.round(tot.interested/tot.main*100):0;
+  const body=rows.sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1)||b.main-a.main).map(r=>{
+    const mc=r.t&&r.t.contacts?rpTgClass(Math.round(r.main/r.t.contacts*100)):'';
+    const ic=r.t&&r.t.interested?rpTgClass(Math.round(r.M.interested/r.t.interested*100)):'';
+    return`<tr><td class="rp-tn">${screen?`<a class="rp-lead" onclick="openEmpReport('${r.emp.id}','${key}')">${escH(r.emp.name)}</a>`:`<b>${escH(r.emp.name)}</b>`}<small>${r.emp.team==='cairo'?'القاهرة':'طنطا'}</small></td>
+      <td class="${mc}">${r.main}${rpDelta(r.main,role==='social'?r.P.newLeads:r.P.contacted,true)}</td>
+      <td class="${ic}">${r.M.interested}${rpDelta(r.M.interested,r.P.interested,true)}</td>
+      ${role==='social'?'':`<td>${r.M.quotes}</td>`}
+      <td>${r.conv}%</td>
+      <td class="${r.M.overdue>=5?'rp-cell-bad':''}">${r.M.overdue}</td>
+      <td class="${r.M.stale2>=10?'rp-cell-bad':''}">${r.M.stale2}${rpDelta(r.M.stale2,r.P.stale2,false)}</td>
+      <td class="${rpTgClass(r.tgPct)}"><b>${r.tgPct===null?'—':r.tgPct+'%'}</b></td></tr>`}).join('');
+  return`<div class="rp-tscroll"><table class="rp-table rp-team-table"><thead><tr><th>الموظف</th><th>${mainLbl}</th><th>مهتم</th>${role==='social'?'':'<th>عروض</th>'}<th>تحويل</th><th>متأخرة</th><th>مهملة +${s2}</th><th>التارجت</th></tr></thead><tbody>${body}</tbody>
+    <tfoot><tr class="rp-tot"><td>المجموع</td><td>${tot.main}</td><td>${tot.interested}</td>${role==='social'?'':`<td>${tot.quotes}</td>`}<td>${convT}%</td><td>${tot.overdue}</td><td>${tot.stale2}</td><td>—</td></tr>
+    <tr class="rp-avg"><td>المتوسط</td><td>${avg(tot.main)}</td><td>${avg(tot.interested)}</td>${role==='social'?'':`<td>${avg(tot.quotes)}</td>`}<td>${convT}%</td><td>${avg(tot.overdue)}</td><td>${avg(tot.stale2)}</td><td>${tgs.length?Math.round(tgs.reduce((a,b)=>a+b,0)/tgs.length)+'%':'—'}</td></tr></tfoot></table></div>`;
+}
+function rpBuildTeamHTML(team,key,o={}){
+  const screen=!!o.screen,rows=rpTeamRows(team,key);
+  const teamLbl={all:'كل الفروع',tanta:'فرع طنطا',cairo:'فرع القاهرة'}[team]||team;
+  const sales=rows.filter(r=>r.emp.role==='sales'),social=rows.filter(r=>r.emp.role==='social');
+  const alerts=[];
+  rows.forEach(r=>{
+    if(r.emp.role==='sales'&&r.M.contacted>=10&&r.M.interested===0)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: ${r.M.contacted} تواصل و0 مهتم`});
+    if(r.tgPct!==null&&r.tgPct<50)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: حقق ${r.tgPct}% بس من التارجت`});
+    if(r.M.stale2>=20)alerts.push({lvl:'amber',text:`${escH(r.emp.name)}: ${r.M.stale2} ليد مهمل +${getSetting('stale2')} يوم`});
+  });
+  const top=[...sales].sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1))[0];
+  if(top&&top.tgPct!==null&&top.tgPct>=100)alerts.push({lvl:'green',text:`${escH(top.emp.name)} الأعلى في تحقيق التارجت (${top.tgPct}%) 🏆`});
+  const badges=[];
+  if(isCurrentWeek(key))badges.push('<span class="rp-badge rp-b-amber">⏳ أسبوع جاري — بيانات غير نهائية</span>');
+  const snapN=rows.filter(r=>r.M._snap||findSnapshot(r.emp.id,key)).length;
+  if(snapN)badges.push(`<span class="rp-badge rp-b-green">📌 ${snapN}/${rows.length} معتمد</span>`);
+  if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red">⚠️ سجل النشاط مش متوصل — الأرقام تقديرية</span>');
+  let h=`<header class="rp-head"><div class="rp-avatar" style="background:linear-gradient(135deg,var(--gold),#e09500)">👥</div><div class="rp-head-main"><div class="rp-name">تقرير الفريق — ${teamLbl}</div><div class="rp-sub">${wkLabelFull(key)} · ${rows.length} موظف</div>${badges.length?`<div class="rp-badges">${badges.join('')}</div>`:''}</div></header>`;
+  const order={red:0,amber:1,green:2};
+  if(alerts.length)h+=`<section class="rp-card rp-summary">${alerts.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,6).map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
+  if(sales.length)h+=rpSection('💼 فريق المبيعات',rpTeamTable(sales,'sales',key,screen),'rp-team-sec');
+  if(social.length)h+=rpSection('📱 فريق السوشيال',rpTeamTable(social,'social',key,screen),'rp-team-sec');
+  if(!rows.length)h+='<div class="rp-empty">مفيش موظفين في الفريق ده</div>';
+  h+=`<div class="rp-note">🟢 فوق التارجت · 🟡 60–99% · 🔴 أقل من 60%. نسبة التارجت = متوسط (تواصل، مهتم، عروض). ${screen?'اضغط على اسم الموظف لفتح تقريره.':''}</div>`;
+  return`<div class="rp">${h}</div>`;
+}
+function rpRenderTeam(){
+  const body=document.getElementById('er-body');if(!body)return;
+  if(!isAdmin()){body.innerHTML='<div class="er-empty">🔒 للأدمن بس</div>';return}
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  renderRpActions({team,key});
+  body.innerHTML=rpBuildTeamHTML(team,key,{screen:true});
+}
+// ═══ ADMIN: TARGETS & SETTINGS ═══
+function renderAdminTargets(){
+  const box=document.getElementById('admin-targets');if(!box)return;
+  const emps=reportEmployees('all');
+  box.innerHTML=`${STATE.addonOk?'':'<div class="alert alert-info" style="font-size:12px;margin-bottom:10px">⚠️ إضافة Apps Script مش متركبة — التارجت هيتحفظ على الجهاز ده بس لحد ما تتركب (شوف apps-script/README.md).</div>'}
+  <div class="table-wrap"><table class="admin-table" dir="rtl"><thead><tr><th>الموظف</th><th>تواصل / ليدز جديدة</th><th>مهتمين</th><th>عروض أسعار</th><th></th></tr></thead><tbody>${emps.map(e=>{const t=STATE.targets[e.id]||{};return`<tr><td><strong style="color:var(--text);font-size:12px">${escH(e.name)}</strong> <small style="color:var(--text3)">${e.role==='sales'?'Sales':'Social'} · ${e.team==='cairo'?'القاهرة':'طنطا'}</small></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-c-${e.id}" value="${t.contacts||''}"></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-i-${e.id}" value="${t.interested||''}"></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-q-${e.id}" value="${t.quotes||''}" ${e.role==='social'?'disabled placeholder="—"':''}></td>
+    <td><button class="btn btn-gold btn-xs" onclick="saveTarget('${e.id}')">💾</button></td></tr>`}).join('')}</tbody></table></div>`;
+  const st=document.getElementById('admin-report-settings');
+  if(st)st.innerHTML=`<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">${[['stale1','الشريحة الأولى'],['stale2','الشريحة التانية'],['stale3','الشريحة التالتة']].map(([k,l])=>`<div class="field"><label>${l} (أيام)</label><input type="number" min="1" id="set-${k}" value="${getSetting(k)}"></div>`).join('')}</div><button class="btn btn-gold btn-sm" onclick="saveReportSettings()" style="margin-top:10px">💾 حفظ الإعدادات</button>`;
+}
+function saveTarget(empId){
+  if(!isAdmin())return;
+  const v=id=>Math.max(0,parseInt(document.getElementById(id)?.value,10)||0);
+  const t={contacts:v('tg-c-'+empId),interested:v('tg-i-'+empId),quotes:v('tg-q-'+empId)};
+  STATE.targets[empId]=t;persistReportCache();
+  gsPost({action:'setTarget',row:[empId,t.contacts,t.interested,t.quotes,new Date().toISOString()]});
+  toast('✅ اتحفظ التارجت','success');
+}
+function saveReportSettings(){
+  if(!isAdmin())return;
+  const vals=['stale1','stale2','stale3'].map(k=>Math.max(1,parseInt(document.getElementById('set-'+k).value,10)||DEFAULT_SETTINGS[k]));
+  if(!(vals[0]<vals[1]&&vals[1]<vals[2])){toast('الأيام لازم تكون متزايدة (مثلاً 7 < 14 < 30)','error');return}
+  ['stale1','stale2','stale3'].forEach((k,i)=>{STATE.settings[k]=String(vals[i]);gsPost({action:'setSetting',key:k,value:vals[i]})});
+  persistReportCache();_wkCache.clear();
+  toast('✅ اتحفظت الإعدادات','success');
+}
+
+// ═══ PRINT / PDF & WHATSAPP ═══
+function rpDoPrint(html,title){
+  let root=document.getElementById('print-root');
+  if(root.parentNode!==document.body)document.body.appendChild(root); // لازم يبقى ابن مباشر للـ body عشان @media print
+  root.innerHTML=`<div class="rp-print" dir="rtl">${html}<div class="rp-print-foot">EgyGulf Foods CRM · اتطبع ${fmtDateTime(new Date().toISOString())}</div></div>`;
+  const oldTitle=document.title;document.title=title;
+  document.body.classList.add('rp-printing');
+  const done=()=>{document.body.classList.remove('rp-printing');document.title=oldTitle;root.innerHTML='';window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>{window.print();setTimeout(()=>{if(document.body.classList.contains('rp-printing')&&!matchMedia('print').matches)done()},1500)},60);
+}
+function rpCurrentEmp(){return STATE.employees.find(e=>e.id===document.getElementById('er-emp-select')?.value)}
+function rpPrint(withAppendix){
+  const emp=rpCurrentEmp();if(!emp){toast('اختر موظف أولاً','error');return}
+  if(!isAdmin()&&emp.id!==SESSION.empId){toast('🔒 مسموح بطباعة تقريرك بس','error');return}
+  const key=rpWeek();
+  const html=rpBuildEmpHTML(emp,key,{screen:false,appendix:!!withAppendix});
+  rpDoPrint(html,`تقرير ${emp.name} ${wkLabel(key).replace(/\//g,'-')}`);
+}
+function rpPrintTeam(){
+  if(!isAdmin())return;
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  rpDoPrint(rpBuildTeamHTML(team,key,{screen:false}),`تقرير الفريق ${wkLabel(key).replace(/\//g,'-')}`);
+}
+async function rpCopy(text){
+  try{await navigator.clipboard.writeText(text);toast('📋 اتنسخ — الصقه في واتساب','success');return}catch(e){}
+  const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  ta.remove();
+  if(ok)toast('📋 اتنسخ — الصقه في واتساب','success');else window.prompt('انسخ النص ده:',text);
+}
+function rpWAText(emp,key){
+  const M=computeEmpWeek(emp,key,{lists:true}),L=M.lists;
+  const snap=findSnapshot(emp.id,key);if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data);
+  const P=weekMetrics(emp,wkShift(key,-1));
+  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  const avgI=teamAvg(emp,key,'interested');
+  const arr=(c,p)=>typeof p==='number'&&c!==p?` (${c>p?'↑':'↓'}${Math.abs(Math.round((c-p)*10)/10)})`:'';
+  const t=rpTargetFor(emp)||{};
+  const lines=[`📊 تقرير ${emp.name} — ${f(s)} إلى ${f(e)}`];
+  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  if(emp.role==='social')lines.push(`• ليدز جديدة: ${M.newLeads}${arr(M.newLeads,P.newLeads)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
+  else lines.push(`• تواصل: ${M.contacted}${arr(M.contacted,P.contacted)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
+  const weakI=(emp.role!=='social'&&M.interested===0&&M.contacted>=10)||(avgI!==null&&M.interested<avgI/2);
+  lines.push(`• مهتم: ${M.interested}${weakI?' ⚠️':''}${avgI!==null?` (متوسط الفريق ${avgI})`:''}`);
+  if(emp.role!=='social')lines.push(`• عروض أسعار: ${M.quotes}${arr(M.quotes,P.quotes)}`);
+  lines.push(`• متابعات متأخرة: ${M.overdue}${M.overdue>=5?' 🔴':''}`);
+  lines.push(`• ليدز مهملة +${getSetting('stale2')} يوم: ${M.stale2}${arr(M.stale2,P.stale2)}`);
+  if(M.won)lines.push(`• صفقات: ${M.won} 🎉`);
+  const top=L.opps[0];
+  if(top){const fu=(top.l.followup||'').slice(0,10);lines.push(`• أهم فرصة: ${top.l.name}${top.l.company?' ('+top.l.company+')':''} — ${rpNextStep(top.l)}${fu?' '+fmtDate(fu):' (مفيش ميعاد)'}`)}
+  return lines.join('\n');
+}
+function rpCopyWA(){
+  const emp=rpCurrentEmp();if(!emp){toast('اختر موظف أولاً','error');return}
+  rpCopy(rpWAText(emp,rpWeek()));
+}
+function rpCopyTeamWA(){
+  if(!isAdmin())return;
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  const rows=rpTeamRows(team,key);
+  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  const lbl={all:'كل الفروع',tanta:'طنطا',cairo:'القاهرة'}[team];
+  const dot=p=>p===null?'':p>=100?' 🟢':p>=60?' 🟡':' 🔴';
+  const lines=[`📊 تقرير فريق ${lbl} — ${f(s)} إلى ${f(e)}`];
+  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  const sales=rows.filter(r=>r.emp.role==='sales'),social=rows.filter(r=>r.emp.role==='social');
+  const sm=(rs,f)=>rs.reduce((a,r)=>a+(r.M[f]||0),0);
+  if(sales.length){
+    lines.push('',`💼 المبيعات: تواصل ${sm(sales,'contacted')} · مهتم ${sm(sales,'interested')} · عروض ${sm(sales,'quotes')}`);
+    sales.sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1)).forEach(r=>lines.push(`• ${r.emp.name}: ${r.M.contacted} تواصل / ${r.M.interested} مهتم${r.M.contacted>=10&&!r.M.interested?' ⚠️':''}${r.tgPct!==null?` — ${r.tgPct}%${dot(r.tgPct)}`:''}`));
+  }
+  if(social.length){
+    lines.push('',`📱 السوشيال: ليدز جديدة ${sm(social,'newLeads')} · مهتم ${sm(social,'interested')}`);
+    social.sort((a,b)=>b.main-a.main).forEach(r=>lines.push(`• ${r.emp.name}: ${r.M.newLeads} ليد / ${r.M.interested} مهتم${r.tgPct!==null?` — ${r.tgPct}%${dot(r.tgPct)}`:''}`));
+  }
+  lines.push('',`⚠️ متابعات متأخرة: ${sm(rows,'overdue')} · مهملة +${getSetting('stale2')} يوم: ${sm(rows,'stale2')}`);
+  rpCopy(lines.join('\n'));
+}
+
 async function init() {
   document.getElementById('app-loading-msg').textContent = 'Loading data...';
   // نحمّل النسخة المحفوظة محليًا فورًا (بدون ما ننتظر الشبكة) عشان أي شاشة تتفتح
