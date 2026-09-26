@@ -352,6 +352,19 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .rp-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .rp-controls .er-select{flex:1;min-width:150px}
 .rp-actions{display:flex;gap:6px;flex-wrap:wrap}
+.rp-period{margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
+.rp-pchips{display:flex;gap:6px;flex-wrap:wrap}
+.rp-pchip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:inherit}
+.rp-pchip.active{background:linear-gradient(135deg,rgba(255,182,7,.2),rgba(255,182,7,.06));color:var(--gold);border-color:rgba(255,182,7,.35)}
+.rp-pinputs{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rp-pinputs .rp-pin{flex:1;min-width:170px}
+.rp-range{display:flex;gap:6px;align-items:center}
+.rp-range span{font-size:12px;color:var(--text3)}
+.rp-range .er-select{flex:1;min-width:120px}
+.rp-step{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.rp-step:disabled{opacity:.35;cursor:default}
+.er-select[type=date],.er-select[type=month]{color-scheme:dark}
+body.light-mode .er-select[type=date],body.light-mode .er-select[type=month]{color-scheme:light}
 .rp{display:flex;flex-direction:column;gap:12px;direction:rtl;text-align:right}
 .rp-head{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
 .rp-avatar{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0}
@@ -448,68 +461,6 @@ details.rp-card[open]>summary.rp-h{margin-bottom:10px}
 .rp-tot td{font-weight:800;color:var(--text);border-top:1px solid var(--border2)}
 .rp-avg td{color:var(--text3);font-size:11px}
 .tg-in{width:74px;padding:6px 8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px}
-/* ═══ REPORT PRINT (A4, light, RTL) ═══ */
-@media print{
-  @page{size:A4;margin:8mm}
-  body.rp-printing{background:#fff!important}
-  body.rp-printing::before,body.rp-printing::after{display:none!important}
-  #print-root .rp-print{
-    --text:#12122a;--text2:#3d3f55;--text3:#6b6f86;--surface:#fff;--surface2:#f2f3f7;--surface3:#fafafb;
-    --border:#e2e4ec;--border2:#c9cdd9;--green:#07845a;--red:#cc1d43;--amber:#a86400;--blue:#1d5fcf;--gold:#a87400;
-    --green-bg:#e7f6ef;--red-bg:#fbe9ee;--amber-bg:#fdf3e2;
-    color:var(--text);font-family:'DM Sans',Arial,sans-serif;direction:rtl;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10px}
-  #print-root .rp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;align-items:start}
-  #print-root .rp-head,#print-root .rp-summary,#print-root .rp-kpis,#print-root .p-appendix,#print-root .rp-team-sec{grid-column:1/-1}
-  #print-root .rp-card,#print-root .rp-head,#print-root .rp-kpi{padding:6px 8px;border-radius:8px;break-inside:avoid;background:#fff}
-  #print-root .rp-page2{break-before:page;margin-top:0}
-  #print-root .rp-page2 .rp-card{grid-column:auto}
-  #print-root .rp-page2 .p-appendix{grid-column:1/-1;break-inside:auto}
-  #print-root .rp-h{font-size:10.5px;margin-bottom:4px}
-  #print-root .rp-head{gap:8px}
-  #print-root .rp-avatar{width:30px;height:30px;font-size:11px;border-radius:8px}
-  #print-root .rp-name{font-size:13px}
-  #print-root .rp-sub{font-size:9.5px}
-  #print-root .rp-badges{margin-top:3px}
-  #print-root .rp-badge{font-size:8.5px;padding:1px 6px}
-  #print-root .rp-summary{gap:2px}
-  #print-root .rp-sum{font-size:10.5px;line-height:1.4}
-  #print-root .rp-dot{margin-top:4px;width:6px;height:6px}
-  #print-root .rp-kpis{gap:5px}
-  #print-root .rp-kpi{gap:2px}
-  #print-root .rp-kpi-v{font-size:17px}
-  #print-root .rp-kpi-l,#print-root .rp-tg,#print-root .rp-kpi-avg{font-size:8.5px}
-  #print-root .rp-funnel{gap:3px}
-  #print-root .rp-fn-row{grid-template-columns:50px minmax(0,1fr) 20px 48px 26px;gap:4px;font-size:9px}
-  #print-root .rp-fn-c{white-space:nowrap;font-size:8.5px}
-  #print-root .rp-note{font-size:8px;margin-top:3px}
-  #print-root .rp-disc{gap:3px}
-  #print-root .rp-disc-row{padding:3px 7px;font-size:9.5px}
-  #print-root .rp-disc-row b{font-size:12px}
-  #print-root .rp-buckets{gap:4px;margin-bottom:4px}
-  #print-root .rp-bucket{padding:3px}
-  #print-root .rp-bucket b{font-size:14px}
-  #print-root .rp-bucket small{font-size:8px}
-  #print-root .rp-table{font-size:8.5px;table-layout:fixed}
-  #print-root .rp-table td,#print-root .rp-table th{overflow-wrap:anywhere}
-  #print-root .rp-team-table td,#print-root .rp-team-table th{white-space:normal}
-  #print-root .rp-team-table th:first-child{width:22%}
-  #print-root .rp-team-table{min-width:0}
-  #print-root .rp-table th,#print-root .rp-table td{padding:2px 4px}
-  #print-root .rp-list{gap:3px}
-  #print-root .rp-opp{padding:3px 6px;gap:5px}
-  #print-root .rp-opp-b{font-size:9.5px}
-  #print-root .rp-opp-s{margin-top:1px;font-size:8.5px}
-  #print-root .rp-opp-n{width:16px;height:16px;font-size:9px}
-  #print-root .tag{font-size:8px;padding:1px 5px}
-  #print-root .rp-stat{padding:4px 2px}
-  #print-root .rp-stat b{font-size:12px}
-  #print-root .rp-print-foot{margin-top:5px;font-size:8px;color:#888;text-align:center}
-  #print-root .rp-cell-good{background:#e7f6ef!important}
-  #print-root .rp-cell-mid{background:#fdf3e2!important}
-  #print-root .rp-cell-bad{background:#fbe9ee!important}
-  #print-root .rp-tscroll{overflow:visible}
-}
-#print-root:not(:empty){display:none}
 .act-lead{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:12px;font-size:12px;color:var(--text2)}
 .act-lead b{color:var(--text);font-size:14px}
 .act-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px}
@@ -1208,7 +1159,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
       <!-- EMPLOYEE REPORT -->
       <div class="page" id="page-weeklyreport">
         <div class="er-topbar">
-          <div class="section-title" style="margin-bottom:0">&#128203; تقرير الأداء الأسبوعي</div>
+          <div class="section-title" style="margin-bottom:0">&#128203; تقرير الأداء</div>
           <div class="er-controls">
             <div id="rp-actions" class="rp-actions"></div>
             <div class="er-print-wrap" id="er-print-wrap" style="position:relative;display:none">
@@ -1230,7 +1181,22 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div id="rp-controls" class="rp-controls">
           <select class="er-select" id="er-emp-select" onchange="erRender()"><option value="">-- اختر موظف --</option></select>
           <select class="er-select" id="rp-team" onchange="erRenderCurrent()" style="display:none"><option value="all">🌍 كل الفروع</option><option value="tanta">🏢 طنطا</option><option value="cairo">🏙️ القاهرة</option></select>
-          <select class="er-select" id="rp-week" onchange="erRenderCurrent()"></select>
+        </div>
+        <div id="rp-period" class="rp-period" dir="rtl">
+          <div class="rp-pchips">
+            <button type="button" class="rp-pchip" data-k="d" onclick="rpSetKind('d')">📅 يومي</button>
+            <button type="button" class="rp-pchip" data-k="w" onclick="rpSetKind('w')">🗓️ أسبوعي</button>
+            <button type="button" class="rp-pchip" data-k="m" onclick="rpSetKind('m')">📆 شهري</button>
+            <button type="button" class="rp-pchip" data-k="r" onclick="rpSetKind('r')">↔️ فترة محددة</button>
+          </div>
+          <div class="rp-pinputs">
+            <button type="button" class="rp-step" onclick="rpStep(-1)" title="الفترة اللي قبلها">السابق</button>
+            <input type="date" class="er-select rp-pin" id="rp-day" data-k="d" onchange="erRenderCurrent()">
+            <select class="er-select rp-pin" id="rp-week" data-k="w" onchange="erRenderCurrent()"></select>
+            <input type="month" class="er-select rp-pin" id="rp-month" data-k="m" onchange="erRenderCurrent()">
+            <span class="rp-pin rp-range" data-k="r"><input type="date" class="er-select" id="rp-from" onchange="erRenderCurrent()"><span>إلى</span><input type="date" class="er-select" id="rp-to" onchange="erRenderCurrent()"></span>
+            <button type="button" class="rp-step" id="rp-next" onclick="rpStep(1)" title="الفترة اللي بعدها">التالي</button>
+          </div>
         </div>
         <div id="er-single-controls" style="display:none"></div>
         <div id="er-pair-controls" style="display:none">
@@ -2143,7 +2109,7 @@ function closeMobMore(){document.getElementById('mob-more-overlay').classList.re
 function setMobNav(page){document.querySelectorAll('.mob-nav-item').forEach(n=>n.classList.remove('active'));const el=document.getElementById('mobnav-'+page);if(el)el.classList.add('active')}
 
 // ═══ NAV ═══
-const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',attendance:'Attendance',recruiters:'Recruiters',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Weekly Report'};
+const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',attendance:'Attendance',recruiters:'Recruiters',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Performance Report'};
 var currentPage='dashboard';
 function nav(page,el){
   currentPage=page;
@@ -2966,6 +2932,7 @@ function erSetMode(m,el){
   erMode=m;
   document.querySelectorAll('.er-mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===m));
   document.getElementById('rp-controls').style.display=m==='pair'?'none':'flex';
+  document.getElementById('rp-period').style.display=m==='pair'?'none':'';
   document.getElementById('er-emp-select').style.display=m==='single'?'':'none';
   document.getElementById('rp-team').style.display=m==='team'?'':'none';
   document.getElementById('er-pair-controls').style.display=m==='pair'?'block':'none';
@@ -2985,19 +2952,53 @@ function erSetPeriod(p,el){
   erRenderCurrent();
 }
 function erRenderCurrent(){
-  _wkCache.clear();
+  _wkCache.clear();rpShowKind();
   if(erMode==='pair'){renderRpActions(null);const a=document.getElementById('er-pair-social').value,b=document.getElementById('er-pair-sales').value;if(a&&b)erRenderPair();return}
   if(erMode==='team'){typeof rpRenderTeam==='function'?rpRenderTeam():null;return}
   erRender();
 }
+let rpKind=(()=>{try{return localStorage.getItem('eg_rpKind')||'w'}catch(e){return'w'}})();
 function rpPopulateWeeks(){
   const sel=document.getElementById('rp-week');if(!sel)return;
-  const cur=currentWeekKey(),prev=sel.value;
-  const keys=[];for(let i=0;i<=12;i++)keys.push(wkShift(cur,-i));
-  sel.innerHTML=keys.map(k=>`<option value="${k}">${k===cur?'⏳ الأسبوع الجاري ':'📅 '}${wkLabel(k)}${k===lastCompletedWeekKey()?' · آخر أسبوع مكتمل':''}</option>`).join('');
-  sel.value=prev&&keys.includes(prev)?prev:lastCompletedWeekKey();
+  const cur=currentWeekKey(),last=lastCompletedWeekKey(),prev=sel.value;
+  const keys=[];for(let i=0;i<=26;i++)keys.push(wkShift(cur,-i));
+  if(prev&&!keys.includes(prev)&&/^w:/.test(prev))keys.push(prev);
+  sel.innerHTML=keys.map(k=>`<option value="${k}">${k===cur?'⏳ الأسبوع الجاري ':'📅 '}${wkLabel(k)}${k===last?' · آخر أسبوع مكتمل':''}</option>`).join('');
+  sel.value=prev&&keys.includes(prev)?prev:last;
+  const today=dkey(new Date());
+  const d=document.getElementById('rp-day');if(d){d.max=today;if(!d.value)d.value=today}
+  const m=document.getElementById('rp-month');if(m){m.max=today.slice(0,7);if(!m.value)m.value=today.slice(0,7)}
+  const f=document.getElementById('rp-from'),t=document.getElementById('rp-to');
+  if(f&&t){f.max=t.max=today;if(!t.value)t.value=today;if(!f.value)f.value=today.slice(0,8)+'01'}
+  rpShowKind();
 }
-function rpWeek(){const v=document.getElementById('rp-week')?.value;return v||lastCompletedWeekKey()}
+function rpShowKind(){
+  document.querySelectorAll('.rp-pchip').forEach(b=>b.classList.toggle('active',b.dataset.k===rpKind));
+  document.querySelectorAll('.rp-pin').forEach(el=>el.style.display=el.dataset.k===rpKind?'':'none');
+  const nx=document.getElementById('rp-next');if(nx)nx.disabled=isCurrentWeek(rpWeek())||perIsFuture(wkShift(rpWeek(),1));
+}
+function rpSetKind(k){rpKind=k;try{localStorage.setItem('eg_rpKind',k)}catch(e){}rpShowKind();erRenderCurrent()}
+function rpWeek(){
+  const v=id=>document.getElementById(id)?.value||'';
+  const today=dkey(new Date());
+  if(rpKind==='d')return'd:'+(v('rp-day')||today);
+  if(rpKind==='m')return'm:'+(v('rp-month')||today.slice(0,7));
+  if(rpKind==='r'){let a=v('rp-from')||today,b=v('rp-to')||today;if(a>b)[a,b]=[b,a];return`r:${a}~${b}`}
+  return v('rp-week')||lastCompletedWeekKey();
+}
+function rpSetInputs(key){
+  const p=perParse(key);rpKind=p.kind;
+  if(p.kind==='d')document.getElementById('rp-day').value=dkey(p.s);
+  else if(p.kind==='m')document.getElementById('rp-month').value=dkey(p.s).slice(0,7);
+  else if(p.kind==='r'){document.getElementById('rp-from').value=dkey(p.s);document.getElementById('rp-to').value=dkey(addDays(p.e,-1))}
+  else{const sel=document.getElementById('rp-week');const k=perKey('w',p.s);if(![...sel.options].some(o=>o.value===k))sel.add(new Option(wkLabel(k),k));sel.value=k}
+  rpShowKind();
+}
+function rpStep(n){
+  const k=wkShift(rpWeek(),n);
+  if(perIsFuture(k))return;
+  rpSetInputs(k);erRenderCurrent();
+}
 function erPopulateSelect(){
   const sel=document.getElementById('er-emp-select');if(!sel)return;
   if(!isAdmin()){
@@ -3073,7 +3074,7 @@ function erRender(){
 function openEmpReport(empId,key){
   nav('weeklyreport',null);
   const sel=document.getElementById('er-emp-select');if(sel)sel.value=empId;
-  if(key){const w=document.getElementById('rp-week');if(w)w.value=key}
+  if(key)rpSetInputs(key);
   erSetMode('single');
 }
 function erBuildHTML(emp){
@@ -3777,14 +3778,53 @@ const INTERESTED_SET=['Interested','Follow-up','Invoice','Closed Won'];
 const CLOSED_SET=['Closed Won','Closed Lost'];
 function dkey(d){d=new Date(d);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function weekStartOf(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+1)%7));return x}
-function weekFromKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
+// ═══ الفترات: مفتاح الفترة = نوع:قيمة ═══
+//  d:2026-09-26 يوم · w:2026-09-19 أسبوع (من السبت) · m:2026-09 شهر · r:2026-09-01~2026-09-15 فترة مخصصة
+function pDate(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d||1)}
 function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
-function wkShift(k,n){return dkey(addDays(weekFromKey(k),7*n))}
-function currentWeekKey(){return dkey(weekStartOf(new Date()))}
+function perParse(key){
+  let kind='w',v=String(key||'');
+  if(/^[dwmr]:/.test(v)){kind=v[0];v=v.slice(2)}
+  let s,e;
+  if(kind==='d'){s=pDate(v);e=addDays(s,1)}
+  else if(kind==='m'){s=pDate(v+'-01');e=new Date(s.getFullYear(),s.getMonth()+1,1)}
+  else if(kind==='r'){const[a,b]=v.split('~');s=pDate(a);e=addDays(pDate(b||a),1);if(e<=s)e=addDays(s,1)}
+  else{s=weekStartOf(pDate(v));e=addDays(s,7)}
+  return{kind,s,e,days:Math.round((e-s)/DAY_MS)};
+}
+function perKey(kind,s,e){
+  if(kind==='d')return'd:'+dkey(s);
+  if(kind==='m')return'm:'+dkey(s).slice(0,7);
+  if(kind==='r')return'r:'+dkey(s)+'~'+dkey(addDays(e,-1));
+  return'w:'+dkey(s);
+}
+function wkShift(k,n){
+  const p=perParse(k);
+  if(p.kind==='m')return perKey('m',new Date(p.s.getFullYear(),p.s.getMonth()+n,1));
+  if(p.kind==='r'){const s=addDays(p.s,p.days*n);return perKey('r',s,addDays(s,p.days))}
+  return perKey(p.kind,addDays(p.s,(p.kind==='d'?1:7)*n));
+}
+function weekFromKey(k){return perParse(k).s}
+function currentWeekKey(){return'w:'+dkey(weekStartOf(new Date()))}
 function lastCompletedWeekKey(){return wkShift(currentWeekKey(),-1)}
-function isCurrentWeek(k){return k===currentWeekKey()}
-function wkLabel(k){const s=weekFromKey(k),e=addDays(s,6);const f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;return`${f(s)} – ${f(e)}`}
-function wkLabelFull(k){const s=weekFromKey(k),e=addDays(s,6);return`${fmtDate(s)} إلى ${fmtDate(e)}`}
+function isCurrentWeek(k){const p=perParse(k),n=Date.now();return n>=p.s.getTime()&&n<p.e.getTime()}
+function perIsFuture(k){return perParse(k).s.getTime()>Date.now()}
+const PER_WORDS={d:{cur:'اليوم ده',prev:'اليوم اللي قبله',next:'اليوم اللي بعده',unit:'اليوم',live:'يوم جاري'},w:{cur:'الأسبوع ده',prev:'الأسبوع اللي فات',next:'الأسبوع الجاي',unit:'الأسبوع',live:'أسبوع جاري'},m:{cur:'الشهر ده',prev:'الشهر اللي فات',next:'الشهر الجاي',unit:'الشهر',live:'شهر جاري'},r:{cur:'الفترة دي',prev:'الفترة اللي قبلها',next:'الفترة الجاية',unit:'الفترة',live:'فترة جارية'}};
+function perW(k){return PER_WORDS[perParse(k).kind]}
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_DAYS=['الأحد','الاتنين','التلات','الأربع','الخميس','الجمعة','السبت'];
+function wkLabel(k){
+  const p=perParse(k),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  if(p.kind==='d')return`${AR_DAYS[p.s.getDay()]} ${f(p.s)}`;
+  if(p.kind==='m')return`${AR_MONTHS[p.s.getMonth()]} ${p.s.getFullYear()}`;
+  return`${f(p.s)} – ${f(addDays(p.e,-1))}`;
+}
+function wkLabelFull(k){
+  const p=perParse(k);
+  if(p.kind==='d')return`يوم ${AR_DAYS[p.s.getDay()]} ${fmtDate(p.s)}`;
+  if(p.kind==='m')return`شهر ${AR_MONTHS[p.s.getMonth()]} ${p.s.getFullYear()}`;
+  return`${p.kind==='w'?'أسبوع ':''}${fmtDate(p.s)} إلى ${fmtDate(addDays(p.e,-1))}`;
+}
 function tms(x){if(!x)return NaN;const t=new Date(x).getTime();return t}
 
 // فهرس الأنشطة/الحالات/التعليقات لكل ليد (بيتبني مرة لكل رسم)
@@ -3806,7 +3846,7 @@ function reportEmployees(team){return STATE.employees.filter(e=>(e.role==='sales
 // بيحسب كل أرقام الأسبوع لموظف. opts.lists=true بيرجّع كمان القوائم التفصيلية.
 function computeEmpWeek(emp,key,opts={}){
   const idx=rIdx();
-  const s=weekFromKey(key).getTime(),e=addDays(weekFromKey(key),7).getTime();
+  const per=perParse(key),s=per.s.getTime(),e=per.e.getTime();
   const now=Date.now(),ref=Math.min(now,e);
   const refDay=dkey(ref-(ref===e?1:0));
   const inW=t=>t>=s&&t<e;
@@ -3818,7 +3858,7 @@ function computeEmpWeek(emp,key,opts={}){
     lostReasons:{},sources:{},est:0,estStale:0,dueNext:0,openLeads:0};
   const L={overdue:[],noNote:[],incomplete:[],stale:[],opps:[],changes:[],dueNext:[]};
   const frs=[];
-  const nextS=e,nextE=e+7*DAY_MS;
+  const nextS=e,nextE=perParse(wkShift(key,1)).e.getTime();
   // أنشطة الموظف نفسه (actor) في الأسبوع
   STATE.activities.forEach(a=>{if(a.empId!==emp.id)return;const t=tms(a.at);if(!inW(t))return;M.activities++;if(M.act[a.type]!==undefined)M.act[a.type]++});
   for(const l of leads){
@@ -3904,7 +3944,9 @@ function computeEmpWeek(emp,key,opts={}){
 }
 const SNAP_FIELDS=['newLeads','contacted','interested','quotes','samples','won','lost','activities','followups','firstRespH','overdue','noNote','incomplete','stale1','stale2','stale3','est','dueNext','openLeads'];
 function snapshotData(M){const d={};SNAP_FIELDS.forEach(f=>d[f]=M[f]);d.act=M.act;d.funnel=M.funnel;d.lostReasons=M.lostReasons;d.sources=M.sources;d.stale=[getSetting('stale1'),getSetting('stale2'),getSetting('stale3')];return d}
-function findSnapshot(empId,key){return STATE.snapshots.find(s=>s.empId===empId&&s.weekStart===key)}
+// الـ snapshots للأسابيع بس (weekStart = تاريخ السبت، من غير البادئة)
+function snapWeek(key){const p=perParse(key);return p.kind==='w'?dkey(p.s):''}
+function findSnapshot(empId,key){const w=snapWeek(key);return w?STATE.snapshots.find(s=>s.empId===empId&&s.weekStart===w):null}
 // أرقام أسبوع: من الـ snapshot لو موجود، غير كده live
 const _wkCache=new Map();
 function weekMetrics(emp,key){
@@ -3922,12 +3964,12 @@ function teamAvg(emp,key,field){
   const vals=peers.map(p=>weekMetrics(p,key)[field]).filter(v=>typeof v==='number');
   return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10:null;
 }
-function snapshotRow(emp,key,M,by){return[key,emp.id,emp.team||'tanta',JSON.stringify(snapshotData(M)),by,new Date().toISOString()]}
+function snapshotRow(emp,key,M,by){return[snapWeek(key),emp.id,emp.team||'tanta',JSON.stringify(snapshotData(M)),by,new Date().toISOString()]}
 function saveSnapshotsFor(emps,key,by){
-  if(isCurrentWeek(key)||weekFromKey(key)>new Date())return 0;
+  if(!snapWeek(key)||isCurrentWeek(key)||perIsFuture(key))return 0;
   const rows=emps.map(emp=>{const M=computeEmpWeek(emp,key);const row=snapshotRow(emp,key,M,by);
-    STATE.snapshots=STATE.snapshots.filter(s=>!(s.empId===emp.id&&s.weekStart===key));
-    STATE.snapshots.push({weekStart:key,empId:emp.id,team:row[2],data:JSON.parse(row[3]),approvedBy:by,approvedAt:row[5]});return row});
+    STATE.snapshots=STATE.snapshots.filter(s=>!(s.empId===emp.id&&s.weekStart===row[0]));
+    STATE.snapshots.push({weekStart:row[0],empId:emp.id,team:row[2],data:JSON.parse(row[3]),approvedBy:by,approvedAt:row[5]});return row});
   if(!rows.length)return 0;
   persistReportCache();
   gsPost({action:'saveSnapshots',rows});
@@ -3949,7 +3991,7 @@ function rpHours(h){if(h===null||h===undefined)return'—';if(h<1)return Math.ro
 function rpDelta(cur,prev,goodUp=true){
   if(typeof cur!=='number'||typeof prev!=='number')return'';
   const d=Math.round((cur-prev)*10)/10;
-  if(!d)return'<span class="rp-delta rp-flat" title="زي الأسبوع اللي فات">＝</span>';
+  if(!d)return'<span class="rp-delta rp-flat" title="زي الفترة السابقة">＝</span>';
   const good=(d>0)===goodUp;
   return`<span class="rp-delta ${good?'rp-good':'rp-bad'}">${d>0?'↑':'↓'}${Math.abs(d)}</span>`;
 }
@@ -3961,9 +4003,16 @@ function rpSpark(vals,goodUp=true){
   const up=v[v.length-1]>=v[v.length-2];const col=(up===goodUp)?'var(--green)':'var(--red)';
   return`<svg class="rp-spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p.join(',')).join(' ')}"/><circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="2.6" fill="${col}"/></svg>`;
 }
-function rpTargetFor(emp){return STATE.targets[emp.id]||null}
-function rpKpiDefs(emp){
-  const t=rpTargetFor(emp)||{};
+// التارجت متسجل أسبوعي؛ لليوم = الأسبوعي ÷ 6 أيام شغل، وللشهر/الفترة = بنسبة عدد الأيام
+function rpTargetFor(emp,key){
+  const t=STATE.targets[emp.id];if(!t)return null;
+  const p=key?perParse(key):{kind:'w',days:7};
+  if(p.kind==='w')return t;
+  const f=p.kind==='d'?1/6:p.days/7,sc=v=>v?Math.max(1,Math.round(v*f)):0;
+  return{contacts:sc(t.contacts),interested:sc(t.interested),quotes:sc(t.quotes),scaled:true};
+}
+function rpKpiDefs(emp,key){
+  const t=rpTargetFor(emp,key)||{};
   if(emp.role==='social')return[
     {f:'newLeads',l:'ليدز جديدة',tg:t.contacts,up:true},
     {f:'interested',l:'مهتمين',tg:t.interested,up:true},
@@ -3977,7 +4026,7 @@ function rpKpiDefs(emp){
 }
 // ملخص تلقائي: التنبيهات الحمرا الأول
 function rpSummary(emp,key,M,P){
-  const out=[],avgI=teamAvg(emp,key,'interested'),t=rpTargetFor(emp)||{};
+  const out=[],avgI=teamAvg(emp,key,'interested'),t=rpTargetFor(emp,key)||{},W=perW(key);
   const mainF=emp.role==='social'?'newLeads':'contacted',mainVal=M[mainF],mainTg=t.contacts;
   if(emp.role!=='social'&&M.contacted>=10&&M.interested===0)out.push({lvl:'red',text:`تواصل مع ${M.contacted} ليد و<b>0 مهتم</b> ⚠️${avgI!==null?` — متوسط الفريق ${avgI}`:''}`});
   if(M.overdue>=5)out.push({lvl:'red',text:`${M.overdue} متابعة متأخرة عن ميعادها`});
@@ -3989,7 +4038,7 @@ function rpSummary(emp,key,M,P){
     :`تواصل مع ${M.contacted} ليد${P?rpArrow(M.contacted,P.contacted):''}، و${M.interested} مهتم${avgI!==null?` (متوسط الفريق ${avgI})`:''}، و${M.quotes} عرض سعر.`;
   out.push({lvl:'info',text:base});
   if(mainTg&&mainVal>=mainTg)out.push({lvl:'green',text:`حقق تارجت ${emp.role==='social'?'الليدز الجديدة':'التواصل'} (${mainVal}/${mainTg}) 🎯`});
-  if(M.won)out.push({lvl:'green',text:`قفل ${M.won} صفقة الأسبوع ده 🎉`});
+  if(M.won)out.push({lvl:'green',text:`قفل ${M.won} صفقة ${W.cur} 🎉`});
   const order={red:0,amber:1,info:2,green:3};
   return out.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,4);
 }
@@ -4010,13 +4059,13 @@ function rpBuildEmpHTML(emp,key,o={}){
   const snap=findSnapshot(emp.id,key);
   if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data); // الأرقام المعتمدة ثابتة
   const prevKey=wkShift(key,-1),P=weekMetrics(emp,prevKey);
-  const cur=isCurrentWeek(key);
+  const cur=isCurrentWeek(key),W=perW(key);
   const roleLbl=emp.role==='sales'?'💼 Sales':'📱 Social Media',teamLbl=emp.team==='cairo'?'القاهرة':'طنطا';
   const S=[getSetting('stale1'),getSetting('stale2'),getSetting('stale3')];
   let h='';
   // Header
   const badges=[];
-  if(cur)badges.push('<span class="rp-badge rp-b-amber">⏳ أسبوع جاري — بيانات غير نهائية</span>');
+  if(cur)badges.push(`<span class="rp-badge rp-b-amber">⏳ ${W.live} — بيانات غير نهائية</span>`);
   if(snap)badges.push(`<span class="rp-badge rp-b-green">📌 معتمد${snap.approvedBy&&snap.approvedBy!=='auto'?' — '+escH(snap.approvedBy):' (تلقائي)'} · ${fmtDate(snap.approvedAt)}</span>`);
   if(M.est)badges.push(`<span class="rp-badge rp-b-gray" title="ليدز قديمة ملهاش سجل نشاط — اتحسبت من تاريخ آخر تعديل">ⓘ ${M.est} ليد أرقامها تقديرية</span>`);
   if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red" title="ركّب apps-script/ReportsAddon.gs">⚠️ سجل النشاط مش متوصل بالشيت — الأرقام تقديرية</span>');
@@ -4026,7 +4075,7 @@ function rpBuildEmpHTML(emp,key,o={}){
   h+=`<section class="rp-card rp-summary p-main">${sum.map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
   // 2. KPI cards
   const keys4=[wkShift(key,-3),wkShift(key,-2),prevKey,key];
-  h+=`<div class="rp-kpis p-main">${rpKpiDefs(emp).map(k=>{
+  h+=`<div class="rp-kpis p-main">${rpKpiDefs(emp,key).map(k=>{
     const v=M[k.f],pv=P[k.f],avg=teamAvg(emp,key,k.f);
     const trend=keys4.map(kk=>kk===key?v:weekMetrics(emp,kk)[k.f]);
     let tg='';
@@ -4035,12 +4084,12 @@ function rpBuildEmpHTML(emp,key,o={}){
   // 3. Funnel
   const FN=['جديد','تم التواصل','مهتم','عرض سعر','عينة','صفقة'];
   const fmax=Math.max(...M.funnel,1),pf=P.funnel||[];
-  h+=rpSection('🔻 Funnel الأسبوع',`<div class="rp-funnel">${M.funnel.map((n,i)=>{
+  h+=rpSection(`🔻 Funnel ${W.unit}`,`<div class="rp-funnel">${M.funnel.map((n,i)=>{
     const conv=i&&M.funnel[i-1]?Math.round(n/M.funnel[i-1]*100)+'%':(i?'—':'');
     return`<div class="rp-fn-row"><span class="rp-fn-l">${FN[i]}</span><div class="rp-fn-bar"><i style="width:${Math.max(n/fmax*100,n?4:0)}%"></i></div><span class="rp-fn-n">${n}</span><span class="rp-fn-c">${i?'← '+conv:''}</span><span class="rp-fn-d">${rpDelta(n,pf[i],true)}</span></div>`}).join('')}</div><div class="rp-note">النسبة = من المرحلة اللي قبلها. العدد = ليدز وصلت للمرحلة دي خلال الأسبوع.</div>`,'p-main');
   // 4. Activity
   const A=M.act||{};
-  h+=rpSection('⚡ النشاط',`<div class="rp-grid">${[['📞','مكالمات',A.call],['💬','واتساب',A.whatsapp],['✉️','إيميل',A.email],['🤝','اجتماعات',A.meeting],['🧾','عروض أسعار',A.quote],['📦','عينات',A.sample],['🔁','متابعات',M.followups],['⏱️','متوسط أول رد',rpHours(M.firstRespH)]].map(x=>`<div class="rp-stat"><span>${x[0]}</span><b>${rpNum(x[2]??0)}</b><small>${x[1]}</small></div>`).join('')}</div>${M.activities===0&&!cur?'<div class="rp-warn">🔴 مفيش ولا نشاط متسجل الأسبوع ده — لازم يتسجل كل تواصل من زرار ⚡</div>':''}`,'p-extra');
+  h+=rpSection('⚡ النشاط',`<div class="rp-grid">${[['📞','مكالمات',A.call],['💬','واتساب',A.whatsapp],['✉️','إيميل',A.email],['🤝','اجتماعات',A.meeting],['🧾','عروض أسعار',A.quote],['📦','عينات',A.sample],['🔁','متابعات',M.followups],['⏱️','متوسط أول رد',rpHours(M.firstRespH)]].map(x=>`<div class="rp-stat"><span>${x[0]}</span><b>${rpNum(x[2]??0)}</b><small>${x[1]}</small></div>`).join('')}</div>${M.activities===0&&!cur?'<div class="rp-warn">🔴 مفيش ولا نشاط متسجل '+W.cur+' — لازم يتسجل كل تواصل من زرار ⚡</div>':''}`,'p-extra');
   // 5. Discipline
   const lst=(arr,fn)=>screen&&arr.length?`<details class="rp-more"><summary>عرض (${arr.length})</summary><div class="rp-list">${arr.slice(0,15).map(fn).join('')}</div></details>`:'';
   h+=rpSection('✅ انضباط المتابعة',`<div class="rp-disc">
@@ -4057,25 +4106,18 @@ function rpBuildEmpHTML(emp,key,o={}){
   h+=rpSection('⭐ أهم 5 فرص',opps.length?`<div class="rp-list">${opps.map((x,i)=>{const fu=(x.l.followup||'').slice(0,10);const late=fu&&fu<todayK;return`<div class="rp-opp"><span class="rp-opp-n">${i+1}</span><div class="rp-opp-b">${rpLeadLink(x.l,screen)}${x.l.company?` <small>· ${escH(x.l.company)}</small>`:''}${x.l.country?` <small>· ${escH(x.l.country)}</small>`:''}<div class="rp-opp-s"><span class="tag ${STATUS_TAG[x.l.status]||'tag-new'}">${escH(x.l.status)}</span>${x.l.samples==='yes'?' <span class="tag tag-Invoice">📦 عينة</span>':''} → ${rpNextStep(x.l)} ${fu?`<b class="${late?'rp-red':''}">${late?'⚠️ متأخر ':''}${fmtDate(fu)}</b>`:'<b class="rp-amber">مفيش ميعاد!</b>'}</div></div></div>`}).join('')}</div>`:'<div class="rp-empty">مفيش ليدز مهتمة أو في مرحلة عرض سعر/عينة</div>','p-main');
   // 8. Lost reasons
   const lr=Object.entries(M.lostReasons||{}).sort((a,b)=>b[1]-a[1]);
-  h+=rpSection(`❌ المرفوض وأسبابه (${M.lost})`,lr.length?`<div class="rp-bars">${lr.map(([r,n])=>`<div class="rp-bar-row"><span>${escH(r)}</span><div class="rp-fn-bar"><i style="width:${n/M.lost*100}%;background:var(--red)"></i></div><b>${n}</b></div>`).join('')}</div>`:'<div class="rp-empty">مفيش ليدز اترفضت الأسبوع ده</div>','p-extra');
+  h+=rpSection(`❌ المرفوض وأسبابه (${M.lost})`,lr.length?`<div class="rp-bars">${lr.map(([r,n])=>`<div class="rp-bar-row"><span>${escH(r)}</span><div class="rp-fn-bar"><i style="width:${n/M.lost*100}%;background:var(--red)"></i></div><b>${n}</b></div>`).join('')}</div>`:'<div class="rp-empty">مفيش ليدز اترفضت '+W.cur+'</div>','p-extra');
   // 9. Sources
   const src=Object.entries(M.sources||{}).sort((a,b)=>b[1].n-a[1].n);
-  h+=rpSection('🎯 تحليل المصدر (ليدز الأسبوع)',src.length?`<table class="rp-table"><thead><tr><th>المصدر</th><th>ليدز</th><th>مهتم</th><th>%</th></tr></thead><tbody>${src.map(([k,v])=>`<tr><td>${k==='Trade Show'?'🎪 معرض':escH(k)}</td><td>${v.n}</td><td>${v.i}</td><td>${v.n?Math.round(v.i/v.n*100):0}%</td></tr>`).join('')}</tbody></table>`:'<div class="rp-empty">مفيش ليدز جديدة الأسبوع ده</div>','p-extra');
+  h+=rpSection(`🎯 تحليل المصدر (ليدز ${W.unit})`,src.length?`<table class="rp-table"><thead><tr><th>المصدر</th><th>ليدز</th><th>مهتم</th><th>%</th></tr></thead><tbody>${src.map(([k,v])=>`<tr><td>${k==='Trade Show'?'🎪 معرض':escH(k)}</td><td>${v.n}</td><td>${v.i}</td><td>${v.n?Math.round(v.i/v.n*100):0}%</td></tr>`).join('')}</tbody></table>`:'<div class="rp-empty">مفيش ليدز جديدة '+W.cur+'</div>','p-extra');
   // 10. Next week
-  const t=rpTargetFor(emp);
-  h+=rpSection('📌 المطلوب الأسبوع الجاي',`<div class="rp-disc"><div class="rp-disc-row"><b>${M.dueNext}</b><span>متابعة مستحقة الأسبوع الجاي</span></div>${M.overdue?`<div class="rp-disc-row is-bad"><b>${M.overdue}</b><span>متابعة متأخرة لازم تتقفل الأول</span></div>`:''}</div>
+  const t=rpTargetFor(emp,key);
+  h+=rpSection(`📌 المطلوب ${W.next}`,`<div class="rp-disc"><div class="rp-disc-row"><b>${M.dueNext}</b><span>متابعة مستحقة ${W.next}</span></div>${M.overdue?`<div class="rp-disc-row is-bad"><b>${M.overdue}</b><span>متابعة متأخرة لازم تتقفل الأول</span></div>`:''}</div>
     ${L.dueNext.length?`<div class="rp-list">${L.dueNext.slice(0,8).map(x=>`<div class="rp-li">${rpLeadLink(x.l,screen)}<span>${fmtDate(x.fu)} · ${rpNextStep(x.l)}</span></div>`).join('')}</div>`:''}
-    <div class="rp-targets">🎯 تارجت الأسبوع: ${t?(emp.role==='social'?`${t.contacts} ليد جديد · `:`${t.contacts} تواصل · `)+`${t.interested} مهتم`+(emp.role==='social'?'':` · ${t.quotes} عرض سعر`):'<span class="rp-amber">مفيش تارجت متحدد — يتظبط من Admin Panel</span>'}</div>`,'p-extra');
+    <div class="rp-targets">🎯 تارجت ${W.unit}${t&&t.scaled?' (محسوب من الأسبوعي)':''}: ${t?(emp.role==='social'?`${t.contacts} ليد جديد · `:`${t.contacts} تواصل · `)+`${t.interested} مهتم`+(emp.role==='social'?'':` · ${t.quotes} عرض سعر`):'<span class="rp-amber">مفيش تارجت متحدد — يتظبط من Admin Panel</span>'}</div>`,'p-extra');
   // 11. Appendix
   const app=`<table class="rp-table"><thead><tr><th>العميل</th><th>قبل</th><th>بعد</th><th>ملاحظة</th></tr></thead><tbody>${L.changes.map(x=>`<tr><td>${rpLeadLink(x.l,screen)}</td><td>${escH(x.from||'—')}</td><td><b>${escH(x.to)}</b></td><td>${escH(x.note||'—')}</td></tr>`).join('')}</tbody></table>`;
-  if(screen)h+=`<details class="rp-card rp-appendix"><summary class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</summary>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}<div class="rp-note">من سجل تغييرات الحالة بس (البيانات القديمة قبل تركيب السجل مش ظاهرة هنا).</div></details>`;
-  if(!screen){
-    // الطباعة: صفحة 1 = الأساسي بس. الأقسام الإضافية + الملحق في صفحات بعدها لو اتطلب الملحق
-    const extras=[];h=h.replace(/<section class="rp-card p-extra">[\s\S]*?<\/section>/g,m=>{extras.push(m);return''});
-    let p2='';
-    if(o.appendix)p2=`<div class="rp rp-page2">${extras.join('')}<section class="rp-card rp-appendix p-appendix"><h3 class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</h3>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}</section></div>`;
-    return`<div class="rp" data-week="${key}">${h}</div>${p2}`;
-  }
+  if(screen)h+=`<details class="rp-card rp-appendix"><summary class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</summary>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة '+W.cur+'</div>'}<div class="rp-note">من سجل تغييرات الحالة بس (البيانات القديمة قبل تركيب السجل مش ظاهرة هنا).</div></details>`;
   return`<div class="rp" data-week="${key}">${h}</div>`;
 }
 function renderRpActions(ctx){
@@ -4087,12 +4129,12 @@ function renderRpActions(ctx){
     html+=team?`<button class="btn btn-gold btn-sm" onclick="rpPrintTeam()">🖨️ طباعة</button><button class="btn btn-outline btn-sm" onclick="rpCopyTeamWA()">📋 نسخ ملخص واتساب</button>`
       :`<button class="btn btn-gold btn-sm" onclick="rpPrint(false)">🖨️ طباعة / PDF</button><button class="btn btn-outline btn-sm" onclick="rpPrint(true)">📎 مع الملحق</button><button class="btn btn-outline btn-sm" onclick="rpCopyWA()">📋 نسخ ملخص واتساب</button>`;
   }
-  if(isAdmin()&&!isCurrentWeek(key)&&STATE.addonOk)html+=`<button class="btn btn-success btn-sm" onclick="rpApprove()">✅ اعتماد التقرير</button>`;
+  if(isAdmin()&&snapWeek(key)&&!isCurrentWeek(key)&&STATE.addonOk)html+=`<button class="btn btn-success btn-sm" onclick="rpApprove()">✅ اعتماد التقرير</button>`;
   box.innerHTML=html;
 }
 function rpApprove(){
   if(!isAdmin())return;
-  const key=rpWeek();if(isCurrentWeek(key)){toast('الأسبوع الجاري لسه مخلصش','error');return}
+  const key=rpWeek();if(!snapWeek(key)){toast('الاعتماد للتقارير الأسبوعية بس','error');return}if(isCurrentWeek(key)){toast('الأسبوع الجاري لسه مخلصش','error');return}
   let emps;
   if(erMode==='team')emps=reportEmployees(document.getElementById('rp-team').value);
   else{const e=STATE.employees.find(x=>x.id===document.getElementById('er-emp-select').value);emps=e?[e]:[]}
@@ -4104,7 +4146,7 @@ function rpApprove(){
 // ═══ TEAM REPORT (admin) ═══
 function rpTeamRows(team,key){
   return reportEmployees(team).map(emp=>{
-    const M=weekMetrics(emp,key),P=weekMetrics(emp,wkShift(key,-1)),t=rpTargetFor(emp);
+    const M=weekMetrics(emp,key),P=weekMetrics(emp,wkShift(key,-1)),t=rpTargetFor(emp,key);
     const main=emp.role==='social'?M.newLeads:M.contacted;
     const conv=main?Math.round(M.interested/main*100):0;
     const pcts=[];
@@ -4152,7 +4194,7 @@ function rpBuildTeamHTML(team,key,o={}){
   const top=[...sales].sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1))[0];
   if(top&&top.tgPct!==null&&top.tgPct>=100)alerts.push({lvl:'green',text:`${escH(top.emp.name)} الأعلى في تحقيق التارجت (${top.tgPct}%) 🏆`});
   const badges=[];
-  if(isCurrentWeek(key))badges.push('<span class="rp-badge rp-b-amber">⏳ أسبوع جاري — بيانات غير نهائية</span>');
+  if(isCurrentWeek(key))badges.push(`<span class="rp-badge rp-b-amber">⏳ ${perW(key).live} — بيانات غير نهائية</span>`);
   const snapN=rows.filter(r=>r.M._snap||findSnapshot(r.emp.id,key)).length;
   if(snapN)badges.push(`<span class="rp-badge rp-b-green">📌 ${snapN}/${rows.length} معتمد</span>`);
   if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red">⚠️ سجل النشاط مش متوصل — الأرقام تقديرية</span>');
@@ -4203,28 +4245,165 @@ function saveReportSettings(){
 }
 
 // ═══ PRINT / PDF & WHATSAPP ═══
-function rpDoPrint(html,title){
-  let root=document.getElementById('print-root');
-  if(root.parentNode!==document.body)document.body.appendChild(root); // لازم يبقى ابن مباشر للـ body عشان @media print
-  root.innerHTML=`<div class="rp-print" dir="rtl">${html}<div class="rp-print-foot">EgyGulf Foods CRM · اتطبع ${fmtDateTime(new Date().toISOString())}</div></div>`;
-  const oldTitle=document.title;document.title=title;
-  document.body.classList.add('rp-printing');
-  const done=()=>{document.body.classList.remove('rp-printing');document.title=oldTitle;root.innerHTML='';window.removeEventListener('afterprint',done)};
-  window.addEventListener('afterprint',done);
-  setTimeout(()=>{window.print();setTimeout(()=>{if(document.body.classList.contains('rp-printing')&&!matchMedia('print').matches)done()},1500)},60);
+// ═══ PRINT / PDF — مستند مستقل ومنظم (A4، خلفية بيضا، RTL) ═══
+const RP_PRINT_CSS=`
+@page{size:A4;margin:9mm 9mm}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;color:#1b1b2f;font-size:10px;line-height:1.35;direction:rtl;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bar{position:sticky;top:0;display:flex;gap:8px;justify-content:center;padding:10px;background:#14113f;z-index:5}
+.bar button{font-family:inherit;font-size:14px;font-weight:700;padding:9px 18px;border-radius:10px;border:0;cursor:pointer}
+.bar .p{background:#ffb607;color:#14113f}.bar .c{background:#ffffff22;color:#fff}
+.doc{max-width:190mm;margin:0 auto}
+@media screen{body{background:#e9ebf2}.doc{background:#fff;margin:14px auto;padding:12mm 10mm;box-shadow:0 4px 24px #0002;border-radius:6px}}
+@media print{.bar{display:none}}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:6px;border-bottom:3px solid #ffb607;margin-bottom:7px}
+.brand{display:flex;align-items:center;gap:8px}
+.logo{width:34px;height:34px;border-radius:8px;background:#14113f;color:#ffb607;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.brand b{display:block;font-size:13px;color:#14113f}.brand small{font-size:9.5px;color:#777}
+.ttl{text-align:left}
+.ttl h1{font-size:16px;font-weight:800;color:#14113f;line-height:1.3}
+.ttl .per{font-size:11px;font-weight:700;color:#a87400}
+.who{display:flex;flex-wrap:wrap;gap:3px 18px;font-size:10px;color:#444;margin-bottom:5px}
+.who b{color:#1b1b2f}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+.tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;border:1px solid}
+.t-amber{color:#9a5b00;background:#fff4df;border-color:#f2d29a}.t-gray{color:#555;background:#f3f4f7;border-color:#dcdfe6}
+.t-green{color:#07744f;background:#e6f6ef;border-color:#aee0c9}.t-red{color:#b3173a;background:#fdebef;border-color:#f3b8c6}
+h2{font-size:11px;font-weight:800;color:#14113f;margin:7px 0 3px;padding-right:7px;border-right:4px solid #ffb607;line-height:1.3}
+.sum{border:1px solid #e3e5ec;border-radius:6px;padding:4px 10px;background:#fafbfc}
+.sum li{list-style:none;padding:1px 0;padding-right:14px;position:relative}
+.sum li:before{content:'';position:absolute;right:0;top:8px;width:7px;height:7px;border-radius:50%;background:#3d6fe0}
+.sum li.red{color:#b3173a;font-weight:700}.sum li.red:before{background:#cc1d43}
+.sum li.amber:before{background:#e09500}.sum li.green:before{background:#0a8f5c}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{background:#f1f2f6;color:#3a3d52;font-weight:700;text-align:right;padding:2.5px 5px;border:1px solid #dcdfe7;white-space:nowrap}
+td{padding:1.5px 5px;border:1px solid #e4e6ed;vertical-align:middle}
+td.c,th.c{text-align:center}
+td.b{font-weight:800}
+tr:nth-child(even) td{background:#fbfbfd}
+.up{color:#07845a;font-weight:700}.down{color:#cc1d43;font-weight:700}.flat{color:#999}
+.ok{color:#07845a;font-weight:800}.mid{color:#a86400;font-weight:800}.bad{color:#cc1d43;font-weight:800}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2>div{min-width:0}
+.fbar{height:7px;border-radius:3px;background:#ffb607;min-width:2px}
+.muted{color:#888;font-size:9px;margin-top:3px}
+.empty{color:#999;text-align:center;padding:6px;border:1px dashed #d7dae3;border-radius:5px}
+.pb{break-before:page;page-break-before:always}
+table,.sum,.row2{break-inside:avoid}
+.foot{margin-top:10px;padding-top:5px;border-top:1px solid #e3e5ec;color:#999;font-size:8.5px;display:flex;justify-content:space-between}
+.cg{background:#e8f6ef!important}.cm{background:#fff4e0!important}.cb{background:#fdecef!important}
+`;
+function rpOpenPrint(title,body){
+  const doc=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escH(title)}</title><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet"><style>${RP_PRINT_CSS}</style></head><body><div class="bar"><button class="p" onclick="window.print()">🖨️ طباعة / حفظ PDF</button><button class="c" onclick="window.close()">✕ إغلاق</button></div><div class="doc">${body}</div><script>(document.fonts&&document.fonts.ready?Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,2500))]):Promise.resolve()).then(()=>setTimeout(()=>window.print(),250));<\/script></body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.open();w.document.write(doc);w.document.close();return}
+  // لو المتصفح منع النافذة: نطبع من iframe مخفي
+  const f=document.createElement('iframe');f.style.cssText='position:fixed;left:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+  const d=f.contentWindow.document;d.open();d.write(doc);d.close();setTimeout(()=>f.remove(),120000);
+}
+function pdDelta(c,p,goodUp=true){
+  if(typeof c!=='number'||typeof p!=='number')return'<span class="flat">—</span>';
+  const d=Math.round((c-p)*10)/10;if(!d)return'<span class="flat">＝</span>';
+  return`<span class="${(d>0)===goodUp?'up':'down'}">${d>0?'↑':'↓'} ${Math.abs(d)}</span>`;
+}
+function pdPct(v,t){if(!t)return'<span class="flat">—</span>';const p=Math.round(v/t*100);return`<span class="${p>=100?'ok':p>=60?'mid':'bad'}">${p}%</span>`}
+function pdHeader(title,subtitle,whoHTML,tags){
+  return`<div class="hd"><div class="brand"><div class="logo">EG</div><div><b>EgyGulf Foods</b><small>CRM · تقرير أداء</small></div></div><div class="ttl"><h1>${title}</h1><div class="per">${subtitle}</div></div></div>${whoHTML?`<div class="who">${whoHTML}</div>`:''}${tags.length?`<div class="tags">${tags.join('')}</div>`:''}`;
+}
+function pdFoot(){return`<div class="foot"><span>EgyGulf Foods CRM</span><span>اتطبع ${fmtDateTime(new Date().toISOString())}</span></div>`}
+function pdTags(key,M,snap){
+  const t=[];
+  if(isCurrentWeek(key))t.push(`<span class="tag t-amber">⏳ ${perW(key).live} — بيانات غير نهائية</span>`);
+  if(snap)t.push(`<span class="tag t-green">📌 معتمد${snap.approvedBy&&snap.approvedBy!=='auto'?' — '+escH(snap.approvedBy):' (تلقائي)'} · ${fmtDate(snap.approvedAt)}</span>`);
+  if(M&&M.est)t.push(`<span class="tag t-gray">ⓘ ${M.est} ليد أرقامها تقديرية (بيانات قديمة من غير سجل نشاط)</span>`);
+  if(!STATE.addonOk)t.push('<span class="tag t-red">⚠️ سجل النشاط مش متوصل بالشيت — الأرقام تقديرية</span>');
+  return t;
+}
+function rpPrintEmpDoc(emp,key,withAppendix){
+  const M=computeEmpWeek(emp,key,{lists:true}),L=M.lists;
+  const snap=findSnapshot(emp.id,key);if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data);
+  const P=weekMetrics(emp,wkShift(key,-1)),W=perW(key),t=rpTargetFor(emp,key)||{};
+  const S=[getSetting('stale1'),getSetting('stale2'),getSetting('stale3')];
+  const social=emp.role==='social';
+  let h=pdHeader(`تقرير أداء — ${escH(emp.name)}`,wkLabelFull(key),
+    `<span>الوظيفة: <b>${social?'Social Media':'Sales'}</b></span><span>الفرع: <b>${emp.team==='cairo'?'القاهرة':'طنطا'}</b></span><span>ليدز مفتوحة: <b>${M.openLeads}</b></span><span>مقارنة بـ: <b>${W.prev} (${wkLabel(wkShift(key,-1))})</b></span>`,pdTags(key,M,snap));
+  // 1. الملخص
+  const sum=rpSummary(emp,key,M,P);
+  h+=`<h2>الملخص</h2><ul class="sum">${sum.map(x=>`<li class="${x.lvl}">${x.text}</li>`).join('')}</ul>`;
+  // 2. المؤشرات
+  const rows=social
+    ?[['ليدز جديدة','newLeads',t.contacts,true],['مهتمين','interested',t.interested,true],['تواصل (من الـ Sales)','contacted',0,true],['صفقات','won',0,true],['ليدز ناقصة بيانات','incomplete',0,false],[`مهملة +${S[1]} يوم`,'stale2',0,false],['متابعات متأخرة','overdue',0,false]]
+    :[['تواصل','contacted',t.contacts,true],['مهتمين','interested',t.interested,true],['عروض أسعار','quotes',t.quotes,true],['عينات','samples',0,true],['صفقات','won',0,true],['ليدز جديدة','newLeads',0,true],['متابعات متأخرة','overdue',0,false],[`مهملة +${S[1]} يوم`,'stale2',0,false],['Contacted من غير ملاحظة','noNote',0,false]];
+  h+=`<h2>المؤشرات</h2><table><thead><tr><th>المؤشر</th><th class="c">${W.unit}</th><th class="c">${W.prev}</th><th class="c">التغيّر</th><th class="c">التارجت${t.scaled?' *':''}</th><th class="c">التحقيق</th><th class="c">متوسط الفريق</th></tr></thead><tbody>${rows.map(([l,f,tg,up])=>`<tr><td>${l}</td><td class="c b">${rpNum(M[f])}</td><td class="c">${rpNum(P[f])}</td><td class="c">${pdDelta(M[f],P[f],up)}</td><td class="c">${tg||'—'}</td><td class="c">${tg?pdPct(M[f],tg):'<span class="flat">—</span>'}</td><td class="c">${rpNum(teamAvg(emp,key,f))}</td></tr>`).join('')}</tbody></table>${t.scaled?`<div class="muted">* التارجت محسوب من التارجت الأسبوعي بنسبة طول ${W.unit}.</div>`:''}`;
+  // 3. Funnel + انضباط
+  const FN=['جديد','تم التواصل','مهتم','عرض سعر','عينة','صفقة'],fmax=Math.max(...M.funnel,1),pf=P.funnel||[];
+  const funnel=`<table><thead><tr><th>المرحلة</th><th class="c">العدد</th><th style="width:38%"></th><th class="c">التحويل</th><th class="c">التغيّر</th></tr></thead><tbody>${M.funnel.map((n,i)=>`<tr><td>${FN[i]}</td><td class="c b">${n}</td><td><div class="fbar" style="width:${Math.max(n/fmax*100,n?3:0)}%"></div></td><td class="c">${i?(M.funnel[i-1]?Math.round(n/M.funnel[i-1]*100)+'%':'—'):''}</td><td class="c">${pdDelta(n,pf[i],true)}</td></tr>`).join('')}</tbody></table>`;
+  const A=M.act||{};
+  const disc=`<table><thead><tr><th>البند</th><th class="c">العدد</th><th class="c">التغيّر</th></tr></thead><tbody>
+    <tr><td>متابعات متأخرة عن ميعادها</td><td class="c b ${M.overdue?'bad':''}">${M.overdue}</td><td class="c">${pdDelta(M.overdue,P.overdue,false)}</td></tr>
+    <tr><td>Contacted من غير ملاحظة</td><td class="c b ${M.noNote?'mid':''}">${M.noNote}</td><td class="c">${pdDelta(M.noNote,P.noNote,false)}</td></tr>
+    <tr><td>ناقصة بيانات (شركة/بلد/رقم)</td><td class="c b ${M.incomplete?'mid':''}">${M.incomplete}</td><td class="c">${pdDelta(M.incomplete,P.incomplete,false)}</td></tr>
+    <tr><td>متابعات مستحقة ${W.next}</td><td class="c b">${M.dueNext}</td><td class="c"></td></tr></tbody></table>`;
+  h+=`<div class="row2"><div><h2>Funnel ${W.unit}</h2>${funnel}</div><div><h2>انضباط المتابعة</h2>${disc}</div></div>`;
+  // 4. النشاط
+  h+=`<h2>النشاط</h2><table><thead><tr><th class="c">📞 مكالمات</th><th class="c">💬 واتساب</th><th class="c">✉️ إيميل</th><th class="c">🤝 اجتماعات</th><th class="c">🧾 عروض</th><th class="c">📦 عينات</th><th class="c">🔁 متابعات</th><th class="c">⏱️ متوسط أول رد</th></tr></thead><tbody><tr>${[A.call,A.whatsapp,A.email,A.meeting,A.quote,A.sample,M.followups].map(v=>`<td class="c b">${v||0}</td>`).join('')}<td class="c b">${rpHours(M.firstRespH)}</td></tr></tbody></table>`;
+  // 5. المهملة
+  h+=`<h2>ليدز مهملة (مفيش نشاط أو تحديث)</h2><table><thead><tr><th class="c">أكتر من ${S[0]} يوم</th><th class="c">أكتر من ${S[1]} يوم</th><th class="c">أكتر من ${S[2]} يوم</th></tr></thead><tbody><tr>${[['stale1'],['stale2'],['stale3']].map(([f])=>`<td class="c"><b class="${M[f]?'bad':''}">${M[f]}</b> &nbsp;${pdDelta(M[f],P[f],false)}</td>`).join('')}</tr></tbody></table>`;
+  h+=L.stale.length?`<table style="margin-top:5px"><thead><tr><th class="c" style="width:22px">#</th><th>العميل</th><th>الشركة</th><th>الحالة</th><th class="c">آخر نشاط</th></tr></thead><tbody>${L.stale.slice(0,5).map((x,i)=>`<tr><td class="c">${i+1}</td><td>${escH(x.l.name)}</td><td>${escH(x.l.company||'—')}</td><td>${escH(x.l.status)}</td><td class="c"><b class="${x.days>S[2]?'bad':x.days>S[1]?'mid':''}">${x.days} يوم</b>${x.est?' ⓘ':''}</td></tr>`).join('')}</tbody></table><div class="muted">أقدم ${Math.min(5,L.stale.length)} من ${L.stale.length}. مستبعد منها الـ Closed Won / Closed Lost. ⓘ = محسوب من تاريخ آخر تعديل.</div>`:'<div class="empty">مفيش ليدز مهملة 👌</div>';
+  // 6. الفرص
+  const opps=L.opps.slice(0,5),today=dkey(new Date());
+  h+=`<h2>أهم 5 فرص</h2>`+(opps.length?`<table><thead><tr><th class="c" style="width:22px">#</th><th>العميل</th><th>البلد</th><th>الحالة</th><th>الخطوة الجاية</th><th class="c">الميعاد</th></tr></thead><tbody>${opps.map((x,i)=>{const fu=(x.l.followup||'').slice(0,10),late=fu&&fu<today;return`<tr><td class="c">${i+1}</td><td><b>${escH(x.l.name)}</b>${x.l.company?` · ${escH(x.l.company)}`:''}</td><td>${escH(x.l.country||'—')}</td><td>${escH(x.l.status)}${x.l.samples==='yes'?' · عينة':''}</td><td>${rpNextStep(x.l)}</td><td class="c">${fu?`<span class="${late?'bad':''}">${late?'متأخر ':''}${fmtDate(fu)}</span>`:'<span class="mid">مفيش ميعاد</span>'}</td></tr>`}).join('')}</tbody></table>`:'<div class="empty">مفيش ليدز مهتمة أو في مرحلة عرض سعر/عينة</div>');
+  // ─── الملحق (صفحات بعد كده) ───
+  if(withAppendix){
+    h+=`<div class="pb"></div>`+pdHeader(`ملحق — ${escH(emp.name)}`,wkLabelFull(key),'',[]);
+    const lr=Object.entries(M.lostReasons||{}).sort((a,b)=>b[1]-a[1]);
+    const src=Object.entries(M.sources||{}).sort((a,b)=>b[1].n-a[1].n);
+    h+=`<div class="row2"><div><h2>المرفوض وأسبابه (${M.lost})</h2>${lr.length?`<table><thead><tr><th>السبب</th><th class="c">العدد</th></tr></thead><tbody>${lr.map(([r,n])=>`<tr><td>${escH(r)}</td><td class="c b">${n}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">مفيش ليدز اترفضت ${W.cur}</div>`}</div>
+      <div><h2>تحليل المصدر (ليدز ${W.unit})</h2>${src.length?`<table><thead><tr><th>المصدر</th><th class="c">ليدز</th><th class="c">مهتم</th><th class="c">%</th></tr></thead><tbody>${src.map(([k,v])=>`<tr><td>${k==='Trade Show'?'معرض':escH(k)}</td><td class="c">${v.n}</td><td class="c">${v.i}</td><td class="c">${v.n?Math.round(v.i/v.n*100):0}%</td></tr>`).join('')}</tbody></table>`:`<div class="empty">مفيش ليدز جديدة ${W.cur}</div>`}</div></div>`;
+    h+=`<h2>المطلوب ${W.next} — متابعات مستحقة (${M.dueNext})</h2>`+(L.dueNext.length?`<table><thead><tr><th>العميل</th><th>الحالة</th><th>الخطوة</th><th class="c">الميعاد</th></tr></thead><tbody>${L.dueNext.map(x=>`<tr><td>${escH(x.l.name)}</td><td>${escH(x.l.status)}</td><td>${rpNextStep(x.l)}</td><td class="c">${fmtDate(x.fu)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">مفيش متابعات متحددة</div>');
+    if(L.overdue.length)h+=`<h2>متابعات متأخرة (${L.overdue.length})</h2><table><thead><tr><th>العميل</th><th>الحالة</th><th class="c">كان ميعادها</th></tr></thead><tbody>${L.overdue.map(x=>`<tr><td>${escH(x.l.name)}</td><td>${escH(x.l.status)}</td><td class="c bad">${fmtDate(x.fu)}</td></tr>`).join('')}</tbody></table>`;
+    h+=`<h2>الليدز اللي حالتها اتغيرت (${L.changes.length})</h2>`+(L.changes.length?`<table><thead><tr><th>العميل</th><th>قبل</th><th>بعد</th><th>ملاحظة</th></tr></thead><tbody>${L.changes.map(x=>`<tr><td>${escH(x.l.name)}</td><td>${escH(x.from||'—')}</td><td><b>${escH(x.to)}</b></td><td>${escH(x.note||'—')}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">مفيش تغييرات حالة مسجلة ${W.cur}</div>`);
+  }
+  return h+pdFoot();
+}
+function rpPrintTeamDoc(team,key){
+  const rows=rpTeamRows(team,key),W=perW(key),S2=getSetting('stale2');
+  const lbl={all:'كل الفروع',tanta:'فرع طنطا',cairo:'فرع القاهرة'}[team]||team;
+  let h=pdHeader(`تقرير الفريق — ${lbl}`,wkLabelFull(key),`<span>عدد الموظفين: <b>${rows.length}</b></span><span>مقارنة بـ: <b>${W.prev}</b></span>`,pdTags(key,null,null));
+  const alerts=[];
+  rows.forEach(r=>{
+    if(r.emp.role==='sales'&&r.M.contacted>=10&&r.M.interested===0)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: ${r.M.contacted} تواصل و0 مهتم`});
+    if(r.tgPct!==null&&r.tgPct<50)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: حقق ${r.tgPct}% بس من التارجت`});
+    if(r.M.overdue>=10)alerts.push({lvl:'amber',text:`${escH(r.emp.name)}: ${r.M.overdue} متابعة متأخرة`});
+  });
+  if(alerts.length)h+=`<h2>تنبيهات</h2><ul class="sum">${alerts.slice(0,8).map(x=>`<li class="${x.lvl}">${x.text}</li>`).join('')}</ul>`;
+  const cls=p=>p===null?'':p>=100?'cg':p>=60?'cm':'cb';
+  const table=(list,role)=>{
+    if(!list.length)return'';
+    const soc=role==='social',sm=f=>list.reduce((a,r)=>a+(r.M[f]||0),0),n=list.length,av=x=>Math.round(x/n*10)/10;
+    const mainF=soc?'newLeads':'contacted',tm=sm(mainF),ti=sm('interested');
+    list=[...list].sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1)||b.main-a.main);
+    return`<h2>${soc?'فريق السوشيال':'فريق المبيعات'}</h2><table><thead><tr><th>الموظف</th><th class="c">الفرع</th><th class="c">${soc?'ليدز جديدة':'تواصل'}</th><th class="c">مهتم</th>${soc?'':'<th class="c">عروض</th>'}<th class="c">تحويل</th><th class="c">متأخرة</th><th class="c">مهملة +${S2}</th><th class="c">التارجت</th></tr></thead><tbody>${list.map(r=>{const pm=r.t&&r.t.contacts?Math.round(r.main/r.t.contacts*100):null,pi=r.t&&r.t.interested?Math.round(r.M.interested/r.t.interested*100):null;return`<tr><td><b>${escH(r.emp.name)}</b></td><td class="c">${r.emp.team==='cairo'?'القاهرة':'طنطا'}</td><td class="c ${cls(pm)}">${r.main} ${pdDelta(r.main,soc?r.P.newLeads:r.P.contacted,true)}</td><td class="c ${cls(pi)}">${r.M.interested} ${pdDelta(r.M.interested,r.P.interested,true)}</td>${soc?'':`<td class="c">${r.M.quotes}</td>`}<td class="c">${r.conv}%</td><td class="c ${r.M.overdue>=5?'bad':''}">${r.M.overdue}</td><td class="c ${r.M.stale2>=10?'bad':''}">${r.M.stale2}</td><td class="c ${cls(r.tgPct)}"><b>${r.tgPct===null?'—':r.tgPct+'%'}</b></td></tr>`}).join('')}
+      <tr><td><b>المجموع</b></td><td></td><td class="c b">${tm}</td><td class="c b">${ti}</td>${soc?'':`<td class="c b">${sm('quotes')}</td>`}<td class="c b">${tm?Math.round(ti/tm*100):0}%</td><td class="c b">${sm('overdue')}</td><td class="c b">${sm('stale2')}</td><td></td></tr>
+      <tr><td>المتوسط</td><td></td><td class="c">${av(tm)}</td><td class="c">${av(ti)}</td>${soc?'':`<td class="c">${av(sm('quotes'))}</td>`}<td></td><td class="c">${av(sm('overdue'))}</td><td class="c">${av(sm('stale2'))}</td><td></td></tr></tbody></table>`;
+  };
+  h+=table(rows.filter(r=>r.emp.role==='sales'),'sales')+table(rows.filter(r=>r.emp.role==='social'),'social');
+  if(!rows.length)h+='<div class="empty">مفيش موظفين</div>';
+  h+=`<div class="muted">الألوان: أخضر = حقق التارجت · أصفر = 60–99% · أحمر = أقل من 60%. التارجت ${perParse(key).kind==='w'?'أسبوعي':'محسوب من الأسبوعي بنسبة طول '+W.unit}.</div>`;
+  return h+pdFoot();
 }
 function rpCurrentEmp(){return STATE.employees.find(e=>e.id===document.getElementById('er-emp-select')?.value)}
 function rpPrint(withAppendix){
   const emp=rpCurrentEmp();if(!emp){toast('اختر موظف أولاً','error');return}
   if(!isAdmin()&&emp.id!==SESSION.empId){toast('🔒 مسموح بطباعة تقريرك بس','error');return}
   const key=rpWeek();
-  const html=rpBuildEmpHTML(emp,key,{screen:false,appendix:!!withAppendix});
-  rpDoPrint(html,`تقرير ${emp.name} ${wkLabel(key).replace(/\//g,'-')}`);
+  rpOpenPrint(`تقرير ${emp.name} — ${wkLabel(key)}`,rpPrintEmpDoc(emp,key,!!withAppendix));
 }
 function rpPrintTeam(){
   if(!isAdmin())return;
   const team=document.getElementById('rp-team').value||'all',key=rpWeek();
-  rpDoPrint(rpBuildTeamHTML(team,key,{screen:false}),`تقرير الفريق ${wkLabel(key).replace(/\//g,'-')}`);
+  rpOpenPrint(`تقرير الفريق — ${wkLabel(key)}`,rpPrintTeamDoc(team,key));
 }
 async function rpCopy(text){
   try{await navigator.clipboard.writeText(text);toast('📋 اتنسخ — الصقه في واتساب','success');return}catch(e){}
@@ -4237,12 +4416,11 @@ function rpWAText(emp,key){
   const M=computeEmpWeek(emp,key,{lists:true}),L=M.lists;
   const snap=findSnapshot(emp.id,key);if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data);
   const P=weekMetrics(emp,wkShift(key,-1));
-  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
   const avgI=teamAvg(emp,key,'interested');
   const arr=(c,p)=>typeof p==='number'&&c!==p?` (${c>p?'↑':'↓'}${Math.abs(Math.round((c-p)*10)/10)})`:'';
-  const t=rpTargetFor(emp)||{};
-  const lines=[`📊 تقرير ${emp.name} — ${f(s)} إلى ${f(e)}`];
-  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  const t=rpTargetFor(emp,key)||{};
+  const lines=[`📊 تقرير ${emp.name} — ${wkLabel(key)}`];
+  if(isCurrentWeek(key))lines.push(`⏳ ${perW(key).live} — أرقام غير نهائية`);
   if(emp.role==='social')lines.push(`• ليدز جديدة: ${M.newLeads}${arr(M.newLeads,P.newLeads)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
   else lines.push(`• تواصل: ${M.contacted}${arr(M.contacted,P.contacted)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
   const weakI=(emp.role!=='social'&&M.interested===0&&M.contacted>=10)||(avgI!==null&&M.interested<avgI/2);
@@ -4263,11 +4441,10 @@ function rpCopyTeamWA(){
   if(!isAdmin())return;
   const team=document.getElementById('rp-team').value||'all',key=rpWeek();
   const rows=rpTeamRows(team,key);
-  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
   const lbl={all:'كل الفروع',tanta:'طنطا',cairo:'القاهرة'}[team];
   const dot=p=>p===null?'':p>=100?' 🟢':p>=60?' 🟡':' 🔴';
-  const lines=[`📊 تقرير فريق ${lbl} — ${f(s)} إلى ${f(e)}`];
-  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  const lines=[`📊 تقرير فريق ${lbl} — ${wkLabel(key)}`];
+  if(isCurrentWeek(key))lines.push(`⏳ ${perW(key).live} — أرقام غير نهائية`);
   const sales=rows.filter(r=>r.emp.role==='sales'),social=rows.filter(r=>r.emp.role==='social');
   const sm=(rs,f)=>rs.reduce((a,r)=>a+(r.M[f]||0),0);
   if(sales.length){
