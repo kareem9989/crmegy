@@ -352,6 +352,8 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .rp-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .rp-controls .er-select{flex:1;min-width:150px}
 .rp-actions{display:flex;gap:6px;flex-wrap:wrap}
+.rp-boxes{margin-bottom:0}
+.rp-box-d{margin-top:4px;min-height:14px}
 .rp-period{margin-bottom:14px;display:flex;flex-direction:column;gap:8px}
 .rp-pchips{display:flex;gap:6px;flex-wrap:wrap}
 .rp-pchip{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:inherit}
@@ -3773,8 +3775,8 @@ async function saveActivity(){
 // ═══ WEEKLY REPORT ENGINE ═══
 // الأسبوع من السبت للجمعة (بتوقيت الجهاز). المفتاح = تاريخ السبت yyyy-mm-dd.
 const DAY_MS=86400000;
-const RANK={'New':0,'No Response':1,'Contacted':1,'Interested':2,'Follow-up':2,'Invoice':3,'Closed Won':5,'Closed Lost':-1};
-const INTERESTED_SET=['Interested','Follow-up','Invoice','Closed Won'];
+const RANK={'Negotiation':2,'New':0,'No Response':1,'Contacted':1,'Interested':2,'Follow-up':2,'Invoice':3,'Closed Won':5,'Closed Lost':-1};
+const INTERESTED_SET=['Interested','Follow-up','Negotiation','Invoice','Closed Won'];
 const CLOSED_SET=['Closed Won','Closed Lost'];
 function dkey(d){d=new Date(d);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function weekStartOf(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+1)%7));return x}
@@ -4042,6 +4044,19 @@ function rpSummary(emp,key,M,P){
   const order={red:0,amber:1,info:2,green:3};
   return out.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,4);
 }
+// المربعات الأربعة (زي التقرير القديم): ليدز الموظف اللي اتضافت في الفترة وحالتها دلوقتي
+function rpCohort(emp,key){
+  const p=perParse(key),s=p.s.getTime(),e=p.e.getTime();
+  const L=empLeads(emp).filter(l=>{const t=tms(l.added);return t>=s&&t<e});
+  const contacted=L.filter(l=>l.status!=='New').length,interested=L.filter(l=>INTERESTED_SET.includes(l.status)).length;
+  return{n:L.length,contacted,interested,pct:L.length?Math.round(interested/L.length*100):0};
+}
+function rpBoxesHTML(emp,key,print){
+  const C=rpCohort(emp,key),P=rpCohort(emp,wkShift(key,-1));
+  const items=[[emp.role==='social'?'Leads أدخلهم':'Leads معاه','n',C.n,'#3d8eff'],['Contacted','contacted',C.contacted,'#ffb020'],['Interested','interested',C.interested,'#00e5a0'],['نسبة الاهتمام','pct',C.pct+'%','#9d78ff']];
+  if(print)return`<div class="boxes">${items.map(([l,f,v,c])=>`<div class="box" style="border-color:${c}66;background:${c}12"><div class="bv" style="color:${c==='#00e5a0'?'#07845a':c==='#ffb020'?'#b36b00':c}">${v}</div><div class="bl">${l}</div><div class="bd">${pdDelta(C[f],P[f],true)} عن ${perW(key).prev}</div></div>`).join('')}</div>`;
+  return`<div class="er-kpi-grid rp-boxes">${items.map(([l,f,v,c])=>`<div class="er-kpi"><div class="er-kpi-bar" style="background:${c}"></div><div class="er-kpi-val" style="color:${c}">${v}</div><div class="er-kpi-lbl">${l}</div><div class="rp-box-d">${rpDelta(C[f],P[f],true)||'<span class="rp-delta rp-flat">＝</span>'}</div></div>`).join('')}</div>`;
+}
 function rpNextStep(l){
   if(l.status==='Invoice')return'متابعة عرض السعر';
   if(l.samples==='yes'&&!l.sampleResult)return'متابعة رأي العينة';
@@ -4070,6 +4085,8 @@ function rpBuildEmpHTML(emp,key,o={}){
   if(M.est)badges.push(`<span class="rp-badge rp-b-gray" title="ليدز قديمة ملهاش سجل نشاط — اتحسبت من تاريخ آخر تعديل">ⓘ ${M.est} ليد أرقامها تقديرية</span>`);
   if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red" title="ركّب apps-script/ReportsAddon.gs">⚠️ سجل النشاط مش متوصل بالشيت — الأرقام تقديرية</span>');
   h+=`<header class="rp-head"><div class="rp-avatar" style="background:${escH(emp.color||'#2d2a76')}">${escH(empInitials(emp.name))}</div><div class="rp-head-main"><div class="rp-name">${escH(emp.name)}</div><div class="rp-sub">${roleLbl} · فرع ${teamLbl} · ${wkLabelFull(key)}</div>${badges.length?`<div class="rp-badges">${badges.join('')}</div>`:''}</div></header>`;
+  // 0. المربعات الأربعة
+  h+=rpBoxesHTML(emp,key,false);
   // 1. Summary
   const sum=rpSummary(emp,key,M,P);
   h+=`<section class="rp-card rp-summary p-main">${sum.map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
@@ -4087,9 +4104,6 @@ function rpBuildEmpHTML(emp,key,o={}){
   h+=rpSection(`🔻 Funnel ${W.unit}`,`<div class="rp-funnel">${M.funnel.map((n,i)=>{
     const conv=i&&M.funnel[i-1]?Math.round(n/M.funnel[i-1]*100)+'%':(i?'—':'');
     return`<div class="rp-fn-row"><span class="rp-fn-l">${FN[i]}</span><div class="rp-fn-bar"><i style="width:${Math.max(n/fmax*100,n?4:0)}%"></i></div><span class="rp-fn-n">${n}</span><span class="rp-fn-c">${i?'← '+conv:''}</span><span class="rp-fn-d">${rpDelta(n,pf[i],true)}</span></div>`}).join('')}</div><div class="rp-note">النسبة = من المرحلة اللي قبلها. العدد = ليدز وصلت للمرحلة دي خلال الأسبوع.</div>`,'p-main');
-  // 4. Activity
-  const A=M.act||{};
-  h+=rpSection('⚡ النشاط',`<div class="rp-grid">${[['📞','مكالمات',A.call],['💬','واتساب',A.whatsapp],['✉️','إيميل',A.email],['🤝','اجتماعات',A.meeting],['🧾','عروض أسعار',A.quote],['📦','عينات',A.sample],['🔁','متابعات',M.followups],['⏱️','متوسط أول رد',rpHours(M.firstRespH)]].map(x=>`<div class="rp-stat"><span>${x[0]}</span><b>${rpNum(x[2]??0)}</b><small>${x[1]}</small></div>`).join('')}</div>${M.activities===0&&!cur?'<div class="rp-warn">🔴 مفيش ولا نشاط متسجل '+W.cur+' — لازم يتسجل كل تواصل من زرار ⚡</div>':''}`,'p-extra');
   // 5. Discipline
   const lst=(arr,fn)=>screen&&arr.length?`<details class="rp-more"><summary>عرض (${arr.length})</summary><div class="rp-list">${arr.slice(0,15).map(fn).join('')}</div></details>`:'';
   h+=rpSection('✅ انضباط المتابعة',`<div class="rp-disc">
@@ -4289,6 +4303,11 @@ tr:nth-child(even) td{background:#fbfbfd}
 .fbar{height:7px;border-radius:3px;background:#ffb607;min-width:2px}
 .muted{color:#888;font-size:9px;margin-top:3px}
 .empty{color:#999;text-align:center;padding:6px;border:1px dashed #d7dae3;border-radius:5px}
+.boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 2px}
+.box{border:2px solid;border-radius:10px;padding:6px 4px;text-align:center}
+.bv{font-size:24px;font-weight:800;line-height:1.15}
+.bl{font-size:10px;font-weight:700;color:#444}
+.bd{font-size:8.5px;color:#777}
 .pb{break-before:page;page-break-before:always}
 table,.sum,.row2{break-inside:avoid}
 .foot{margin-top:10px;padding-top:5px;border-top:1px solid #e3e5ec;color:#999;font-size:8.5px;display:flex;justify-content:space-between}
@@ -4328,6 +4347,8 @@ function rpPrintEmpDoc(emp,key,withAppendix){
   const social=emp.role==='social';
   let h=pdHeader(`تقرير أداء — ${escH(emp.name)}`,wkLabelFull(key),
     `<span>الوظيفة: <b>${social?'Social Media':'Sales'}</b></span><span>الفرع: <b>${emp.team==='cairo'?'القاهرة':'طنطا'}</b></span><span>ليدز مفتوحة: <b>${M.openLeads}</b></span><span>مقارنة بـ: <b>${W.prev} (${wkLabel(wkShift(key,-1))})</b></span>`,pdTags(key,M,snap));
+  // 0. المربعات الأربعة
+  h+=rpBoxesHTML(emp,key,true);
   // 1. الملخص
   const sum=rpSummary(emp,key,M,P);
   h+=`<h2>الملخص</h2><ul class="sum">${sum.map(x=>`<li class="${x.lvl}">${x.text}</li>`).join('')}</ul>`;
@@ -4346,8 +4367,6 @@ function rpPrintEmpDoc(emp,key,withAppendix){
     <tr><td>ناقصة بيانات (شركة/بلد/رقم)</td><td class="c b ${M.incomplete?'mid':''}">${M.incomplete}</td><td class="c">${pdDelta(M.incomplete,P.incomplete,false)}</td></tr>
     <tr><td>متابعات مستحقة ${W.next}</td><td class="c b">${M.dueNext}</td><td class="c"></td></tr></tbody></table>`;
   h+=`<div class="row2"><div><h2>Funnel ${W.unit}</h2>${funnel}</div><div><h2>انضباط المتابعة</h2>${disc}</div></div>`;
-  // 4. النشاط
-  h+=`<h2>النشاط</h2><table><thead><tr><th class="c">📞 مكالمات</th><th class="c">💬 واتساب</th><th class="c">✉️ إيميل</th><th class="c">🤝 اجتماعات</th><th class="c">🧾 عروض</th><th class="c">📦 عينات</th><th class="c">🔁 متابعات</th><th class="c">⏱️ متوسط أول رد</th></tr></thead><tbody><tr>${[A.call,A.whatsapp,A.email,A.meeting,A.quote,A.sample,M.followups].map(v=>`<td class="c b">${v||0}</td>`).join('')}<td class="c b">${rpHours(M.firstRespH)}</td></tr></tbody></table>`;
   // 5. المهملة
   h+=`<h2>ليدز مهملة (مفيش نشاط أو تحديث)</h2><table><thead><tr><th class="c">أكتر من ${S[0]} يوم</th><th class="c">أكتر من ${S[1]} يوم</th><th class="c">أكتر من ${S[2]} يوم</th></tr></thead><tbody><tr>${[['stale1'],['stale2'],['stale3']].map(([f])=>`<td class="c"><b class="${M[f]?'bad':''}">${M[f]}</b> &nbsp;${pdDelta(M[f],P[f],false)}</td>`).join('')}</tr></tbody></table>`;
   h+=L.stale.length?`<table style="margin-top:5px"><thead><tr><th class="c" style="width:22px">#</th><th>العميل</th><th>الشركة</th><th>الحالة</th><th class="c">آخر نشاط</th></tr></thead><tbody>${L.stale.slice(0,5).map((x,i)=>`<tr><td class="c">${i+1}</td><td>${escH(x.l.name)}</td><td>${escH(x.l.company||'—')}</td><td>${escH(x.l.status)}</td><td class="c"><b class="${x.days>S[2]?'bad':x.days>S[1]?'mid':''}">${x.days} يوم</b>${x.est?' ⓘ':''}</td></tr>`).join('')}</tbody></table><div class="muted">أقدم ${Math.min(5,L.stale.length)} من ${L.stale.length}. مستبعد منها الـ Closed Won / Closed Lost. ⓘ = محسوب من تاريخ آخر تعديل.</div>`:'<div class="empty">مفيش ليدز مهملة 👌</div>';
@@ -4421,6 +4440,7 @@ function rpWAText(emp,key){
   const t=rpTargetFor(emp,key)||{};
   const lines=[`📊 تقرير ${emp.name} — ${wkLabel(key)}`];
   if(isCurrentWeek(key))lines.push(`⏳ ${perW(key).live} — أرقام غير نهائية`);
+  {const C=rpCohort(emp,key);lines.push(`• ليدز ${perW(key).unit}: ${C.n} · Contacted ${C.contacted} · Interested ${C.interested} (${C.pct}%)`)}
   if(emp.role==='social')lines.push(`• ليدز جديدة: ${M.newLeads}${arr(M.newLeads,P.newLeads)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
   else lines.push(`• تواصل: ${M.contacted}${arr(M.contacted,P.contacted)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
   const weakI=(emp.role!=='social'&&M.interested===0&&M.contacted>=10)||(avgI!==null&&M.interested<avgI/2);
