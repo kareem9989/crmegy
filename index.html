@@ -412,7 +412,9 @@ details.rp-card[open]>summary.rp-h{margin-bottom:10px}
 .rp-bucket{display:flex;flex-direction:column;align-items:center;padding:10px 6px;border-radius:12px;background:var(--surface2);gap:2px}
 .rp-bucket small{font-size:10.5px;color:var(--text3)}.rp-bucket b{font-size:22px;color:var(--text)}
 .rp-bucket.is-bad b{color:var(--red)}
-.rp-table{width:100%;border-collapse:collapse;font-size:12px}
+.rp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:0}
+.rp-table th{text-transform:none;letter-spacing:0}
+.rp-team-table{min-width:560px}
 .rp-table th{font-size:10.5px;color:var(--text3);font-weight:700;text-align:right;padding:6px 8px;border-bottom:1px solid var(--border2)}
 .rp-table td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
 .rp-table small{color:var(--text3)}
@@ -446,6 +448,68 @@ details.rp-card[open]>summary.rp-h{margin-bottom:10px}
 .rp-tot td{font-weight:800;color:var(--text);border-top:1px solid var(--border2)}
 .rp-avg td{color:var(--text3);font-size:11px}
 .tg-in{width:74px;padding:6px 8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px}
+/* ═══ REPORT PRINT (A4, light, RTL) ═══ */
+@media print{
+  @page{size:A4;margin:8mm}
+  body.rp-printing{background:#fff!important}
+  body.rp-printing::before,body.rp-printing::after{display:none!important}
+  #print-root .rp-print{
+    --text:#12122a;--text2:#3d3f55;--text3:#6b6f86;--surface:#fff;--surface2:#f2f3f7;--surface3:#fafafb;
+    --border:#e2e4ec;--border2:#c9cdd9;--green:#07845a;--red:#cc1d43;--amber:#a86400;--blue:#1d5fcf;--gold:#a87400;
+    --green-bg:#e7f6ef;--red-bg:#fbe9ee;--amber-bg:#fdf3e2;
+    color:var(--text);font-family:'DM Sans',Arial,sans-serif;direction:rtl;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:10px}
+  #print-root .rp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;align-items:start}
+  #print-root .rp-head,#print-root .rp-summary,#print-root .rp-kpis,#print-root .p-appendix,#print-root .rp-team-sec{grid-column:1/-1}
+  #print-root .rp-card,#print-root .rp-head,#print-root .rp-kpi{padding:6px 8px;border-radius:8px;break-inside:avoid;background:#fff}
+  #print-root .rp-page2{break-before:page;margin-top:0}
+  #print-root .rp-page2 .rp-card{grid-column:auto}
+  #print-root .rp-page2 .p-appendix{grid-column:1/-1;break-inside:auto}
+  #print-root .rp-h{font-size:10.5px;margin-bottom:4px}
+  #print-root .rp-head{gap:8px}
+  #print-root .rp-avatar{width:30px;height:30px;font-size:11px;border-radius:8px}
+  #print-root .rp-name{font-size:13px}
+  #print-root .rp-sub{font-size:9.5px}
+  #print-root .rp-badges{margin-top:3px}
+  #print-root .rp-badge{font-size:8.5px;padding:1px 6px}
+  #print-root .rp-summary{gap:2px}
+  #print-root .rp-sum{font-size:10.5px;line-height:1.4}
+  #print-root .rp-dot{margin-top:4px;width:6px;height:6px}
+  #print-root .rp-kpis{gap:5px}
+  #print-root .rp-kpi{gap:2px}
+  #print-root .rp-kpi-v{font-size:17px}
+  #print-root .rp-kpi-l,#print-root .rp-tg,#print-root .rp-kpi-avg{font-size:8.5px}
+  #print-root .rp-funnel{gap:3px}
+  #print-root .rp-fn-row{grid-template-columns:50px minmax(0,1fr) 20px 48px 26px;gap:4px;font-size:9px}
+  #print-root .rp-fn-c{white-space:nowrap;font-size:8.5px}
+  #print-root .rp-note{font-size:8px;margin-top:3px}
+  #print-root .rp-disc{gap:3px}
+  #print-root .rp-disc-row{padding:3px 7px;font-size:9.5px}
+  #print-root .rp-disc-row b{font-size:12px}
+  #print-root .rp-buckets{gap:4px;margin-bottom:4px}
+  #print-root .rp-bucket{padding:3px}
+  #print-root .rp-bucket b{font-size:14px}
+  #print-root .rp-bucket small{font-size:8px}
+  #print-root .rp-table{font-size:8.5px;table-layout:fixed}
+  #print-root .rp-table td,#print-root .rp-table th{overflow-wrap:anywhere}
+  #print-root .rp-team-table td,#print-root .rp-team-table th{white-space:normal}
+  #print-root .rp-team-table th:first-child{width:22%}
+  #print-root .rp-team-table{min-width:0}
+  #print-root .rp-table th,#print-root .rp-table td{padding:2px 4px}
+  #print-root .rp-list{gap:3px}
+  #print-root .rp-opp{padding:3px 6px;gap:5px}
+  #print-root .rp-opp-b{font-size:9.5px}
+  #print-root .rp-opp-s{margin-top:1px;font-size:8.5px}
+  #print-root .rp-opp-n{width:16px;height:16px;font-size:9px}
+  #print-root .tag{font-size:8px;padding:1px 5px}
+  #print-root .rp-stat{padding:4px 2px}
+  #print-root .rp-stat b{font-size:12px}
+  #print-root .rp-print-foot{margin-top:5px;font-size:8px;color:#888;text-align:center}
+  #print-root .rp-cell-good{background:#e7f6ef!important}
+  #print-root .rp-cell-mid{background:#fdf3e2!important}
+  #print-root .rp-cell-bad{background:#fbe9ee!important}
+  #print-root .rp-tscroll{overflow:visible}
+}
+#print-root:not(:empty){display:none}
 .act-lead{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:12px;font-size:12px;color:var(--text2)}
 .act-lead b{color:var(--text);font-size:14px}
 .act-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px}
@@ -4005,7 +4069,13 @@ function rpBuildEmpHTML(emp,key,o={}){
   // 11. Appendix
   const app=`<table class="rp-table"><thead><tr><th>العميل</th><th>قبل</th><th>بعد</th><th>ملاحظة</th></tr></thead><tbody>${L.changes.map(x=>`<tr><td>${rpLeadLink(x.l,screen)}</td><td>${escH(x.from||'—')}</td><td><b>${escH(x.to)}</b></td><td>${escH(x.note||'—')}</td></tr>`).join('')}</tbody></table>`;
   if(screen)h+=`<details class="rp-card rp-appendix"><summary class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</summary>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}<div class="rp-note">من سجل تغييرات الحالة بس (البيانات القديمة قبل تركيب السجل مش ظاهرة هنا).</div></details>`;
-  else if(o.appendix)h+=`<section class="rp-card rp-appendix p-appendix"><h3 class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</h3>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}</section>`;
+  if(!screen){
+    // الطباعة: صفحة 1 = الأساسي بس. الأقسام الإضافية + الملحق في صفحات بعدها لو اتطلب الملحق
+    const extras=[];h=h.replace(/<section class="rp-card p-extra">[\s\S]*?<\/section>/g,m=>{extras.push(m);return''});
+    let p2='';
+    if(o.appendix)p2=`<div class="rp rp-page2">${extras.join('')}<section class="rp-card rp-appendix p-appendix"><h3 class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</h3>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة الأسبوع ده</div>'}</section></div>`;
+    return`<div class="rp" data-week="${key}">${h}</div>${p2}`;
+  }
   return`<div class="rp" data-week="${key}">${h}</div>`;
 }
 function renderRpActions(ctx){
@@ -4089,8 +4159,8 @@ function rpBuildTeamHTML(team,key,o={}){
   let h=`<header class="rp-head"><div class="rp-avatar" style="background:linear-gradient(135deg,var(--gold),#e09500)">👥</div><div class="rp-head-main"><div class="rp-name">تقرير الفريق — ${teamLbl}</div><div class="rp-sub">${wkLabelFull(key)} · ${rows.length} موظف</div>${badges.length?`<div class="rp-badges">${badges.join('')}</div>`:''}</div></header>`;
   const order={red:0,amber:1,green:2};
   if(alerts.length)h+=`<section class="rp-card rp-summary">${alerts.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,6).map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
-  if(sales.length)h+=rpSection('💼 فريق المبيعات',rpTeamTable(sales,'sales',key,screen));
-  if(social.length)h+=rpSection('📱 فريق السوشيال',rpTeamTable(social,'social',key,screen));
+  if(sales.length)h+=rpSection('💼 فريق المبيعات',rpTeamTable(sales,'sales',key,screen),'rp-team-sec');
+  if(social.length)h+=rpSection('📱 فريق السوشيال',rpTeamTable(social,'social',key,screen),'rp-team-sec');
   if(!rows.length)h+='<div class="rp-empty">مفيش موظفين في الفريق ده</div>';
   h+=`<div class="rp-note">🟢 فوق التارجت · 🟡 60–99% · 🔴 أقل من 60%. نسبة التارجت = متوسط (تواصل، مهتم، عروض). ${screen?'اضغط على اسم الموظف لفتح تقريره.':''}</div>`;
   return`<div class="rp">${h}</div>`;
@@ -4130,6 +4200,86 @@ function saveReportSettings(){
   ['stale1','stale2','stale3'].forEach((k,i)=>{STATE.settings[k]=String(vals[i]);gsPost({action:'setSetting',key:k,value:vals[i]})});
   persistReportCache();_wkCache.clear();
   toast('✅ اتحفظت الإعدادات','success');
+}
+
+// ═══ PRINT / PDF & WHATSAPP ═══
+function rpDoPrint(html,title){
+  let root=document.getElementById('print-root');
+  if(root.parentNode!==document.body)document.body.appendChild(root); // لازم يبقى ابن مباشر للـ body عشان @media print
+  root.innerHTML=`<div class="rp-print" dir="rtl">${html}<div class="rp-print-foot">EgyGulf Foods CRM · اتطبع ${fmtDateTime(new Date().toISOString())}</div></div>`;
+  const oldTitle=document.title;document.title=title;
+  document.body.classList.add('rp-printing');
+  const done=()=>{document.body.classList.remove('rp-printing');document.title=oldTitle;root.innerHTML='';window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>{window.print();setTimeout(()=>{if(document.body.classList.contains('rp-printing')&&!matchMedia('print').matches)done()},1500)},60);
+}
+function rpCurrentEmp(){return STATE.employees.find(e=>e.id===document.getElementById('er-emp-select')?.value)}
+function rpPrint(withAppendix){
+  const emp=rpCurrentEmp();if(!emp){toast('اختر موظف أولاً','error');return}
+  if(!isAdmin()&&emp.id!==SESSION.empId){toast('🔒 مسموح بطباعة تقريرك بس','error');return}
+  const key=rpWeek();
+  const html=rpBuildEmpHTML(emp,key,{screen:false,appendix:!!withAppendix});
+  rpDoPrint(html,`تقرير ${emp.name} ${wkLabel(key).replace(/\//g,'-')}`);
+}
+function rpPrintTeam(){
+  if(!isAdmin())return;
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  rpDoPrint(rpBuildTeamHTML(team,key,{screen:false}),`تقرير الفريق ${wkLabel(key).replace(/\//g,'-')}`);
+}
+async function rpCopy(text){
+  try{await navigator.clipboard.writeText(text);toast('📋 اتنسخ — الصقه في واتساب','success');return}catch(e){}
+  const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  ta.remove();
+  if(ok)toast('📋 اتنسخ — الصقه في واتساب','success');else window.prompt('انسخ النص ده:',text);
+}
+function rpWAText(emp,key){
+  const M=computeEmpWeek(emp,key,{lists:true}),L=M.lists;
+  const snap=findSnapshot(emp.id,key);if(snap&&snap.data&&snap.data.contacted!==undefined)Object.assign(M,snap.data);
+  const P=weekMetrics(emp,wkShift(key,-1));
+  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  const avgI=teamAvg(emp,key,'interested');
+  const arr=(c,p)=>typeof p==='number'&&c!==p?` (${c>p?'↑':'↓'}${Math.abs(Math.round((c-p)*10)/10)})`:'';
+  const t=rpTargetFor(emp)||{};
+  const lines=[`📊 تقرير ${emp.name} — ${f(s)} إلى ${f(e)}`];
+  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  if(emp.role==='social')lines.push(`• ليدز جديدة: ${M.newLeads}${arr(M.newLeads,P.newLeads)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
+  else lines.push(`• تواصل: ${M.contacted}${arr(M.contacted,P.contacted)}${t.contacts?` / تارجت ${t.contacts}`:''}`);
+  const weakI=(emp.role!=='social'&&M.interested===0&&M.contacted>=10)||(avgI!==null&&M.interested<avgI/2);
+  lines.push(`• مهتم: ${M.interested}${weakI?' ⚠️':''}${avgI!==null?` (متوسط الفريق ${avgI})`:''}`);
+  if(emp.role!=='social')lines.push(`• عروض أسعار: ${M.quotes}${arr(M.quotes,P.quotes)}`);
+  lines.push(`• متابعات متأخرة: ${M.overdue}${M.overdue>=5?' 🔴':''}`);
+  lines.push(`• ليدز مهملة +${getSetting('stale2')} يوم: ${M.stale2}${arr(M.stale2,P.stale2)}`);
+  if(M.won)lines.push(`• صفقات: ${M.won} 🎉`);
+  const top=L.opps[0];
+  if(top){const fu=(top.l.followup||'').slice(0,10);lines.push(`• أهم فرصة: ${top.l.name}${top.l.company?' ('+top.l.company+')':''} — ${rpNextStep(top.l)}${fu?' '+fmtDate(fu):' (مفيش ميعاد)'}`)}
+  return lines.join('\n');
+}
+function rpCopyWA(){
+  const emp=rpCurrentEmp();if(!emp){toast('اختر موظف أولاً','error');return}
+  rpCopy(rpWAText(emp,rpWeek()));
+}
+function rpCopyTeamWA(){
+  if(!isAdmin())return;
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  const rows=rpTeamRows(team,key);
+  const s=weekFromKey(key),e=addDays(s,6),f=x=>`${String(x.getDate()).padStart(2,'0')}/${String(x.getMonth()+1).padStart(2,'0')}`;
+  const lbl={all:'كل الفروع',tanta:'طنطا',cairo:'القاهرة'}[team];
+  const dot=p=>p===null?'':p>=100?' 🟢':p>=60?' 🟡':' 🔴';
+  const lines=[`📊 تقرير فريق ${lbl} — ${f(s)} إلى ${f(e)}`];
+  if(isCurrentWeek(key))lines.push('⏳ أسبوع جاري — أرقام غير نهائية');
+  const sales=rows.filter(r=>r.emp.role==='sales'),social=rows.filter(r=>r.emp.role==='social');
+  const sm=(rs,f)=>rs.reduce((a,r)=>a+(r.M[f]||0),0);
+  if(sales.length){
+    lines.push('',`💼 المبيعات: تواصل ${sm(sales,'contacted')} · مهتم ${sm(sales,'interested')} · عروض ${sm(sales,'quotes')}`);
+    sales.sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1)).forEach(r=>lines.push(`• ${r.emp.name}: ${r.M.contacted} تواصل / ${r.M.interested} مهتم${r.M.contacted>=10&&!r.M.interested?' ⚠️':''}${r.tgPct!==null?` — ${r.tgPct}%${dot(r.tgPct)}`:''}`));
+  }
+  if(social.length){
+    lines.push('',`📱 السوشيال: ليدز جديدة ${sm(social,'newLeads')} · مهتم ${sm(social,'interested')}`);
+    social.sort((a,b)=>b.main-a.main).forEach(r=>lines.push(`• ${r.emp.name}: ${r.M.newLeads} ليد / ${r.M.interested} مهتم${r.tgPct!==null?` — ${r.tgPct}%${dot(r.tgPct)}`:''}`));
+  }
+  lines.push('',`⚠️ متابعات متأخرة: ${sm(rows,'overdue')} · مهملة +${getSetting('stale2')} يوم: ${sm(rows,'stale2')}`);
+  rpCopy(lines.join('\n'));
 }
 
 async function init() {
