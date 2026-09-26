@@ -436,6 +436,16 @@ details.rp-card[open]>summary.rp-h{margin-bottom:10px}
   .rp-stat b{font-size:15px}
 }
 @media(max-width:380px){.rp-grid{grid-template-columns:repeat(2,1fr)}}
+.rp-tscroll{overflow-x:auto;margin:0 -4px}
+.rp-team-table td,.rp-team-table th{text-align:center;white-space:nowrap}
+.rp-team-table td.rp-tn,.rp-team-table th:first-child{text-align:right}
+.rp-tn small{display:block;color:var(--text3);font-size:10px}
+.rp-cell-good{background:rgba(0,229,160,.1);color:var(--green)!important}
+.rp-cell-mid{background:rgba(255,176,32,.1);color:var(--amber)!important}
+.rp-cell-bad{background:rgba(255,61,104,.1);color:var(--red)!important}
+.rp-tot td{font-weight:800;color:var(--text);border-top:1px solid var(--border2)}
+.rp-avg td{color:var(--text3);font-size:11px}
+.tg-in{width:74px;padding:6px 8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px}
 .act-lead{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:12px;font-size:12px;color:var(--text2)}
 .act-lead b{color:var(--text);font-size:14px}
 .act-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px}
@@ -1306,6 +1316,10 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div class="section-title">Employee Roster</div>
         <div class="table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Role</th><th>Password</th><th>Status</th><th>Action</th></tr></thead><tbody id="emp-roster-tbody"></tbody></table></div>
         <button class="btn btn-gold btn-sm" onclick="openAddEmployee()" style="margin-top:10px;width:100%;justify-content:center">+ Add Employee</button>
+        <div class="section-title" style="margin-top:22px">🎯 التارجت الأسبوعي</div>
+        <div id="admin-targets"></div>
+        <div class="section-title" style="margin-top:22px">🕸️ إعدادات الليدز المهملة</div>
+        <div class="card" id="admin-report-settings" dir="rtl"></div>
       </div>
     </div>
   </div>
@@ -2863,7 +2877,7 @@ async function doMerge(){
 }
 
 // ═══ ADMIN ═══
-function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'Cairo':'Tanta'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}" style="cursor:pointer" onclick="editEmployeeTitle('${e.id}')" title="Click to set job title">${e.title||e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
+function renderAdmin(){renderAdminTargets();const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong> <span style="font-size:11px" title="${e.team==='cairo'?'Cairo':'Tanta'}">${e.team==='cairo'?'🏙️':'🏢'}</span></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}" style="cursor:pointer" onclick="editEmployeeTitle('${e.id}')" title="Click to set job title">${e.title||e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
 function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-phone','ae-title'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-team').value='tanta';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
 async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active',title:getField('ae-title')};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
 async function editEmployeeTitle(id){if(!isAdmin())return;const emp=STATE.employees.find(e=>e.id===id);if(!emp)return;const val=prompt('Job title for '+emp.name+':',emp.title||'');if(val===null)return;emp.title=val.trim();await gsPost({action:'updateEmployee',id:emp.id,row:employeeToRow(emp)});renderAdmin();renderSalesCards();renderSocialCards()}
@@ -4015,6 +4029,107 @@ function rpApprove(){
   if(!emps.length)return;
   confirmDialog('اعتماد التقرير',`هيتحفظ نسخة ثابتة من أرقام أسبوع ${wkLabel(key)} لـ ${emps.length} موظف، ودي اللي هتستخدم في المقارنات بعد كده.`,()=>{
     const n=saveSnapshotsFor(emps,key,SESSION.user||'Admin');toast(`✅ اتعتمد تقرير ${n} موظف`,'success');erRenderCurrent()},'📌');
+}
+
+// ═══ TEAM REPORT (admin) ═══
+function rpTeamRows(team,key){
+  return reportEmployees(team).map(emp=>{
+    const M=weekMetrics(emp,key),P=weekMetrics(emp,wkShift(key,-1)),t=rpTargetFor(emp);
+    const main=emp.role==='social'?M.newLeads:M.contacted;
+    const conv=main?Math.round(M.interested/main*100):0;
+    const pcts=[];
+    if(t){if(t.contacts)pcts.push(main/t.contacts);if(t.interested)pcts.push(M.interested/t.interested);if(emp.role!=='social'&&t.quotes)pcts.push(M.quotes/t.quotes)}
+    const tgPct=pcts.length?Math.round(pcts.reduce((a,b)=>a+Math.min(b,1.5),0)/pcts.length*100):null;
+    return{emp,M,P,main,conv,tgPct,t};
+  });
+}
+function rpTgClass(p){return p===null?'':p>=100?'rp-cell-good':p>=60?'rp-cell-mid':'rp-cell-bad'}
+function rpTeamTable(rows,role,key,screen){
+  if(!rows.length)return'';
+  const s2=getSetting('stale2');
+  const mainLbl=role==='social'?'ليدز جديدة':'تواصل';
+  const sum=f=>rows.reduce((a,r)=>a+(typeof r[f]==='number'?r[f]:0),0);
+  const sumM=f=>rows.reduce((a,r)=>a+(r.M[f]||0),0);
+  const tot={main:sum('main'),interested:sumM('interested'),quotes:sumM('quotes'),overdue:sumM('overdue'),stale2:sumM('stale2')};
+  const tgs=rows.map(r=>r.tgPct).filter(x=>x!==null);
+  const n=rows.length,avg=x=>Math.round(x/n*10)/10;
+  const convT=tot.main?Math.round(tot.interested/tot.main*100):0;
+  const body=rows.sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1)||b.main-a.main).map(r=>{
+    const mc=r.t&&r.t.contacts?rpTgClass(Math.round(r.main/r.t.contacts*100)):'';
+    const ic=r.t&&r.t.interested?rpTgClass(Math.round(r.M.interested/r.t.interested*100)):'';
+    return`<tr><td class="rp-tn">${screen?`<a class="rp-lead" onclick="openEmpReport('${r.emp.id}','${key}')">${escH(r.emp.name)}</a>`:`<b>${escH(r.emp.name)}</b>`}<small>${r.emp.team==='cairo'?'القاهرة':'طنطا'}</small></td>
+      <td class="${mc}">${r.main}${rpDelta(r.main,role==='social'?r.P.newLeads:r.P.contacted,true)}</td>
+      <td class="${ic}">${r.M.interested}${rpDelta(r.M.interested,r.P.interested,true)}</td>
+      ${role==='social'?'':`<td>${r.M.quotes}</td>`}
+      <td>${r.conv}%</td>
+      <td class="${r.M.overdue>=5?'rp-cell-bad':''}">${r.M.overdue}</td>
+      <td class="${r.M.stale2>=10?'rp-cell-bad':''}">${r.M.stale2}${rpDelta(r.M.stale2,r.P.stale2,false)}</td>
+      <td class="${rpTgClass(r.tgPct)}"><b>${r.tgPct===null?'—':r.tgPct+'%'}</b></td></tr>`}).join('');
+  return`<div class="rp-tscroll"><table class="rp-table rp-team-table"><thead><tr><th>الموظف</th><th>${mainLbl}</th><th>مهتم</th>${role==='social'?'':'<th>عروض</th>'}<th>تحويل</th><th>متأخرة</th><th>مهملة +${s2}</th><th>التارجت</th></tr></thead><tbody>${body}</tbody>
+    <tfoot><tr class="rp-tot"><td>المجموع</td><td>${tot.main}</td><td>${tot.interested}</td>${role==='social'?'':`<td>${tot.quotes}</td>`}<td>${convT}%</td><td>${tot.overdue}</td><td>${tot.stale2}</td><td>—</td></tr>
+    <tr class="rp-avg"><td>المتوسط</td><td>${avg(tot.main)}</td><td>${avg(tot.interested)}</td>${role==='social'?'':`<td>${avg(tot.quotes)}</td>`}<td>${convT}%</td><td>${avg(tot.overdue)}</td><td>${avg(tot.stale2)}</td><td>${tgs.length?Math.round(tgs.reduce((a,b)=>a+b,0)/tgs.length)+'%':'—'}</td></tr></tfoot></table></div>`;
+}
+function rpBuildTeamHTML(team,key,o={}){
+  const screen=!!o.screen,rows=rpTeamRows(team,key);
+  const teamLbl={all:'كل الفروع',tanta:'فرع طنطا',cairo:'فرع القاهرة'}[team]||team;
+  const sales=rows.filter(r=>r.emp.role==='sales'),social=rows.filter(r=>r.emp.role==='social');
+  const alerts=[];
+  rows.forEach(r=>{
+    if(r.emp.role==='sales'&&r.M.contacted>=10&&r.M.interested===0)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: ${r.M.contacted} تواصل و0 مهتم`});
+    if(r.tgPct!==null&&r.tgPct<50)alerts.push({lvl:'red',text:`${escH(r.emp.name)}: حقق ${r.tgPct}% بس من التارجت`});
+    if(r.M.stale2>=20)alerts.push({lvl:'amber',text:`${escH(r.emp.name)}: ${r.M.stale2} ليد مهمل +${getSetting('stale2')} يوم`});
+  });
+  const top=[...sales].sort((a,b)=>(b.tgPct??-1)-(a.tgPct??-1))[0];
+  if(top&&top.tgPct!==null&&top.tgPct>=100)alerts.push({lvl:'green',text:`${escH(top.emp.name)} الأعلى في تحقيق التارجت (${top.tgPct}%) 🏆`});
+  const badges=[];
+  if(isCurrentWeek(key))badges.push('<span class="rp-badge rp-b-amber">⏳ أسبوع جاري — بيانات غير نهائية</span>');
+  const snapN=rows.filter(r=>r.M._snap||findSnapshot(r.emp.id,key)).length;
+  if(snapN)badges.push(`<span class="rp-badge rp-b-green">📌 ${snapN}/${rows.length} معتمد</span>`);
+  if(!STATE.addonOk)badges.push('<span class="rp-badge rp-b-red">⚠️ سجل النشاط مش متوصل — الأرقام تقديرية</span>');
+  let h=`<header class="rp-head"><div class="rp-avatar" style="background:linear-gradient(135deg,var(--gold),#e09500)">👥</div><div class="rp-head-main"><div class="rp-name">تقرير الفريق — ${teamLbl}</div><div class="rp-sub">${wkLabelFull(key)} · ${rows.length} موظف</div>${badges.length?`<div class="rp-badges">${badges.join('')}</div>`:''}</div></header>`;
+  const order={red:0,amber:1,green:2};
+  if(alerts.length)h+=`<section class="rp-card rp-summary">${alerts.sort((a,b)=>order[a.lvl]-order[b.lvl]).slice(0,6).map(x=>`<div class="rp-sum rp-sum-${x.lvl}"><span class="rp-dot"></span><span>${x.text}</span></div>`).join('')}</section>`;
+  if(sales.length)h+=rpSection('💼 فريق المبيعات',rpTeamTable(sales,'sales',key,screen));
+  if(social.length)h+=rpSection('📱 فريق السوشيال',rpTeamTable(social,'social',key,screen));
+  if(!rows.length)h+='<div class="rp-empty">مفيش موظفين في الفريق ده</div>';
+  h+=`<div class="rp-note">🟢 فوق التارجت · 🟡 60–99% · 🔴 أقل من 60%. نسبة التارجت = متوسط (تواصل، مهتم، عروض). ${screen?'اضغط على اسم الموظف لفتح تقريره.':''}</div>`;
+  return`<div class="rp">${h}</div>`;
+}
+function rpRenderTeam(){
+  const body=document.getElementById('er-body');if(!body)return;
+  if(!isAdmin()){body.innerHTML='<div class="er-empty">🔒 للأدمن بس</div>';return}
+  const team=document.getElementById('rp-team').value||'all',key=rpWeek();
+  renderRpActions({team,key});
+  body.innerHTML=rpBuildTeamHTML(team,key,{screen:true});
+}
+// ═══ ADMIN: TARGETS & SETTINGS ═══
+function renderAdminTargets(){
+  const box=document.getElementById('admin-targets');if(!box)return;
+  const emps=reportEmployees('all');
+  box.innerHTML=`${STATE.addonOk?'':'<div class="alert alert-info" style="font-size:12px;margin-bottom:10px">⚠️ إضافة Apps Script مش متركبة — التارجت هيتحفظ على الجهاز ده بس لحد ما تتركب (شوف apps-script/README.md).</div>'}
+  <div class="table-wrap"><table class="admin-table" dir="rtl"><thead><tr><th>الموظف</th><th>تواصل / ليدز جديدة</th><th>مهتمين</th><th>عروض أسعار</th><th></th></tr></thead><tbody>${emps.map(e=>{const t=STATE.targets[e.id]||{};return`<tr><td><strong style="color:var(--text);font-size:12px">${escH(e.name)}</strong> <small style="color:var(--text3)">${e.role==='sales'?'Sales':'Social'} · ${e.team==='cairo'?'القاهرة':'طنطا'}</small></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-c-${e.id}" value="${t.contacts||''}"></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-i-${e.id}" value="${t.interested||''}"></td>
+    <td><input class="tg-in" type="number" min="0" inputmode="numeric" id="tg-q-${e.id}" value="${t.quotes||''}" ${e.role==='social'?'disabled placeholder="—"':''}></td>
+    <td><button class="btn btn-gold btn-xs" onclick="saveTarget('${e.id}')">💾</button></td></tr>`}).join('')}</tbody></table></div>`;
+  const st=document.getElementById('admin-report-settings');
+  if(st)st.innerHTML=`<div class="form-grid" style="grid-template-columns:repeat(3,1fr)">${[['stale1','الشريحة الأولى'],['stale2','الشريحة التانية'],['stale3','الشريحة التالتة']].map(([k,l])=>`<div class="field"><label>${l} (أيام)</label><input type="number" min="1" id="set-${k}" value="${getSetting(k)}"></div>`).join('')}</div><button class="btn btn-gold btn-sm" onclick="saveReportSettings()" style="margin-top:10px">💾 حفظ الإعدادات</button>`;
+}
+function saveTarget(empId){
+  if(!isAdmin())return;
+  const v=id=>Math.max(0,parseInt(document.getElementById(id)?.value,10)||0);
+  const t={contacts:v('tg-c-'+empId),interested:v('tg-i-'+empId),quotes:v('tg-q-'+empId)};
+  STATE.targets[empId]=t;persistReportCache();
+  gsPost({action:'setTarget',row:[empId,t.contacts,t.interested,t.quotes,new Date().toISOString()]});
+  toast('✅ اتحفظ التارجت','success');
+}
+function saveReportSettings(){
+  if(!isAdmin())return;
+  const vals=['stale1','stale2','stale3'].map(k=>Math.max(1,parseInt(document.getElementById('set-'+k).value,10)||DEFAULT_SETTINGS[k]));
+  if(!(vals[0]<vals[1]&&vals[1]<vals[2])){toast('الأيام لازم تكون متزايدة (مثلاً 7 < 14 < 30)','error');return}
+  ['stale1','stale2','stale3'].forEach((k,i)=>{STATE.settings[k]=String(vals[i]);gsPost({action:'setSetting',key:k,value:vals[i]})});
+  persistReportCache();_wkCache.clear();
+  toast('✅ اتحفظت الإعدادات','success');
 }
 
 async function init() {
