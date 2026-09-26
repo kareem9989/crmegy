@@ -348,6 +348,16 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .dup-lead-detail{font-size:10px;color:var(--text3);line-height:1.5}
 .dup-match-info{font-size:10px;color:var(--amber);background:rgba(255,176,32,.08);border-radius:6px;padding:4px 10px;display:inline-block;margin-bottom:8px}
 /* Employee Report */
+.act-lead{padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:12px;font-size:12px;color:var(--text2)}
+.act-lead b{color:var(--text);font-size:14px}
+.act-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:6px}
+.act-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.act-type{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;min-height:56px}
+.act-type span{font-size:18px}
+.act-type.active{border-color:var(--gold);background:rgba(255,182,7,.12);color:var(--gold)}
+.act-timeline{display:flex;flex-direction:column;gap:6px;max-height:170px;overflow-y:auto}
+.act-tl-item{display:flex;gap:8px;font-size:11.5px;color:var(--text2);padding:7px 10px;border-radius:9px;background:var(--surface3);border:1px solid var(--border)}
+.act-tl-item .when{color:var(--text3);font-size:10px;margin-inline-start:auto;white-space:nowrap}
 .er-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
 .er-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .er-select{padding:8px 12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none}
@@ -1448,8 +1458,28 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
     <input type="hidden" id="el-id">
     <div class="modal-footer" id="edit-modal-footer">
       <button class="btn btn-outline" onclick="closeModal('edit-lead-modal')">Cancel</button>
+      <button class="btn btn-outline" onclick="openActivityModal(_editingLeadId)">⚡ تسجيل نشاط</button>
       <button class="btn btn-gold" onclick="updateLead()">💾 Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ACTIVITY QUICK LOG -->
+<div class="modal-overlay" id="act-modal">
+  <div class="modal" style="max-width:480px" dir="rtl">
+    <div class="modal-header"><div class="modal-title">⚡ تسجيل نشاط</div><button class="modal-close" onclick="closeModal('act-modal')">✕</button></div>
+    <div class="act-lead" id="act-lead-info"></div>
+    <div class="act-label">نوع النشاط</div>
+    <div class="act-types" id="act-types"></div>
+    <div class="field" style="margin-top:12px"><label>ملاحظة</label><textarea id="act-note" rows="3" placeholder="حصل إيه؟ العميل قال إيه؟"></textarea></div>
+    <div class="form-grid" style="margin-top:12px">
+      <div class="field"><label>الحالة</label><select id="act-status" onchange="toggleLostReason('act')"><option>New</option><option>Contacted</option><option>Interested</option><option>Follow-up</option><option>Invoice</option><option>Closed Won</option><option>Closed Lost</option><option>No Response</option></select></div>
+      <div class="field"><label>المتابعة الجاية</label><input id="act-followup" type="date"></div>
+      <div class="field" id="act-lost-wrap" style="display:none"><label>سبب الرفض <span style="color:var(--red)">*</span></label><select id="act-lost-reason"><option value="">-- اختر --</option><option>السعر</option><option>مش بيستورد</option><option>عنده مورد</option><option>رقم غلط</option><option>مفيش رد</option><option>أخرى</option></select></div>
+    </div>
+    <div class="act-label" style="margin-top:14px">آخر نشاط على الليد</div>
+    <div class="act-timeline" id="act-timeline"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('act-modal')">إلغاء</button><button class="btn btn-gold" id="act-save-btn" onclick="saveActivity()">✅ حفظ النشاط</button></div>
   </div>
 </div>
 
@@ -2105,6 +2135,7 @@ function _renderLeadTableInner(){
           <td>${visitBadge}</td>
           <td style="font-size:10px;color:var(--text3);white-space:nowrap">${updatedAgo}</td>
           <td><div style="display:flex;gap:4px">
+            <button class="btn btn-outline btn-xs" onclick="openActivityModal('${l.id}')" title="تسجيل نشاط">⚡</button>
             <button class="btn btn-outline btn-xs" onclick="openEditLead('${l.id}')">✏️</button>
             <button class="btn btn-outline btn-xs" onclick="window.open('https://wa.me/'+encodeURIComponent('${l.whatsapp||l.phone}'))">💬</button>
             <button class="btn btn-danger btn-xs" onclick="deleteLead('${l.id}')">🗑️</button>
@@ -2128,6 +2159,7 @@ function _renderLeadTableInner(){
           <div class="lead-card-meta"><span class="tag ${PRI_TAG[l.priority]||'tag-medium'}">${l.priority}</span>${l.source?`<span class="tag tag-noresponse">${l.source}</span>`:''}${visitBadge}${sampleBadge}${l.deal?`<span style="font-size:11px;font-weight:700;color:var(--green)">${fmt(l.deal)}</span>`:''}</div>
           <div style="font-size:10px;color:var(--text3);margin-bottom:8px">🕐 Updated: ${updatedAgo}</div>
           <div class="lead-card-actions">
+            <button class="btn btn-gold btn-sm" onclick="openActivityModal('${l.id}')" style="flex:1;justify-content:center">⚡ نشاط</button>
             <button class="btn btn-outline btn-sm" onclick="openEditLead('${l.id}')" style="flex:1;justify-content:center">✏️ Edit</button>
             <button class="btn btn-outline btn-sm" onclick="window.open('https://wa.me/'+encodeURIComponent('${l.whatsapp||l.phone}'))">💬</button>
             <button class="btn btn-danger btn-sm" onclick="deleteLead('${l.id}')">🗑️</button>
@@ -3478,6 +3510,66 @@ function logStatusChange(lead,from,to){
   return h;
 }
 function toggleLostReason(prefix){const st=document.getElementById(prefix+'-status'),w=document.getElementById(prefix+'-lost-wrap');if(st&&w)w.style.display=st.value==='Closed Lost'?'':'none'}
+
+// ═══ ACTIVITY QUICK LOG ═══
+let _actLeadId=null,_actType='';
+function leadTimeline(leadId){
+  const items=[];
+  STATE.activities.filter(a=>a.leadId===leadId).forEach(a=>{const t=actType(a.type);items.push({at:a.at,icon:t.i,text:t.l+(a.note?' — '+a.note:''),by:a.empName})});
+  STATE.statusHistory.filter(h=>h.leadId===leadId).forEach(h=>items.push({at:h.at,icon:'🔁',text:`${h.from||'—'} ← ${h.to}`,by:h.byName}));
+  STATE.comments.filter(c=>c.leadId===leadId).forEach(c=>items.push({at:c.date,icon:'💬',text:c.text,by:c.authorName}));
+  return items.filter(i=>i.at).sort((a,b)=>new Date(b.at)-new Date(a.at));
+}
+function openActivityModal(leadId){
+  const lead=STATE.leads.find(l=>l.id===leadId);if(!lead){toast('Lead not found','error');return}
+  _actLeadId=leadId;_actType='';
+  document.getElementById('act-lead-info').innerHTML=`<b>${escH(lead.name)}</b>${lead.company?' · '+escH(lead.company):''}<br><span class="tag ${STATUS_TAG[lead.status]||'tag-new'}" style="margin-top:6px;display:inline-block">${escH(lead.status)}</span> ${lead.followup?`<span style="font-size:11px;color:var(--text3)">· متابعة: ${fmtDate(lead.followup)}</span>`:''}`;
+  document.getElementById('act-types').innerHTML=ACTIVITY_TYPES.map(t=>`<button type="button" class="act-type" data-type="${t.v}" onclick="pickActType('${t.v}')"><span>${t.i}</span>${t.l}</button>`).join('');
+  document.getElementById('act-note').value='';
+  document.getElementById('act-status').value=lead.status||'New';
+  document.getElementById('act-followup').value=(lead.followup||'').slice(0,10);
+  document.getElementById('act-lost-reason').value=lead.lostReason||'';
+  toggleLostReason('act');
+  const tl=leadTimeline(leadId).slice(0,6);
+  document.getElementById('act-timeline').innerHTML=tl.length?tl.map(i=>`<div class="act-tl-item"><span>${i.icon}</span><span>${escH(i.text)}${i.by?` <span style="color:var(--text3)">· ${escH(i.by)}</span>`:''}</span><span class="when">${ago(i.at)}</span></div>`).join(''):'<div class="act-tl-item" style="justify-content:center;color:var(--text3)">مفيش نشاط مسجل لسه</div>';
+  openModal('act-modal');
+}
+function pickActType(v){
+  _actType=v;
+  document.querySelectorAll('#act-types .act-type').forEach(b=>b.classList.toggle('active',b.dataset.type===v));
+  // أول تواصل مع ليد جديد → نقترح Contacted تلقائيًا
+  const st=document.getElementById('act-status'),lead=STATE.leads.find(l=>l.id===_actLeadId);
+  if(lead&&lead.status==='New'&&CONTACT_TYPES.includes(v)&&st.value==='New'){st.value='Contacted';toggleLostReason('act')}
+  if(lead&&v==='quote'&&['New','Contacted','Interested','Follow-up','No Response'].includes(st.value)){st.value='Invoice';toggleLostReason('act')}
+}
+async function saveActivity(){
+  const lead=STATE.leads.find(l=>l.id===_actLeadId);if(!lead)return;
+  if(!_actType){toast('اختار نوع النشاط','error');return}
+  const note=document.getElementById('act-note').value.trim();
+  const newStatus=document.getElementById('act-status').value;
+  const followup=document.getElementById('act-followup').value;
+  const lostReason=document.getElementById('act-lost-reason').value;
+  if(newStatus==='Closed Lost'&&!lostReason){toast('اختر سبب الرفض ⚠️','error');return}
+  const btn=document.getElementById('act-save-btn');btn.disabled=true;
+  try{
+    logActivity(lead,_actType,note);
+    const oldStatus=lead.status;
+    const rowChanged=newStatus!==oldStatus||followup!==(lead.followup||'')||(_actType==='sample'&&lead.samples!=='yes');
+    if(rowChanged){
+      lead.status=newStatus;lead.followup=followup;
+      if(_actType==='sample')lead.samples='yes';
+      if(newStatus!=='New'&&lead.response!=='Replied'&&CONTACT_TYPES.includes(_actType)&&note)lead.response='Replied';
+      lead.updated=new Date().toISOString();
+      await gsPost({action:'updateLead',id:lead.id,row:leadToRow(lead),branch:leadBranch(lead)});
+    }
+    if(newStatus!==oldStatus)logStatusChange(lead,oldStatus,newStatus);
+    if(newStatus==='Closed Lost'&&lostReason!==lead.lostReason)setLeadExtra(lead,{lostReason});
+    closeModal('act-modal');
+    toast('✅ '+actType(_actType).l+' — '+lead.name,'success');
+    if(document.getElementById('edit-lead-modal').classList.contains('open'))openEditLead(lead.id);
+    renderPage(currentPage);
+  }finally{btn.disabled=false}
+}
 
 async function init() {
   document.getElementById('app-loading-msg').textContent = 'Loading data...';
