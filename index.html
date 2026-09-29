@@ -938,11 +938,12 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
         <div class="dup-hard-block" id="dup-hard-block"><div class="dup-icon">🚫</div><div><div class="dup-title">رقم مكرر في الداتا بيز!</div><div class="dup-detail" id="dup-hard-detail"></div></div></div>
         <div class="card" style="padding:20px">
           <div class="modal-section">Contact Information</div>
+          <div class="field" style="margin-bottom:12px"><label>وسيلة التواصل الأساسية <span class="req">*</span></label><div class="interested-tabs" style="margin-bottom:0"><button type="button" class="itab active" id="nl-cm-phone" onclick="setContactMethod('phone')">📞 رقم تليفون</button><button type="button" class="itab" id="nl-cm-email" onclick="setContactMethod('email')">✉️ إيميل</button></div></div>
           <div class="form-grid">
             <div class="field"><label>Full Name <span class="req">*</span></label><input id="nl-name" placeholder="Ahmed Al Mansouri"></div>
             <div class="field"><label>Company</label><input id="nl-company" placeholder="Gulf Foods LLC"></div>
             <div class="field">
-              <label>Phone <span class="req">*</span></label>
+              <label>Phone <span class="req" id="nl-phone-req">*</span></label>
               <input id="nl-phone" placeholder="00966XXXXXXXXX" type="tel" inputmode="numeric" oninput="enforcePhoneFormat(this);liveCheckDup('nl-phone')">
               <div class="phone-hint" id="nl-phone-hint">يبدأ بـ 00 — أرقام فقط</div>
             </div>
@@ -952,7 +953,7 @@ body.light-mode .er-empty{background:rgba(20,17,63,.02);border-color:var(--borde
               <div class="phone-hint" id="nl-whatsapp-hint">يبدأ بـ 00 — أرقام فقط</div>
             </div>
             <div class="field country-wrap"><label>Country <span class="req">*</span></label><input id="nl-country" placeholder="Type country..." autocomplete="off" oninput="showCountrySuggestions('nl-country','nl-country-dd')" onblur="setTimeout(()=>hideCountryDD('nl-country-dd'),200)"><div class="country-dropdown" id="nl-country-dd" style="display:none"></div></div>
-            <div class="field"><label>Email</label><input id="nl-email" placeholder="email@company.com" type="email"></div>
+            <div class="field"><label>Email <span class="req" id="nl-email-req" style="display:none">*</span></label><input id="nl-email" placeholder="email@company.com" type="email"></div>
           </div>
           <div class="modal-section">Assignment <span style="color:var(--red);font-size:10px">* Required</span></div>
           <div class="form-grid">
@@ -2172,17 +2173,23 @@ function resetDupBlock(){hideDupBlock();blockSaveBtn(false);['nl-phone','nl-what
 
 // ═══ SAVE LEAD ═══
 function getField(id){const e=document.getElementById(id);return e?e.value.trim():''}
+let nlContactMethod='phone';
+function setContactMethod(m){nlContactMethod=m;document.getElementById('nl-cm-phone').classList.toggle('active',m==='phone');document.getElementById('nl-cm-email').classList.toggle('active',m==='email');document.getElementById('nl-phone-req').style.display=m==='phone'?'':'none';document.getElementById('nl-email-req').style.display=m==='email'?'':'none'}
+function isValidEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
 async function saveLead(){
   const name=getField('nl-name'),phone=getField('nl-phone'),country=getField('nl-country');
   const branchVal=getField('nl-branch')||'tanta';
   const salesEmpId=getField('nl-sales-emp'),socialEmpId=getField('nl-social-emp');
   if(!name){toast('Name is required','error');return}
-  if(!phone){toast('Phone is required','error');return}
-  if(!isValidPhone(phone)){toast('❌ رقم الهاتف غير صحيح — يبدأ بـ 00 وأرقام فقط','error');return}
+  const emailVal=getField('nl-email');
+  if(nlContactMethod==='phone'&&!phone){toast('رقم التليفون مطلوب','error');return}
+  if(nlContactMethod==='email'&&!emailVal){toast('الإيميل مطلوب','error');return}
+  if(phone&&!isValidPhone(phone)){toast('❌ رقم الهاتف غير صحيح — يبدأ بـ 00 وأرقام فقط','error');return}
+  if(emailVal&&!isValidEmail(emailVal)){toast('❌ الإيميل غير صحيح','error');return}
   if(!country){toast('Country is required','error');return}
   if(!salesEmpId){toast('Sales Employee is required ⚠️','error');return}
   if(!socialEmpId&&branchVal!=='cairo'){toast('Social Media Employee is required ⚠️','error');return}
-  const dupPhone=findExactDuplicate(phone,null);
+  const dupPhone=phone?findExactDuplicate(phone,null):null;
   if(dupPhone){showDupBlock(`"${phone}" → <strong>${dupPhone.name}</strong>`);blockSaveBtn(true);toast('🚫 رقم مكرر!','error');logDuplicate(name,dupPhone.name,'Fuzzy Phone Match');return}
   const wa=getField('nl-whatsapp');
   if(wa&&!isValidPhone(wa)){toast('❌ رقم الواتساب غير صحيح — يبدأ بـ 00','error');return}
@@ -2199,7 +2206,7 @@ async function saveLead(){
   clearLeadForm();updateDupNavBadge();nav('leads',null);setMobNav('leads');
 }
 function logDuplicate(blocked,matches,reason){const entry={date:new Date().toLocaleString(),blocked,matches,reason};STATE.dupLog.unshift(entry);LS.set('dupLog',STATE.dupLog);const s=STATE.dupStats;s.total++;s.today++;s.pending++;LS.set('dupStats',s)}
-function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const b=document.getElementById('nl-branch');if(b)b.value='tanta';populateLeadFormSelects();resetDupBlock()}
+function clearLeadForm(){['nl-name','nl-company','nl-phone','nl-whatsapp','nl-email','nl-country','nl-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});const b=document.getElementById('nl-branch');if(b)b.value='tanta';setContactMethod('phone');populateLeadFormSelects();resetDupBlock()}
 
 // ═══ LEAD TABLE ═══
 let leadPage=1;const PER_PAGE=15;
