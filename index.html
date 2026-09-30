@@ -4207,7 +4207,7 @@ function renderRpActions(ctx){
   let html='';
   if(typeof rpPrint==='function'){
     html+=team?`<button class="btn btn-gold btn-sm" onclick="rpPrintTeam()">🖨️ طباعة</button><button class="btn btn-outline btn-sm" onclick="rpCopyTeamWA()">📋 نسخ ملخص واتساب</button>`
-      :`<button class="btn btn-gold btn-sm" onclick="rpPrint(false)">🖨️ طباعة / PDF</button><button class="btn btn-outline btn-sm" onclick="rpPrint(true)">📎 مع الملحق</button><button class="btn btn-outline btn-sm" onclick="rpCopyWA()">📋 نسخ ملخص واتساب</button>`;
+      :`<button class="btn btn-gold btn-sm" onclick="rpPrint(false)">🖨️ طباعة / PDF</button><button class="btn btn-outline btn-sm" onclick="rpPrint(true)">📎 مع التفاصيل</button><button class="btn btn-outline btn-sm" onclick="rpCopyWA()">📋 نسخ ملخص واتساب</button>`;
   }
   if(isAdmin()&&snapWeek(key)&&!isCurrentWeek(key)&&STATE.addonOk)html+=`<button class="btn btn-success btn-sm" onclick="rpApprove()">✅ اعتماد التقرير</button>`;
   box.innerHTML=html;
@@ -4415,7 +4415,13 @@ function rpPrintEmpDoc(emp,key,withAppendix){
     `<span>الوظيفة: <b>${social?'Social Media':'Sales'}</b></span><span>الفرع: <b>${emp.team==='cairo'?'القاهرة':'طنطا'}</b></span><span>ليدز مفتوحة: <b>${M.openLeads}</b></span><span>مقارنة بـ: <b>${W.prev} (${wkLabel(wkShift(key,-1))})</b></span>`,pdTags(key,M,snap));
   // 0. المربعات الأربعة
   h+=rpBoxesHTML(emp,key,true);
-  h+=rpOldFollowHTML(emp,key,true);
+  {const p=perParse(key),ps=p.s.getTime(),pe=p.e.getTime();
+   const rank=x=>INTERESTED_SET.includes(x.status)?0:x.status==='New'?2:1;
+   const NL=empLeads(emp).filter(l=>{const t=tms(l.added);return t>=ps&&t<pe}).sort((a,b)=>rank(a)-rank(b));
+   const OL=rpOldFollow(emp,key).list.map(x=>x.l);
+   const tbl=(title,arr)=>`<h2>${title} (${arr.length})</h2>`+(arr.length?`<table><thead><tr><th class="c" style="width:22px">#</th><th>العميل</th><th>الشركة</th><th>البلد</th><th>الحالة</th><th style="width:40%">آخر تعليق</th></tr></thead><tbody>${arr.map((l,i)=>{const n=leadLastNote(l);return`<tr><td class="c">${i+1}</td><td><b>${escH(l.name)}</b></td><td>${escH(l.company||'—')}</td><td>${escH(l.country||'—')}</td><td>${escH(l.status)}</td><td>${n?escH(n.text)+(n.by?` <span class="muted">— ${escH(n.by)}${isNaN(n.t)?'':' · '+fmtDate(new Date(n.t))}</span>`:''):'<span class="flat">مفيش تعليق</span>'}</td></tr>`}).join('')}</tbody></table>`:'<div class="empty">مفيش</div>');
+   h+=tbl(`ليدز ${W.unit}`,NL)+tbl('ليدز قديمة اتعملها متابعة',OL);}
+  if(!withAppendix)return h+pdFoot();
   // 1. الملخص
   const sum=rpSummary(emp,key,M,P);
   h+=`<h2>الملخص</h2><ul class="sum">${sum.map(x=>`<li class="${x.lvl}">${x.text}</li>`).join('')}</ul>`;
