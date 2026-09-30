@@ -353,6 +353,12 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .rp-controls .er-select{flex:1;min-width:150px}
 .rp-actions{display:flex;gap:6px;flex-wrap:wrap}
 .rp-boxes{margin-bottom:0}
+.rp-note-row{padding:8px 10px;border:1px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--surface3)}
+.rp-note-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
+.rp-note-top .tag{margin-inline-start:auto}
+.rp-note-txt{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5}
+.rp-note-none{color:var(--text3);font-style:italic}
+.rp-note-grp{font-size:11.5px;font-weight:800;color:var(--text2);margin:6px 0}
 .rp-boxes5{grid-template-columns:repeat(5,1fr)!important}
 @media(max-width:768px){.rp-boxes5{grid-template-columns:repeat(3,1fr)!important}}
 .rp-details>summary{list-style:none;cursor:pointer;text-align:center;font-size:12.5px;font-weight:700;color:var(--gold);padding:10px;border:1px dashed rgba(255,182,7,.35);border-radius:12px}
@@ -4084,6 +4090,24 @@ function rpOldFollowHTML(emp,key,print){
   if(print)return`<h2>متابعة الداتا القديمة ${W.cur}</h2><table><thead><tr><th class="c">ليدز قديمة اتعملها متابعة</th><th class="c">منهم بقوا مهتمين</th><th class="c">عن ${W.prev}</th></tr></thead><tbody><tr><td class="c b">${O.n}</td><td class="c b">${O.interested}</td><td class="c">${pdDelta(O.n,P.n,true)}</td></tr></tbody></table>`+(O.list.length?`<table style="margin-top:5px"><thead><tr><th>العميل</th><th>الحالة دلوقتي</th><th>المتابعة</th><th class="c">عمر الليد</th></tr></thead><tbody>${O.list.slice(0,15).map(x=>`<tr><td>${escH(x.l.name)}</td><td>${escH(x.l.status)}</td><td>${x.how}</td><td class="c">${x.ageDays} يوم</td></tr>`).join('')}</tbody></table>`:'');
   return`<section class="rp-card"><h3 class="rp-h">🔄 متابعة الداتا القديمة ${W.cur}</h3><div class="rp-buckets" style="grid-template-columns:1fr 1fr"><div class="rp-bucket"><small>ليدز قديمة اتعملها متابعة</small><b style="color:var(--blue)">${O.n}</b>${rpDelta(O.n,P.n,true)}</div><div class="rp-bucket"><small>منهم بقوا مهتمين</small><b style="color:var(--green)">${O.interested}</b>${rpDelta(O.interested,P.interested,true)}</div></div>${O.list.length?`<details class="rp-more"><summary>عرض الليدز (${O.list.length})</summary><div class="rp-list">${O.list.map(x=>`<div class="rp-li">${rpLeadLink(x.l,true)}<span>${x.how} · ${escH(x.l.status)}${x.est?' ⓘ':''}</span></div>`).join('')}</div></details>`:'<div class="rp-empty">مفيش متابعة لليدز قديمة '+W.cur+'</div>'}<div class="rp-note">ليد قديم = اتضاف قبل بداية الفترة. بيتحسب لو اتسجل عليه نشاط أو تغيير حالة أو تعليق جوه الفترة. ⓘ = اتحسب من تاريخ آخر تعديل.</div></section>`;
 }
+// آخر تعليق/ملاحظة على الليد (تعليق، ملاحظة نشاط، أو خانة Notes)
+function leadLastNote(l){
+  const idx=rIdx();let best=null;
+  (idx.coms.get(l.id)||[]).forEach(c=>{if(c.text&&(!best||c.t>best.t))best={t:c.t,text:c.text,by:c.authorName}});
+  (idx.acts.get(l.id)||[]).forEach(a=>{if(a.note&&(!best||a.t>best.t))best={t:a.t,text:a.note,by:a.empName}});
+  if(best)return best;
+  return l.notes?{t:NaN,text:l.notes,by:''}:null;
+}
+function rpLeadsNotesHTML(emp,key){
+  const p=perParse(key),s=p.s.getTime(),e=p.e.getTime(),W=perW(key);
+  const rank=x=>INTERESTED_SET.includes(x.status)?0:x.status==='New'?2:1;
+  const L=empLeads(emp).filter(l=>{const t=tms(l.added);return t>=s&&t<e}).sort((a,b)=>rank(a)-rank(b));
+  const O=rpOldFollow(emp,key).list.map(x=>x.l);
+  const row=l=>{const n=leadLastNote(l);return`<div class="rp-note-row"><div class="rp-note-top">${rpLeadLink(l,true)}${l.company?` <small>· ${escH(l.company)}</small>`:''}<span class="tag ${STATUS_TAG[l.status]||'tag-new'}">${escH(l.status)}</span></div>${n?`<div class="rp-note-txt">📝 ${escH(n.text)}${n.by?` <small>— ${escH(n.by)}${isNaN(n.t)?'':' · '+ago(new Date(n.t).toISOString())}</small>`:''}</div>`:'<div class="rp-note-txt rp-note-none">مفيش تعليق</div>'}</div>`};
+  const block=(title,arr)=>arr.length?`<div class="rp-note-grp">${title} (${arr.length})</div>${arr.slice(0,8).map(row).join('')}${arr.length>8?`<details class="rp-more"><summary>عرض الباقي (${arr.length-8})</summary>${arr.slice(8).map(row).join('')}</details>`:''}`:'';
+  const body=block(`🆕 ليدز ${W.unit}`,L)+block('🔄 ليدز قديمة اتعملها متابعة',O);
+  return`<section class="rp-card"><h3 class="rp-h">📝 الليدز وآخر تعليق</h3>${body||'<div class="rp-empty">مفيش ليدز '+W.cur+'</div>'}</section>`;
+}
 function rpBoxesHTML(emp,key,print){
   const C=rpCohort(emp,key),P=rpCohort(emp,wkShift(key,-1));
   const items=[[emp.role==='social'?'Leads أدخلهم':'Leads معاه','n',C.n,'#3d8eff'],['Contacted','contacted',C.contacted,'#ffb020'],['Interested','interested',C.interested,'#00e5a0'],['نسبة الاهتمام','pct',C.pct+'%','#9d78ff']];
@@ -4170,7 +4194,7 @@ function rpBuildEmpHTML(emp,key,o={}){
   if(screen){const head=h.slice(0,_dS),det=h.slice(_dS,_oS)+h.slice(_oE),opp=h.slice(_oS,_oE);
     const O=rpOldFollow(emp,key);
     const oldList=O.list.length?`<section class="rp-card"><h3 class="rp-h">🔄 الليدز القديمة اللي اتعملها متابعة (${O.n}${O.interested?` · ${O.interested} بقوا مهتمين`:''})</h3><div class="rp-list">${O.list.map(x=>`<div class="rp-li">${rpLeadLink(x.l,true)}<span>${x.how} · ${escH(x.l.status)}${x.est?' ⓘ':''}</span></div>`).join('')}</div></section>`:'';
-    h=head+opp+`<details class="rp-details"><summary>📊 عرض التفاصيل الكاملة ▾</summary><div>${oldList}${det}</div></details>`}
+    h=head+rpLeadsNotesHTML(emp,key)+opp+`<details class="rp-details"><summary>📊 عرض التفاصيل الكاملة ▾</summary><div>${oldList}${det}</div></details>`}
   // 11. Appendix
   const app=`<table class="rp-table"><thead><tr><th>العميل</th><th>قبل</th><th>بعد</th><th>ملاحظة</th></tr></thead><tbody>${L.changes.map(x=>`<tr><td>${rpLeadLink(x.l,screen)}</td><td>${escH(x.from||'—')}</td><td><b>${escH(x.to)}</b></td><td>${escH(x.note||'—')}</td></tr>`).join('')}</tbody></table>`;
   if(screen)h+=`<details class="rp-card rp-appendix"><summary class="rp-h">📎 ملحق: الليدز اللي حالتها اتغيرت (${L.changes.length})</summary>${L.changes.length?app:'<div class="rp-empty">مفيش تغييرات حالة مسجلة '+W.cur+'</div>'}<div class="rp-note">من سجل تغييرات الحالة بس (البيانات القديمة قبل تركيب السجل مش ظاهرة هنا).</div></details>`;
