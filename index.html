@@ -4111,9 +4111,9 @@ function rpLeadsNotesHTML(emp,key){
 function rpBoxesHTML(emp,key,print){
   const C=rpCohort(emp,key),P=rpCohort(emp,wkShift(key,-1));
   const items=[[emp.role==='social'?'Leads أدخلهم':'Leads معاه','n',C.n,'#3d8eff'],['Contacted','contacted',C.contacted,'#ffb020'],['Interested','interested',C.interested,'#00e5a0'],['نسبة الاهتمام','pct',C.pct+'%','#9d78ff']];
-  if(print)return`<div class="boxes">${items.map(([l,f,v,c])=>`<div class="box" style="border-color:${c}66;background:${c}12"><div class="bv" style="color:${c==='#00e5a0'?'#07845a':c==='#ffb020'?'#b36b00':c}">${v}</div><div class="bl">${l}</div><div class="bd">${pdDelta(C[f],P[f],true)} عن ${perW(key).prev}</div></div>`).join('')}</div>`;
   const O=rpOldFollow(emp,key),OP=rpOldFollow(emp,wkShift(key,-1));
   items.push(['متابعة داتا قديمة','old',O.n,'#00d4e8']);C.old=O.n;P.old=OP.n;
+  if(print)return`<div class="boxes">${items.map(([l,f,v,c])=>`<div class="box" style="border-color:${c}66;background:${c}12"><div class="bv" style="color:${c==='#00e5a0'?'#07845a':c==='#ffb020'?'#b36b00':c}">${v}</div><div class="bl">${l}</div><div class="bd">${pdDelta(C[f],P[f],true)} عن ${perW(key).prev}</div></div>`).join('')}</div>`;
   return`<div class="er-kpi-grid rp-boxes rp-boxes5">${items.map(([l,f,v,c])=>`<div class="er-kpi"><div class="er-kpi-bar" style="background:${c}"></div><div class="er-kpi-val" style="color:${c}">${v}</div><div class="er-kpi-lbl">${l}</div><div class="rp-box-d">${rpDelta(C[f],P[f],true)||'<span class="rp-delta rp-flat">＝</span>'}</div></div>`).join('')}</div>`;
 }
 function rpNextStep(l){
@@ -4369,7 +4369,7 @@ tr:nth-child(even) td{background:#fbfbfd}
 .fbar{height:7px;border-radius:3px;background:#ffb607;min-width:2px}
 .muted{color:#888;font-size:9px;margin-top:3px}
 .empty{color:#999;text-align:center;padding:6px;border:1px dashed #d7dae3;border-radius:5px}
-.boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 2px}
+.boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 2px}
 .box{border:2px solid;border-radius:10px;padding:6px 4px;text-align:center}
 .bv{font-size:24px;font-weight:800;line-height:1.15}
 .bl{font-size:10px;font-weight:700;color:#444}
