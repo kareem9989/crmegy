@@ -86,7 +86,14 @@ const canSee=v=>(PERM[access()]||ALL).includes(v);
 const uid=()=>Math.random().toString(36).slice(2,10);
 const today=()=>new Date().toISOString().slice(0,10);
 // ---- Firebase config: الصق إعدادات مشروعك هنا (انظر README). لو سبتها null النظام يشتغل محلي على المتصفح ----
-const FIREBASE_CONFIG=null;
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyCx_ZnrunSgQb4DWCKNJEjI_s75BJmJGHo",
+  authDomain:"wav11-5ead9.firebaseapp.com",
+  projectId:"wav11-5ead9",
+  storageBucket:"wav11-5ead9.firebasestorage.app",
+  messagingSenderId:"740879830049",
+  appId:"1:740879830049:web:59b3460fc309f834a52760"
+};
 const CLOUD=!!FIREBASE_CONFIG;
 const COLLS=['leads','clients','projects','tasks','invoices','team','attendance','posts','expenses','retainers'];
 const DEFAULT_SET={company:'WAV',currency:'ج.م',tax:14,pin:''};
