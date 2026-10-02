@@ -74,19 +74,22 @@ const SERVICES=['إدارة سوشيال ميديا','إعلانات ممولة'
 const PSTAT=['قيد التنفيذ','متوقف','مكتمل','ملغي'];
 const TSTAT=['للعمل','جاري','مراجعة','تم'];
 const PRIO=['عادي','مهم','عاجل'];
+const PLAT=['فيسبوك','إنستجرام','تيك توك','لينكدإن','يوتيوب','X'];
+const POSTST=['فكرة','قيد التصميم','مراجعة','معتمد','منشور'];
+const EXPC=['إعلانات','مرتبات','أدوات واشتراكات','مواصلات','إيجار','أخرى'];
 const ROLES=['مدير','سيلز','مصمم','ميديا باير','كاتب محتوى','مونتير','أكونت مانجر'];
 const uid=()=>Math.random().toString(36).slice(2,10);
 const today=()=>new Date().toISOString().slice(0,10);
 // ---- Firebase config: الصق إعدادات مشروعك هنا (انظر README). لو سبتها null النظام يشتغل محلي على المتصفح ----
 const FIREBASE_CONFIG=null;
 const CLOUD=!!FIREBASE_CONFIG;
-const COLLS=['leads','clients','projects','tasks','invoices','team','attendance'];
+const COLLS=['leads','clients','projects','tasks','invoices','team','attendance','posts','expenses','retainers'];
 const DEFAULT_SET={company:'WAV',currency:'ج.م',tax:14,pin:''};
 let db,fdb,fauth,shadow={};
 function load(){
   if(CLOUD){db={settings:Object.assign({},DEFAULT_SET)};COLLS.forEach(c=>db[c]=[]);return}
   try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-  db=Object.assign({leads:[],clients:[],projects:[],tasks:[],invoices:[],team:[],attendance:[],settings:Object.assign({},DEFAULT_SET)},db||{});
+  db=Object.assign({leads:[],clients:[],projects:[],tasks:[],invoices:[],team:[],attendance:[],posts:[],expenses:[],retainers:[],settings:Object.assign({},DEFAULT_SET)},db||{});
   if(!db.team.length)db.team.push({id:uid(),name:'المدير',role:'مدير',phone:'',target:0});}
 function save(){
   if(!CLOUD){localStorage.setItem(KEY,JSON.stringify(db));return}
@@ -144,6 +147,18 @@ const E={
   {k:'assignee',l:'المسؤول',t:'select',o:refOpt('team')},{k:'due',l:'الموعد النهائي',t:'date'},
   {k:'status',l:'الحالة',t:'select',o:()=>opt(TSTAT)},{k:'prio',l:'الأولوية',t:'select',o:()=>opt(PRIO)}],
   def:()=>({status:'للعمل',prio:'عادي'})},
+ posts:{label:'بوست',f:[
+  {k:'title',l:'فكرة / عنوان البوست',req:1},{k:'client',l:'العميل',t:'select',o:refOpt('clients')},{k:'platform',l:'المنصة',t:'select',o:()=>opt(PLAT)},
+  {k:'date',l:'تاريخ النشر',t:'date'},{k:'status',l:'الحالة',t:'select',o:()=>opt(POSTST)},{k:'assignee',l:'المسؤول',t:'select',o:refOpt('team')},{k:'notes',l:'الكابشن / ملاحظات',t:'textarea'}],
+  def:()=>({status:'فكرة',date:today(),platform:'إنستجرام'})},
+ expenses:{label:'مصروف',f:[
+  {k:'title',l:'البيان',req:1},{k:'category',l:'النوع',t:'select',o:()=>opt(EXPC)},{k:'amount',l:'المبلغ',t:'number'},
+  {k:'date',l:'التاريخ',t:'date'},{k:'project',l:'مشروع (اختياري)',t:'select',o:refOpt('projects')}],
+  def:()=>({date:today(),category:'إعلانات'})},
+ retainers:{label:'اشتراك شهري',f:[
+  {k:'client',l:'العميل',t:'select',o:refOpt('clients'),req:1},{k:'service',l:'الخدمة / الباقة',t:'select',o:()=>opt(SERVICES)},
+  {k:'fee',l:'القيمة الشهرية',t:'number'},{k:'day',l:'يوم الاستحقاق من الشهر',t:'number'},{k:'active',l:'نشط؟',t:'select',o:()=>opt(['نعم','لا'])}],
+  def:()=>({active:'نعم',day:5})},
  team:{label:'موظف',f:[
   {k:'name',l:'الاسم',req:1},{k:'role',l:'الوظيفة',t:'select',o:()=>opt(ROLES)},{k:'phone',l:'الموبايل'},
   {k:'target',l:'التارجت الشهري (قيمة تعاقدات)',t:'number'}],def:()=>({role:'سيلز'})}
@@ -161,14 +176,14 @@ const dleft=d=>d?Math.ceil((new Date(d)-new Date(today()))/864e5):null;
 
 // ============ UI core ============
 let view='dashboard',q='',fil='',cur=null;
-const NAV=[['dashboard','📊','لوحة التحكم'],['leads','🎯','الليدز'],['clients','🤝','العملاء'],['projects','📁','المشاريع والحملات'],['tasks','✅','المهام'],['invoices','🧾','الفواتير والعروض'],['team','👥','الفريق والحضور'],['reports','📈','التقارير'],['settings','⚙️','الإعدادات']];
+const NAV=[['dashboard','📊','لوحة التحكم'],['leads','🎯','الليدز'],['clients','🤝','العملاء'],['projects','📁','المشاريع والحملات'],['tasks','✅','المهام'],['posts','🗓','كالندر المحتوى'],['invoices','🧾','الفواتير والعروض'],['retainers','🔁','الاشتراكات الشهرية'],['expenses','💸','المصروفات'],['team','👥','الفريق والحضور'],['reports','📈','التقارير'],['settings','⚙️','الإعدادات']];
 function go(v,id){view=v;cur=id||null;q='';fil='';document.getElementById('side').classList.remove('open');render()}
 function render(){
   document.getElementById('nav').innerHTML=NAV.map(([k,i,l])=>`<div class="nav ${view===k?'on':''}" onclick="go('${k}')">${i} ${l}</div>`).join('');
   const t=NAV.find(n=>n[0]===view);document.getElementById('title').textContent=(cur&&view==='clients'?'ملف العميل':t[2]);
   document.getElementById('actions').innerHTML='';
   const V=document.getElementById('view');
-  ({dashboard:vDash,leads:vLeads,clients:cur?vClient:vList,projects:vList,tasks:vList,invoices:vInv,team:vTeam,reports:vRep,settings:vSet})[view](V);
+  ({dashboard:vDash,leads:vLeads,clients:cur?vClient:vList,projects:vList,tasks:vList,posts:vList,expenses:vList,retainers:vList,invoices:vInv,team:vTeam,reports:vRep,settings:vSet})[view](V);
 }
 function act(html){document.getElementById('actions').innerHTML=html}
 function modal(html){const m=document.getElementById('modal');m.innerHTML=html?`<div class="modal" onmousedown="if(event.target===this)modal()"><div class="mb">${html}</div></div>`:''}
@@ -197,12 +212,15 @@ function vDash(V){
   const out=inv.reduce((s,i)=>s+invCalc(i).due,0);
   const late=db.tasks.filter(t=>t.status!=='تم'&&t.due&&t.due<today());
   const fu=db.leads.filter(l=>l.follow&&l.follow<=today()&&!['تم التعاقد','خسارة'].includes(l.stage));
+  const mo0=today().slice(0,7),wk=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+  const exM=db.expenses.filter(x=>(x.date||'').startsWith(mo0)).reduce((s,x)=>s+(+x.amount||0),0);
+  const revM=inv.reduce((s,i)=>s+(i.payments||[]).filter(p=>p.date.startsWith(mo0)).reduce((a,p)=>a+p.amount,0),0);
   const k=(l,v,c)=>`<div class="card kpi"><span>${l}</span><b style="${c?'color:var(--'+c+')':''}">${v}</b></div>`;
   const stg=STAGES.map(s=>({s,n:db.leads.filter(l=>l.stage===s).length}));const mx=Math.max(1,...stg.map(x=>x.n));
-  V.innerHTML=`<div class="grid">${k('ليدز مفتوحة',open.length)}${k('قيمة الـ Pipeline',money(open.reduce((s,l)=>s+(+l.value||0),0)))}${k('عملاء',db.clients.length)}${k('مشاريع شغالة',db.projects.filter(p=>p.status==='قيد التنفيذ').length)}${k('إيرادات محصّلة',money(rev),'ok')}${k('مستحق التحصيل',money(out),'warn')}${k('مهام متأخرة',late.length,late.length?'bad':'')}${k('نسبة التحويل',(db.leads.length?Math.round(won.length/db.leads.length*100):0)+'%')}</div>
+  V.innerHTML=`<div class="grid">${k('ليدز مفتوحة',open.length)}${k('قيمة الـ Pipeline',money(open.reduce((s,l)=>s+(+l.value||0),0)))}${k('عملاء',db.clients.length)}${k('مشاريع شغالة',db.projects.filter(p=>p.status==='قيد التنفيذ').length)}${k('إيرادات محصّلة',money(rev),'ok')}${k('مستحق التحصيل',money(out),'warn')}${k('مهام متأخرة',late.length,late.length?'bad':'')}${k('نسبة التحويل',(db.leads.length?Math.round(won.length/db.leads.length*100):0)+'%')}${k('مصروفات الشهر',money(exM),'bad')}${k('صافي الشهر',money(revM-exM),revM-exM>=0?'ok':'bad')}${k('بوستات الأسبوع',db.posts.filter(p=>p.date>=today()&&p.date<=wk&&p.status!=='منشور').length)}</div>
   <div class="two" style="gap:12px">
    <div class="card"><b>مراحل المبيعات</b>${stg.map(x=>`<div style="margin-top:10px;font-size:13px">${x.s} — ${x.n}<div class="bar"><i style="width:${x.n/mx*100}%"></i></div></div>`).join('')}</div>
-   <div class="card"><b>⏰ محتاج متابعة النهاردة (${fu.length})</b>${fu.slice(0,8).map(l=>`<div style="margin-top:8px;font-size:13px;cursor:pointer" onclick="form('leads','${l.id}')">${esc(l.name)} · ${wa(l.phone)} <small style="color:var(--mut)">${l.follow}</small></div>`).join('')||'<div class="empty">لا يوجد</div>'}
+   <div class="card"><b>⏰ محتاج متابعة النهاردة (${fu.length})</b>${fu.slice(0,8).map(l=>`<div style="margin-top:8px;font-size:13px;cursor:pointer" onclick="leadView('${l.id}')">${esc(l.name)} · ${wa(l.phone)} <small style="color:var(--mut)">${l.follow}</small></div>`).join('')||'<div class="empty">لا يوجد</div>'}
    <hr style="border:0;border-top:1px solid var(--bd);margin:12px 0"><b>🔥 مهام متأخرة</b>${late.slice(0,6).map(t=>`<div style="margin-top:8px;font-size:13px">${esc(t.title)} <small style="color:var(--mut)">${nm('team',t.assignee)} · ${t.due}</small></div>`).join('')||'<div class="empty">لا يوجد</div>'}</div></div>`;
 }
 
@@ -213,26 +231,53 @@ function vLeads(V){
   V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vLeads(document.getElementById('view'))" autofocus></div><div class="kan">`+STAGES.map(s=>{
     const items=ls.filter(l=>l.stage===s);
     return `<div class="col" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropLead(event,'${s}')"><h3>${s}<span>${items.length} · ${money(items.reduce((a,l)=>a+(+l.value||0),0))}</span></h3>`+
-    items.map(l=>`<div class="lead" draggable="true" ondragstart="event.dataTransfer.setData('t','${l.id}')" onclick="form('leads','${l.id}')"><b>${esc(l.name)}</b><small>${esc(l.company||'')} ${l.service?'· '+esc(l.service):''}</small><small>${wa(l.phone)} · ${money(l.value)}</small>${l.follow?`<small style="color:${l.follow<=today()?'var(--bad)':'var(--mut)'}">📅 ${l.follow}</small>`:''}</div>`).join('')+`</div>`}).join('')+`</div><p style="color:var(--mut);font-size:12px">اسحب الكارت بين المراحل. لما الليد يوصل "تم التعاقد" هتقدر تحوله لعميل.</p>`;
+    items.map(l=>`<div class="lead" draggable="true" ondragstart="event.dataTransfer.setData('t','${l.id}')" onclick="leadView('${l.id}')"><b>${esc(l.name)}</b><small>${esc(l.company||'')} ${l.service?'· '+esc(l.service):''}</small><small>${wa(l.phone)} · ${money(l.value)}</small>${l.follow?`<small style="color:${l.follow<=today()?'var(--bad)':'var(--mut)'}">📅 ${l.follow}</small>`:''}</div>`).join('')+`</div>`}).join('')+`</div><p style="color:var(--mut);font-size:12px">اسحب الكارت بين المراحل. لما الليد يوصل "تم التعاقد" هتقدر تحوله لعميل.</p>`;
 }
-function dropLead(e,s){e.preventDefault();const l=by('leads',e.dataTransfer.getData('t'));if(!l)return;l.stage=s;save();
-  if(s==='تم التعاقد'&&!db.clients.some(c=>c.fromLead===l.id)&&confirm('تحويل الليد لعميل؟')){db.clients.push({id:uid(),name:l.company||l.name,contact:l.name,phone:l.phone,email:l.email,manager:l.owner,since:today(),fromLead:l.id,created:today()});save()}
+function toClient(id){const l=by('leads',id);let c=db.clients.find(c=>c.fromLead===id);
+  if(!c){c={id:uid(),name:l.company||l.name,contact:l.name,phone:l.phone,email:l.email,manager:l.owner,since:today(),fromLead:id,created:today()};db.clients.push(c);save()}return c.id}
+function dropLead(e,s){e.preventDefault();const l=by('leads',e.dataTransfer.getData('t'));if(!l)return;l.stage=s;l.log=(l.log||[]).concat({date:today(),text:'انتقل إلى: '+s});save();
+  if(s==='تم التعاقد'&&!db.clients.some(c=>c.fromLead===l.id)&&confirm('تحويل الليد لعميل؟'))toClient(l.id);
   render()}
+function leadView(id){const l=by('leads',id);
+  modal(`<h2>${esc(l.name)} ${tag(l.stage)}</h2><p style="color:var(--mut)">${esc(l.company||'')} · ${wa(l.phone)} · ${esc(l.email||'')}</p><p style="margin-top:6px">${esc(l.service||'')} · ${money(l.value)} · ${esc(l.source||'')} · ${nm('team',l.owner)}</p>${l.notes?`<p style="margin-top:6px">${esc(l.notes)}</p>`:''}
+  <div class="row" style="flex-wrap:wrap"><button class="btn s" onclick="form('leads','${id}')">تعديل</button><button class="btn s g" onclick="go('clients',toClient('${id}'))">تحويل لعميل</button><button class="btn s g" onclick="modal();invForm(null,toClient('${id}'),'quote')">عرض سعر</button></div>
+  <hr style="border:0;border-top:1px solid var(--bd);margin:14px 0"><b>سجل النشاط</b>
+  <form onsubmit="return addLog(event,'${id}')" style="display:flex;gap:6px;margin:8px 0"><input name="t" placeholder="مكالمة / اجتماع / ملاحظة..." required><input name="f" type="date" title="متابعة جاية" style="max-width:140px"><button class="btn s">+</button></form>
+  ${(l.log||[]).slice().reverse().map(x=>`<div style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--bd)"><small style="color:var(--mut)">${x.date}</small> ${esc(x.text)}</div>`).join('')||'<div class="empty">لا يوجد نشاط</div>'}`)}
+function addLog(e,id){e.preventDefault();const l=by('leads',id),f=new FormData(e.target);l.log=(l.log||[]).concat({date:today(),text:f.get('t')});if(f.get('f'))l.follow=f.get('f');save();render();leadView(id);return false}
 
 // ============ Generic lists ============
 const COLS={
  clients:[['name','العميل'],['contact','التواصل'],['phone','الموبايل',v=>wa(v)],['industry','المجال'],['manager','الأكونت',v=>nm('team',v)],['_p','مشاريع',(v,r)=>db.projects.filter(p=>p.client===r.id).length],['_b','الرصيد المستحق',(v,r)=>money(db.invoices.filter(i=>i.client===r.id&&i.kind==='invoice').reduce((s,i)=>s+invCalc(i).due,0))]],
  projects:[['name','المشروع'],['client','العميل',v=>nm('clients',v)],['service','الخدمة'],['status','الحالة',v=>tag(v)],['budget','القيمة',v=>money(v)],['progress','الإنجاز',v=>`<div class="bar" style="width:80px"><i style="width:${v||0}%"></i></div>`],['end','النهاية']],
- tasks:[['title','المهمة'],['project','المشروع',v=>nm('projects',v)],['assignee','المسؤول',v=>nm('team',v)],['due','الموعد',(v,r)=>v?`<span style="color:${r.status!=='تم'&&v<today()?'var(--bad)':'inherit'}">${v}</span>`:'—'],['prio','الأولوية',v=>tag(v)],['status','الحالة',v=>tag(v)]]
+ tasks:[['title','المهمة'],['project','المشروع',v=>nm('projects',v)],['assignee','المسؤول',v=>nm('team',v)],['due','الموعد',(v,r)=>v?`<span style="color:${r.status!=='تم'&&v<today()?'var(--bad)':'inherit'}">${v}</span>`:'—'],['prio','الأولوية',v=>tag(v)],['status','الحالة',v=>tag(v)]],
+ posts:[['date','النشر'],['title','البوست'],['client','العميل',v=>nm('clients',v)],['platform','المنصة'],['assignee','المسؤول',v=>nm('team',v)],['status','الحالة',v=>tag(v)]],
+ expenses:[['date','التاريخ'],['title','البيان'],['category','النوع'],['amount','المبلغ',v=>money(v)],['project','المشروع',v=>v?nm('projects',v):'—']],
+ retainers:[['client','العميل',v=>nm('clients',v)],['service','الخدمة'],['fee','القيمة',v=>money(v)],['day','يوم الاستحقاق'],['active','نشط',v=>tag(v==='نعم'?'مدفوعة':'متوقف').replace(/>[^<]+</,'>'+v+'<')],['last','آخر فاتورة']]
 };
 function vList(V){
-  const c=E[view],cols=COLS[view];act(`<button class="btn" onclick="form('${view}')">+ ${c.label}</button>`);
-  const stOpts=view==='projects'?PSTAT:view==='tasks'?TSTAT:null;
+  const c=E[view],cols=COLS[view];act(`${view==='retainers'?'<button class="btn g" onclick="genRetainers()">⚡ توليد فواتير الشهر</button> ':''}<button class="btn" onclick="form('${view}')">+ ${c.label}</button>`);
+  const stOpts=view==='projects'?PSTAT:view==='tasks'?TSTAT:view==='posts'?POSTST:null;
   let rows=db[view].filter(r=>(!q||JSON.stringify(r).includes(q))&&(!fil||r.status===fil));
+  if(view==='posts')rows.sort((a,b)=>(a.date||'9')>(b.date||'9')?1:-1);
+  if(view==='expenses')rows.sort((a,b)=>(a.date||'')<(b.date||'')?1:-1);
   if(view==='tasks')rows.sort((a,b)=>(a.due||'9')>(b.due||'9')?1:-1);
   V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vList(document.getElementById('view'))">${stOpts?`<select onchange="fil=this.value;vList(document.getElementById('view'))"><option value="">كل الحالات</option>${stOpts.map(s=>`<option ${s===fil?'selected':''}>${s}</option>`).join('')}</select>`:''}<button class="btn g" onclick="csv('${view}')">⬇ CSV</button></div>
-  <div class="card tw"><table><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr>${rows.map(r=>`<tr>${cols.map(([k,,fn])=>`<td>${fn?fn(r[k],r):esc(r[k]??'—')}</td>`).join('')}<td>${view==='clients'?`<button class="btn s g" onclick="go('clients','${r.id}')">فتح</button> `:''}${view==='tasks'&&r.status!=='تم'?`<button class="btn s" onclick="by('tasks','${r.id}').status='تم';save();render()">✔</button> `:''}<button class="btn s g" onclick="form('${view}','${r.id}')">تعديل</button></td></tr>`).join('')||`<tr><td colspan="9" class="empty">لا توجد بيانات</td></tr>`}</table></div>`;
+  <div class="card tw"><table><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr>${rows.map(r=>`<tr>${cols.map(([k,,fn])=>`<td>${fn?fn(r[k],r):esc(r[k]??'—')}</td>`).join('')}<td>${view==='clients'?`<button class="btn s g" onclick="go('clients','${r.id}')">فتح</button> `:''}${view==='tasks'&&r.status!=='تم'?`<button class="btn s" onclick="by('tasks','${r.id}').status='تم';save();render()">✔</button> `:''}<button class="btn s g" onclick="form('${view}','${r.id}')">تعديل</button></td></tr>`).join('')||`<tr><td colspan="9" class="empty">لا توجد بيانات</td></tr>`}</table></div>`+(view==='posts'?postsCal():'')+(view==='expenses'?`<p style="margin-top:10px">إجمالي المعروض: <b>${money(rows.reduce((s,r)=>s+(+r.amount||0),0))}</b></p>`:'');
 }
+let calM=today().slice(0,7);
+function calShift(n){const d=new Date(calM+'-01');d.setMonth(d.getMonth()+n);calM=d.toISOString().slice(0,7);render()}
+function postsCal(){
+  const d0=new Date(calM+'-01'),first=(d0.getDay()+1)%7,days=new Date(d0.getFullYear(),d0.getMonth()+1,0).getDate();
+  let cells='';for(let i=0;i<first;i++)cells+='<div></div>';
+  for(let d=1;d<=days;d++){const ds=calM+'-'+String(d).padStart(2,'0');const ps=db.posts.filter(p=>p.date===ds);
+    cells+=`<div class="card" style="padding:6px;min-height:78px;font-size:11px;${ds===today()?'outline:2px solid var(--pri)':''}"><b>${d}</b>${ps.map(p=>`<div class="tag ${stTag(p.status==='منشور'?'مدفوعة':'x')}" style="display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;cursor:pointer" onclick="form('posts','${p.id}')">${esc(p.platform||'')} · ${esc(p.title)}</div>`).join('')}</div>`}
+  return `<div style="margin-top:14px;display:flex;gap:8px;align-items:center"><button class="btn s g" onclick="calShift(-1)">→</button><b>${calM}</b><button class="btn s g" onclick="calShift(1)">←</button></div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px">${['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'].map(x=>`<small style="color:var(--mut);text-align:center">${x}</small>`).join('')}${cells}</div>`}
+function genRetainers(){const m=today().slice(0,7);let n=0;
+  db.retainers.filter(r=>r.active!=='لا'&&r.last!==m&&r.client).forEach(r=>{const no='INV-'+String(db.invoices.filter(x=>x.kind==='invoice').length+1).padStart(4,'0');
+    db.invoices.push({id:uid(),kind:'invoice',no,client:r.client,project:'',date:today(),due:m+'-'+String(Math.min(28,r.day||5)).padStart(2,'0'),tax:db.settings.tax,status:'مرسل',items:[{desc:(r.service||'اشتراك شهري')+' — '+m,qty:1,price:+r.fee||0}],payments:[]});r.last=m;n++});
+  save();alert(n?`تم إنشاء ${n} فاتورة`:'لا توجد اشتراكات جديدة لهذا الشهر');render()}
 
 // ============ Client profile ============
 function vClient(V){
@@ -253,8 +298,8 @@ function vInv(V){
   V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vInv(document.getElementById('view'))"><select onchange="fil=this.value;vInv(document.getElementById('view'))"><option value="">كل الحالات</option>${['غير مدفوعة','مدفوعة جزئياً','مدفوعة','متأخرة','مرسل','مقبول','مرفوض'].map(s=>`<option ${s===fil?'selected':''}>${s}</option>`).join('')}</select><button class="btn g" onclick="csv('invoices')">⬇ CSV</button></div>
   <div class="card tw"><table><tr><th>الرقم</th><th>النوع</th><th>العميل</th><th>التاريخ</th><th>الاستحقاق</th><th>الإجمالي</th><th>المتبقي</th><th>الحالة</th><th></th></tr>${rows.map(i=>{const c=invCalc(i);return`<tr><td>${esc(i.no)}</td><td>${i.kind==='quote'?'عرض سعر':'فاتورة'}</td><td>${nm('clients',i.client)}</td><td>${i.date}</td><td>${i.due||'—'}</td><td>${money(c.total)}</td><td>${i.kind==='quote'?'—':money(c.due)}</td><td>${tag(invStatus(i))}</td><td><button class="btn s g" onclick="invView('${i.id}')">فتح</button></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">لا توجد فواتير</td></tr>'}</table></div>`;
 }
-function invForm(id,client){
-  const i=id?by('invoices',id):{kind:'invoice',date:today(),tax:db.settings.tax,client:client||'',items:[],status:'مرسل'};
+function invForm(id,client,kind){
+  const i=id?by('invoices',id):{kind:kind||'invoice',date:today(),tax:db.settings.tax,client:client||'',items:[],status:'مرسل'};
   modal(`<h2>${id?'تعديل':'جديد'}</h2><form onsubmit="return saveInv(event,'${id||''}')"><div class="two">
   <div><label>النوع</label><select name="kind"><option value="invoice" ${i.kind==='invoice'?'selected':''}>فاتورة</option><option value="quote" ${i.kind==='quote'?'selected':''}>عرض سعر</option></select></div>
   <div><label>العميل *</label><select name="client" required><option value="">—</option>${db.clients.map(c=>`<option value="${c.id}" ${c.id===i.client?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
@@ -301,6 +346,7 @@ function vRep(V){
   const src=SOURCES.map(s=>({s,n:db.leads.filter(l=>l.source===s).length,w:db.leads.filter(l=>l.source===s&&l.stage==='تم التعاقد').length})).filter(x=>x.n);
   const mo=today().slice(0,7);
   V.innerHTML=`<div class="card"><b>الإيرادات المحصّلة — آخر 6 شهور</b><div style="display:flex;gap:10px;align-items:flex-end;height:140px;margin-top:10px">${revM.map((v,i)=>`<div style="flex:1;text-align:center;font-size:11px"><div style="height:${v/mxR*100}px;background:linear-gradient(var(--pri),var(--acc));border-radius:6px 6px 0 0;min-height:2px"></div>${months[i].slice(5)}<br>${v?Math.round(v).toLocaleString('ar-EG'):''}</div>`).join('')}</div></div>
+  <div class="card tw" style="margin-top:12px"><b>الأرباح والخسائر</b><table><tr><th>الشهر</th><th>إيرادات</th><th>مصروفات</th><th>الصافي</th></tr>${months.map((m,i)=>{const ex=db.expenses.filter(x=>(x.date||'').startsWith(m)).reduce((s,x)=>s+(+x.amount||0),0);return`<tr><td>${m}</td><td>${money(revM[i])}</td><td>${money(ex)}</td><td style="color:var(--${revM[i]-ex>=0?'ok':'bad'})">${money(revM[i]-ex)}</td></tr>`}).join('')}</table></div>
   <div class="card tw" style="margin-top:12px"><b>أداء مصادر الليدز</b><table><tr><th>المصدر</th><th>ليدز</th><th>تعاقدات</th><th>التحويل</th></tr>${src.map(x=>`<tr><td>${x.s}</td><td>${x.n}</td><td>${x.w}</td><td>${Math.round(x.w/x.n*100)}%</td></tr>`).join('')||'<tr><td class="empty">لا توجد بيانات</td></tr>'}</table></div>
   <div class="card tw" style="margin-top:12px"><b>أداء الفريق (الشهر الحالي)</b><table><tr><th>الموظف</th><th>ليدز</th><th>تعاقدات</th><th>قيمة التعاقد</th><th>التارجت</th><th>مهام مكتملة</th></tr>${db.team.map(t=>{const ls=db.leads.filter(l=>l.owner===t.id&&(l.created||'').startsWith(mo));const w=db.leads.filter(l=>l.owner===t.id&&l.stage==='تم التعاقد');const v=w.reduce((s,l)=>s+(+l.value||0),0);
    return`<tr><td>${esc(t.name)}</td><td>${ls.length}</td><td>${w.length}</td><td>${money(v)}</td><td>${t.target?`<div class="bar" style="width:90px"><i style="width:${Math.min(100,v/t.target*100)}%"></i></div>`:'—'}</td><td>${db.tasks.filter(x=>x.assignee===t.id&&x.status==='تم').length}</td></tr>`}).join('')}</table></div>
