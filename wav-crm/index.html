@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WAV CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0b0d1a;--card:#141830;--card2:#1b2040;--text:#eef0ff;--mut:#8b93c4;--bd:rgba(255,255,255,.09);--pri:#6c5ce7;--pri2:#a29bfe;--acc:#00d2d3;--ok:#00e5a0;--bad:#ff4d6d;--warn:#ffb020;--r:12px}
 body.light{--bg:#f3f4fb;--card:#fff;--card2:#eef0fa;--text:#1a1c35;--mut:#666b95;--bd:rgba(20,20,60,.12)}
@@ -74,11 +77,41 @@ const PRIO=['عادي','مهم','عاجل'];
 const ROLES=['مدير','سيلز','مصمم','ميديا باير','كاتب محتوى','مونتير','أكونت مانجر'];
 const uid=()=>Math.random().toString(36).slice(2,10);
 const today=()=>new Date().toISOString().slice(0,10);
-let db;
-function load(){try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-  db=Object.assign({leads:[],clients:[],projects:[],tasks:[],invoices:[],team:[],attendance:[],settings:{company:'WAV',currency:'ج.م',tax:14,pin:''}},db||{});
+// ---- Firebase config: الصق إعدادات مشروعك هنا (انظر README). لو سبتها null النظام يشتغل محلي على المتصفح ----
+const FIREBASE_CONFIG=null;
+const CLOUD=!!FIREBASE_CONFIG;
+const COLLS=['leads','clients','projects','tasks','invoices','team','attendance'];
+const DEFAULT_SET={company:'WAV',currency:'ج.م',tax:14,pin:''};
+let db,fdb,fauth,shadow={};
+function load(){
+  if(CLOUD){db={settings:Object.assign({},DEFAULT_SET)};COLLS.forEach(c=>db[c]=[]);return}
+  try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  db=Object.assign({leads:[],clients:[],projects:[],tasks:[],invoices:[],team:[],attendance:[],settings:Object.assign({},DEFAULT_SET)},db||{});
   if(!db.team.length)db.team.push({id:uid(),name:'المدير',role:'مدير',phone:'',target:0});}
-function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function save(){
+  if(!CLOUD){localStorage.setItem(KEY,JSON.stringify(db));return}
+  const batch=fdb.batch();let n=0;
+  COLLS.forEach(c=>{const sh=shadow[c]=shadow[c]||{};const seen={};
+    db[c].forEach(r=>{seen[r.id]=1;const j=JSON.stringify(r);if(sh[r.id]!==j){batch.set(fdb.collection(c).doc(r.id),JSON.parse(j));sh[r.id]=j;n++}});
+    Object.keys(sh).forEach(id=>{if(!seen[id]){batch.delete(fdb.collection(c).doc(id));delete sh[id];n++}})});
+  const sj=JSON.stringify(db.settings);if(shadow._settings!==sj){batch.set(fdb.collection('meta').doc('settings'),JSON.parse(sj));shadow._settings=sj;n++}
+  if(n)batch.commit().catch(e=>alert('فشل الحفظ على السيرفر: '+e.message));
+}
+function startCloud(){
+  const ready={};
+  COLLS.forEach(c=>fdb.collection(c).onSnapshot(snap=>{
+    shadow[c]={};db[c]=snap.docs.map(d=>{const r=Object.assign({},d.data(),{id:d.id});shadow[c][d.id]=JSON.stringify(r);return r});
+    if(c==='team'&&!ready.team&&!db.team.length){ready.team=1;db.team.push({id:uid(),name:'المدير',role:'مدير',phone:'',target:0});save()}
+    ready[c]=1;softRender()},e=>alert('خطأ في قراءة '+c+': '+e.message)));
+  fdb.collection('meta').doc('settings').onSnapshot(d=>{db.settings=Object.assign({},DEFAULT_SET,d.data()||{});shadow._settings=JSON.stringify(db.settings);softRender()});
+}
+function softRender(){const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&document.getElementById('view').contains(a))return;render()}
+function loginScreen(msg){
+  document.querySelector('aside').style.display='none';document.querySelector('main').style.display='none';
+  let d=document.getElementById('login');if(!d){d=document.createElement('div');d.id='login';document.body.appendChild(d)}
+  d.style.cssText='margin:auto;width:100%;max-width:340px;padding:24px';
+  d.innerHTML=`<div class="card"><div class="logo" style="text-align:center">WAV CRM</div><form onsubmit="return doLogin(event)"><label>الإيميل</label><input name="e" type="email" required><label>كلمة السر</label><input name="p" type="password" required><div class="row"><button class="btn" style="width:100%">دخول</button></div><p id="lerr" style="color:var(--bad);font-size:13px;margin-top:8px">${msg||''}</p></form></div>`}
+function doLogin(e){e.preventDefault();const f=e.target;fauth.signInWithEmailAndPassword(f.e.value,f.p.value).catch(()=>{document.getElementById('lerr').textContent='الإيميل أو كلمة السر غلط'});return false}
 load();
 const money=n=>(Math.round((+n||0)*100)/100).toLocaleString('ar-EG')+' '+db.settings.currency;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -277,21 +310,30 @@ function vRep(V){
 // ============ Settings / backup ============
 function vSet(V){
   const s=db.settings;
-  V.innerHTML=`<div class="card" style="max-width:480px"><form onsubmit="return saveSet(event)"><label>اسم الشركة</label><input name="company" value="${esc(s.company)}"><div class="two"><div><label>العملة</label><input name="currency" value="${esc(s.currency)}"></div><div><label>الضريبة الافتراضية %</label><input type="number" name="tax" value="${s.tax}"></div></div><label>كود دخول (PIN) — اتركه فارغ لإلغائه</label><input name="pin" value="${esc(s.pin)}"><div class="row"><button class="btn">حفظ</button></div></form></div>
-  <div class="card" style="max-width:480px;margin-top:12px"><b>نسخة احتياطية</b><p style="color:var(--mut);font-size:13px;margin:6px 0">البيانات محفوظة في المتصفح. نزّل نسخة بشكل دوري.</p><div class="row" style="margin:0"><button class="btn" onclick="backup()">⬇ تنزيل</button><label class="btn g" style="margin:0;color:var(--text)">⬆ استرجاع<input type="file" accept=".json" hidden onchange="restore(this.files[0])"></label></div></div>`;
+  V.innerHTML=`<div class="card" style="max-width:480px"><form onsubmit="return saveSet(event)"><label>اسم الشركة</label><input name="company" value="${esc(s.company)}"><div class="two"><div><label>العملة</label><input name="currency" value="${esc(s.currency)}"></div><div><label>الضريبة الافتراضية %</label><input type="number" name="tax" value="${s.tax}"></div></div>${CLOUD?'':`<label>كود دخول (PIN) — اتركه فارغ لإلغائه</label><input name="pin" value="${esc(s.pin)}">`}<div class="row"><button class="btn">حفظ</button></div></form></div>
+  <div class="card" style="max-width:480px;margin-top:12px"><b>نسخة احتياطية</b><p style="color:var(--mut);font-size:13px;margin:6px 0">${CLOUD?'البيانات على السيرفر ومشتركة مع الفريق.':'البيانات محفوظة في المتصفح. نزّل نسخة بشكل دوري.'} </p><div class="row" style="margin:0"><button class="btn" onclick="backup()">⬇ تنزيل</button><label class="btn g" style="margin:0;color:var(--text)">⬆ استرجاع<input type="file" accept=".json" hidden onchange="restore(this.files[0])"></label></div></div>`;
 }
-function saveSet(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));db.settings={company:f.company,currency:f.currency,tax:+f.tax||0,pin:f.pin};save();render();return false}
+function saveSet(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));db.settings={company:f.company,currency:f.currency,tax:+f.tax||0,pin:f.pin||''};save();render();return false}
 function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
 function backup(){dl(`wav-crm-${today()}.json`,JSON.stringify(db),'application/json')}
-function restore(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();load();render();alert('تم الاسترجاع')}catch(e){alert('ملف غير صالح')}};r.readAsText(f)}
+function restore(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(CLOUD){COLLS.forEach(c=>db[c]=d[c]||[]);db.settings=Object.assign({},DEFAULT_SET,d.settings)}else db=d;save();if(!CLOUD)load();render();alert('تم الاسترجاع')}catch(e){alert('ملف غير صالح')}};r.readAsText(f)}
 function csv(col){const rows=db[col];if(!rows.length)return alert('لا توجد بيانات');const keys=Object.keys(rows[0]).filter(k=>typeof rows[0][k]!=='object');
   dl(`${col}.csv`,'﻿'+[keys.join(','),...rows.map(r=>keys.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n'),'text/csv')}
 function toggleTheme(){document.body.classList.toggle('light');try{localStorage.setItem('wav_theme',document.body.classList.contains('light')?'l':'d')}catch(e){}}
-function logout(){sessionStorage.removeItem('wav_ok');location.reload()}
+function logout(){if(CLOUD)fauth.signOut();else{sessionStorage.removeItem('wav_ok');location.reload()}}
 
 // ============ Boot ============
 try{if(localStorage.getItem('wav_theme')==='l')document.body.classList.add('light')}catch(e){}
-if(db.settings.pin&&sessionStorage.getItem('wav_ok')!=='1'){
+if(CLOUD){
+  firebase.initializeApp(FIREBASE_CONFIG);fauth=firebase.auth();fdb=firebase.firestore();
+  let started=false;
+  fauth.onAuthStateChanged(u=>{
+    if(!u){loginScreen();return}
+    const l=document.getElementById('login');if(l)l.remove();
+    document.querySelector('aside').style.display='';document.querySelector('main').style.display='';
+    if(!started){started=true;startCloud()}render();
+  });
+}else if(db.settings.pin&&sessionStorage.getItem('wav_ok')!=='1'){
   document.querySelector('aside').style.display='none';document.querySelector('main').style.display='none';
   const p=prompt('أدخل كود الدخول:');
   if(p===db.settings.pin){sessionStorage.setItem('wav_ok','1');location.reload()}else document.body.innerHTML='<h2 style="margin:auto;padding:40px">🔒 كود غير صحيح — حدّث الصفحة</h2>';
