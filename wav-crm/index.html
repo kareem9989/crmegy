@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAV CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d1a;--card:#141830;--card2:#1b2040;--text:#eef0ff;--mut:#8b93c4;--bd:rgba(255,255,255,.09);--pri:#6c5ce7;--pri2:#a29bfe;--acc:#00d2d3;--ok:#00e5a0;--bad:#ff4d6d;--warn:#ffb020;--r:12px}
+body.light{--bg:#f3f4fb;--card:#fff;--card2:#eef0fa;--text:#1a1c35;--mut:#666b95;--bd:rgba(20,20,60,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Cairo,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+aside{width:220px;background:var(--card);border-inline-end:1px solid var(--bd);padding:16px 10px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.logo{font-size:26px;font-weight:800;padding:6px 10px 14px;background:linear-gradient(90deg,var(--pri2),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--mut);font-weight:600;display:flex;gap:8px;align-items:center}
+.nav:hover{background:var(--card2)}.nav.on{background:var(--pri);color:#fff}
+main{flex:1;padding:22px;min-width:0}
+h1{font-size:22px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{background:var(--pri);color:#fff;border:0;padding:8px 16px;border-radius:9px;font:600 14px Cairo;cursor:pointer}
+.btn.g{background:var(--card2);color:var(--text);border:1px solid var(--bd)}.btn.d{background:var(--bad)}.btn.s{padding:4px 10px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:14px}
+.kpi b{display:block;font-size:24px;margin-top:4px}.kpi span{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;text-align:start;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:12px}
+.tw{overflow-x:auto}
+.tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;background:var(--card2)}
+.tag.ok{background:rgba(0,229,160,.15);color:var(--ok)}.tag.bad{background:rgba(255,77,109,.15);color:var(--bad)}.tag.warn{background:rgba(255,176,32,.15);color:var(--warn)}.tag.pri{background:rgba(108,92,231,.2);color:var(--pri2)}
+input,select,textarea{width:100%;background:var(--card2);color:var(--text);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;font:14px Cairo}
+label{font-size:12px;color:var(--mut);display:block;margin:8px 0 3px}
+.bar{height:8px;background:var(--card2);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--acc))}
+.kan{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
+.col{min-width:230px;flex:1;background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:10px}
+.col h3{font-size:13px;margin-bottom:8px;display:flex;justify-content:space-between}
+.lead{background:var(--card2);border-radius:9px;padding:9px;margin-bottom:8px;cursor:grab;font-size:13px}
+.lead small{color:var(--mut);display:block}
+.col.over{outline:2px dashed var(--pri)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9;padding:12px}
+.mb{background:var(--card);border-radius:14px;padding:18px;width:100%;max-width:520px;max-height:92vh;overflow:auto;border:1px solid var(--bd)}
+.mb h2{margin-bottom:6px;font-size:18px}.row{display:flex;gap:8px;margin-top:14px;justify-content:flex-start}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tools input,.tools select{max-width:220px}
+.hb{display:none}
+@media(max-width:800px){aside{position:fixed;inset-block:0;inset-inline-start:0;z-index:5;transform:translateX(100%)}[dir=rtl] aside{transform:translateX(100%)}aside.open{transform:none!important}.hb{display:inline-block}main{padding:14px}.two{grid-template-columns:1fr}}
+.empty{color:var(--mut);text-align:center;padding:24px}
+@media print{aside,.noprint{display:none!important}body{background:#fff;color:#000}.card{border:0}}
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="logo">WAV</div>
+  <div id="nav"></div>
+  <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px">
+    <button class="btn g s" onclick="toggleTheme()">🌓 الوضع</button>
+    <button class="btn g s" onclick="logout()">🚪 خروج</button>
+  </div>
+</aside>
+<main>
+  <h1><span><button class="btn g s hb" onclick="document.getElementById('side').classList.toggle('open')">☰</button> <span id="title"></span></span><span id="actions"></span></h1>
+  <div id="view"></div>
+</main>
+<div id="modal"></div>
+
+<script>
+// ============ Data layer (localStorage) ============
+const KEY='wav_crm_v1';
+const STAGES=['جديد','تم التواصل','عرض سعر','تفاوض','تم التعاقد','خسارة'];
+const SOURCES=['فيسبوك','إنستجرام','واتساب','ترشيح','موقع','اتصال مباشر','أخرى'];
+const SERVICES=['إدارة سوشيال ميديا','إعلانات ممولة','تصميم وهوية','فيديو وموشن','موقع إلكتروني','SEO','استشارات','أخرى'];
+const PSTAT=['قيد التنفيذ','متوقف','مكتمل','ملغي'];
+const TSTAT=['للعمل','جاري','مراجعة','تم'];
+const PRIO=['عادي','مهم','عاجل'];
+const ROLES=['مدير','سيلز','مصمم','ميديا باير','كاتب محتوى','مونتير','أكونت مانجر'];
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>new Date().toISOString().slice(0,10);
+let db;
+function load(){try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  db=Object.assign({leads:[],clients:[],projects:[],tasks:[],invoices:[],team:[],attendance:[],settings:{company:'WAV',currency:'ج.م',tax:14,pin:''}},db||{});
+  if(!db.team.length)db.team.push({id:uid(),name:'المدير',role:'مدير',phone:'',target:0});}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+load();
+const money=n=>(Math.round((+n||0)*100)/100).toLocaleString('ar-EG')+' '+db.settings.currency;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const by=(col,id)=>db[col].find(x=>x.id===id);
+const nm=(col,id)=>by(col,id)?.name||by(col,id)?.title||'—';
+const wa=p=>p?`<a style="color:var(--ok)" target="_blank" href="https://wa.me/${String(p).replace(/\D/g,'').replace(/^0/,'20')}">${esc(p)}</a>`:'—';
+
+// ============ Entity configs ============
+const opt=(a)=>a.map(x=>[x,x]);
+const refOpt=(c)=>()=>db[c].map(x=>[x.id,x.name||x.title]);
+const E={
+ leads:{label:'ليد',f:[
+  {k:'name',l:'الاسم',req:1},{k:'company',l:'الشركة / البراند'},{k:'phone',l:'الموبايل / واتساب'},{k:'email',l:'الإيميل'},
+  {k:'source',l:'المصدر',t:'select',o:()=>opt(SOURCES)},{k:'service',l:'الخدمة المطلوبة',t:'select',o:()=>opt(SERVICES)},
+  {k:'stage',l:'المرحلة',t:'select',o:()=>opt(STAGES)},{k:'value',l:'القيمة المتوقعة',t:'number'},
+  {k:'owner',l:'المسؤول',t:'select',o:refOpt('team')},{k:'follow',l:'موعد المتابعة',t:'date'},{k:'notes',l:'ملاحظات',t:'textarea'}],
+  def:()=>({stage:'جديد',source:'فيسبوك',owner:db.team[0]?.id})},
+ clients:{label:'عميل',f:[
+  {k:'name',l:'اسم العميل / الشركة',req:1},{k:'contact',l:'مسؤول التواصل'},{k:'phone',l:'الموبايل'},{k:'email',l:'الإيميل'},
+  {k:'industry',l:'المجال'},{k:'manager',l:'أكونت مانجر',t:'select',o:refOpt('team')},{k:'since',l:'تاريخ التعاقد',t:'date'},{k:'notes',l:'ملاحظات',t:'textarea'}],
+  def:()=>({since:today()})},
+ projects:{label:'مشروع / حملة',f:[
+  {k:'name',l:'اسم المشروع / الحملة',req:1},{k:'client',l:'العميل',t:'select',o:refOpt('clients'),req:1},
+  {k:'service',l:'الخدمة',t:'select',o:()=>opt(SERVICES)},{k:'status',l:'الحالة',t:'select',o:()=>opt(PSTAT)},
+  {k:'budget',l:'قيمة التعاقد',t:'number'},{k:'adspend',l:'ميزانية الإعلانات',t:'number'},
+  {k:'start',l:'البداية',t:'date'},{k:'end',l:'النهاية',t:'date'},{k:'progress',l:'نسبة الإنجاز %',t:'number'},{k:'notes',l:'ملاحظات',t:'textarea'}],
+  def:()=>({status:'قيد التنفيذ',start:today(),progress:0})},
+ tasks:{label:'مهمة',f:[
+  {k:'title',l:'المهمة',req:1},{k:'project',l:'المشروع',t:'select',o:refOpt('projects')},
+  {k:'assignee',l:'المسؤول',t:'select',o:refOpt('team')},{k:'due',l:'الموعد النهائي',t:'date'},
+  {k:'status',l:'الحالة',t:'select',o:()=>opt(TSTAT)},{k:'prio',l:'الأولوية',t:'select',o:()=>opt(PRIO)}],
+  def:()=>({status:'للعمل',prio:'عادي'})},
+ team:{label:'موظف',f:[
+  {k:'name',l:'الاسم',req:1},{k:'role',l:'الوظيفة',t:'select',o:()=>opt(ROLES)},{k:'phone',l:'الموبايل'},
+  {k:'target',l:'التارجت الشهري (قيمة تعاقدات)',t:'number'}],def:()=>({role:'سيلز'})}
+};
+
+// ============ Helpers: invoices ============
+function invCalc(i){const sub=(i.items||[]).reduce((s,x)=>s+x.qty*x.price,0);const tax=sub*(+i.tax||0)/100;const total=sub+tax;
+  const paid=(i.payments||[]).reduce((s,p)=>s+(+p.amount||0),0);return{sub,tax,total,paid,due:total-paid}}
+function invStatus(i){if(i.kind==='quote')return i.status||'مرسل';const c=invCalc(i);
+  if(c.total>0&&c.paid>=c.total)return'مدفوعة';if(c.paid>0&&i.due&&i.due<today())return'متأخرة';if(c.paid>0)return'مدفوعة جزئياً';
+  if(i.due&&i.due<today())return'متأخرة';return'غير مدفوعة'}
+const stTag=s=>({'مدفوعة':'ok','مكتمل':'ok','تم':'ok','تم التعاقد':'ok','مقبول':'ok','متأخرة':'bad','خسارة':'bad','ملغي':'bad','عاجل':'bad','مرفوض':'bad','غير مدفوعة':'warn','مدفوعة جزئياً':'warn','متوقف':'warn','مهم':'warn'}[s]||'pri');
+const tag=s=>`<span class="tag ${stTag(s)}">${esc(s)}</span>`;
+const dleft=d=>d?Math.ceil((new Date(d)-new Date(today()))/864e5):null;
+
+// ============ UI core ============
+let view='dashboard',q='',fil='',cur=null;
+const NAV=[['dashboard','📊','لوحة التحكم'],['leads','🎯','الليدز'],['clients','🤝','العملاء'],['projects','📁','المشاريع والحملات'],['tasks','✅','المهام'],['invoices','🧾','الفواتير والعروض'],['team','👥','الفريق والحضور'],['reports','📈','التقارير'],['settings','⚙️','الإعدادات']];
+function go(v,id){view=v;cur=id||null;q='';fil='';document.getElementById('side').classList.remove('open');render()}
+function render(){
+  document.getElementById('nav').innerHTML=NAV.map(([k,i,l])=>`<div class="nav ${view===k?'on':''}" onclick="go('${k}')">${i} ${l}</div>`).join('');
+  const t=NAV.find(n=>n[0]===view);document.getElementById('title').textContent=(cur&&view==='clients'?'ملف العميل':t[2]);
+  document.getElementById('actions').innerHTML='';
+  const V=document.getElementById('view');
+  ({dashboard:vDash,leads:vLeads,clients:cur?vClient:vList,projects:vList,tasks:vList,invoices:vInv,team:vTeam,reports:vRep,settings:vSet})[view](V);
+}
+function act(html){document.getElementById('actions').innerHTML=html}
+function modal(html){const m=document.getElementById('modal');m.innerHTML=html?`<div class="modal" onmousedown="if(event.target===this)modal()"><div class="mb">${html}</div></div>`:''}
+
+// generic form
+function form(col,id,pre){
+  const c=E[col],rec=id?by(col,id):Object.assign({},c.def(),pre||{});
+  const fields=c.f.map(f=>{const v=rec[f.k]??'';let inp;
+    if(f.t==='select'){inp=`<select name="${f.k}"><option value="">—</option>${f.o().map(([a,b])=>`<option value="${esc(a)}" ${a==v?'selected':''}>${esc(b)}</option>`).join('')}</select>`}
+    else if(f.t==='textarea')inp=`<textarea name="${f.k}" rows="3">${esc(v)}</textarea>`;
+    else inp=`<input name="${f.k}" type="${f.t||'text'}" value="${esc(v)}" ${f.req?'required':''}>`;
+    return `<div><label>${f.l}${f.req?' *':''}</label>${inp}</div>`}).join('');
+  modal(`<h2>${id?'تعديل':'إضافة'} ${c.label}</h2><form onsubmit="return saveForm(event,'${col}','${id||''}')"><div class="two">${fields}</div>
+   <div class="row"><button class="btn">حفظ</button><button type="button" class="btn g" onclick="modal()">إلغاء</button>${id?`<button type="button" class="btn d" style="margin-inline-start:auto" onclick="del('${col}','${id}')">حذف</button>`:''}</div></form>`);
+}
+function saveForm(e,col,id){e.preventDefault();const fd=new FormData(e.target);const o={};
+  E[col].f.forEach(f=>{let v=fd.get(f.k);if(f.t==='number')v=v===''?0:+v;o[f.k]=v});
+  if(id)Object.assign(by(col,id),o);else db[col].push(Object.assign({id:uid(),created:today()},o));
+  save();modal();render();return false}
+function del(col,id){if(!confirm('متأكد من الحذف؟'))return;db[col]=db[col].filter(x=>x.id!==id);save();modal();cur=null;render()}
+
+// ============ Dashboard ============
+function vDash(V){
+  const won=db.leads.filter(l=>l.stage==='تم التعاقد'),open=db.leads.filter(l=>!['تم التعاقد','خسارة'].includes(l.stage));
+  const inv=db.invoices.filter(i=>i.kind==='invoice');const rev=inv.reduce((s,i)=>s+invCalc(i).paid,0);
+  const out=inv.reduce((s,i)=>s+invCalc(i).due,0);
+  const late=db.tasks.filter(t=>t.status!=='تم'&&t.due&&t.due<today());
+  const fu=db.leads.filter(l=>l.follow&&l.follow<=today()&&!['تم التعاقد','خسارة'].includes(l.stage));
+  const k=(l,v,c)=>`<div class="card kpi"><span>${l}</span><b style="${c?'color:var(--'+c+')':''}">${v}</b></div>`;
+  const stg=STAGES.map(s=>({s,n:db.leads.filter(l=>l.stage===s).length}));const mx=Math.max(1,...stg.map(x=>x.n));
+  V.innerHTML=`<div class="grid">${k('ليدز مفتوحة',open.length)}${k('قيمة الـ Pipeline',money(open.reduce((s,l)=>s+(+l.value||0),0)))}${k('عملاء',db.clients.length)}${k('مشاريع شغالة',db.projects.filter(p=>p.status==='قيد التنفيذ').length)}${k('إيرادات محصّلة',money(rev),'ok')}${k('مستحق التحصيل',money(out),'warn')}${k('مهام متأخرة',late.length,late.length?'bad':'')}${k('نسبة التحويل',(db.leads.length?Math.round(won.length/db.leads.length*100):0)+'%')}</div>
+  <div class="two" style="gap:12px">
+   <div class="card"><b>مراحل المبيعات</b>${stg.map(x=>`<div style="margin-top:10px;font-size:13px">${x.s} — ${x.n}<div class="bar"><i style="width:${x.n/mx*100}%"></i></div></div>`).join('')}</div>
+   <div class="card"><b>⏰ محتاج متابعة النهاردة (${fu.length})</b>${fu.slice(0,8).map(l=>`<div style="margin-top:8px;font-size:13px;cursor:pointer" onclick="form('leads','${l.id}')">${esc(l.name)} · ${wa(l.phone)} <small style="color:var(--mut)">${l.follow}</small></div>`).join('')||'<div class="empty">لا يوجد</div>'}
+   <hr style="border:0;border-top:1px solid var(--bd);margin:12px 0"><b>🔥 مهام متأخرة</b>${late.slice(0,6).map(t=>`<div style="margin-top:8px;font-size:13px">${esc(t.title)} <small style="color:var(--mut)">${nm('team',t.assignee)} · ${t.due}</small></div>`).join('')||'<div class="empty">لا يوجد</div>'}</div></div>`;
+}
+
+// ============ Leads kanban ============
+function vLeads(V){
+  act(`<button class="btn" onclick="form('leads')">+ ليد جديد</button>`);
+  const ls=db.leads.filter(l=>!q||(l.name+l.company+l.phone).includes(q));
+  V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vLeads(document.getElementById('view'))" autofocus></div><div class="kan">`+STAGES.map(s=>{
+    const items=ls.filter(l=>l.stage===s);
+    return `<div class="col" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropLead(event,'${s}')"><h3>${s}<span>${items.length} · ${money(items.reduce((a,l)=>a+(+l.value||0),0))}</span></h3>`+
+    items.map(l=>`<div class="lead" draggable="true" ondragstart="event.dataTransfer.setData('t','${l.id}')" onclick="form('leads','${l.id}')"><b>${esc(l.name)}</b><small>${esc(l.company||'')} ${l.service?'· '+esc(l.service):''}</small><small>${wa(l.phone)} · ${money(l.value)}</small>${l.follow?`<small style="color:${l.follow<=today()?'var(--bad)':'var(--mut)'}">📅 ${l.follow}</small>`:''}</div>`).join('')+`</div>`}).join('')+`</div><p style="color:var(--mut);font-size:12px">اسحب الكارت بين المراحل. لما الليد يوصل "تم التعاقد" هتقدر تحوله لعميل.</p>`;
+}
+function dropLead(e,s){e.preventDefault();const l=by('leads',e.dataTransfer.getData('t'));if(!l)return;l.stage=s;save();
+  if(s==='تم التعاقد'&&!db.clients.some(c=>c.fromLead===l.id)&&confirm('تحويل الليد لعميل؟')){db.clients.push({id:uid(),name:l.company||l.name,contact:l.name,phone:l.phone,email:l.email,manager:l.owner,since:today(),fromLead:l.id,created:today()});save()}
+  render()}
+
+// ============ Generic lists ============
+const COLS={
+ clients:[['name','العميل'],['contact','التواصل'],['phone','الموبايل',v=>wa(v)],['industry','المجال'],['manager','الأكونت',v=>nm('team',v)],['_p','مشاريع',(v,r)=>db.projects.filter(p=>p.client===r.id).length],['_b','الرصيد المستحق',(v,r)=>money(db.invoices.filter(i=>i.client===r.id&&i.kind==='invoice').reduce((s,i)=>s+invCalc(i).due,0))]],
+ projects:[['name','المشروع'],['client','العميل',v=>nm('clients',v)],['service','الخدمة'],['status','الحالة',v=>tag(v)],['budget','القيمة',v=>money(v)],['progress','الإنجاز',v=>`<div class="bar" style="width:80px"><i style="width:${v||0}%"></i></div>`],['end','النهاية']],
+ tasks:[['title','المهمة'],['project','المشروع',v=>nm('projects',v)],['assignee','المسؤول',v=>nm('team',v)],['due','الموعد',(v,r)=>v?`<span style="color:${r.status!=='تم'&&v<today()?'var(--bad)':'inherit'}">${v}</span>`:'—'],['prio','الأولوية',v=>tag(v)],['status','الحالة',v=>tag(v)]]
+};
+function vList(V){
+  const c=E[view],cols=COLS[view];act(`<button class="btn" onclick="form('${view}')">+ ${c.label}</button>`);
+  const stOpts=view==='projects'?PSTAT:view==='tasks'?TSTAT:null;
+  let rows=db[view].filter(r=>(!q||JSON.stringify(r).includes(q))&&(!fil||r.status===fil));
+  if(view==='tasks')rows.sort((a,b)=>(a.due||'9')>(b.due||'9')?1:-1);
+  V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vList(document.getElementById('view'))">${stOpts?`<select onchange="fil=this.value;vList(document.getElementById('view'))"><option value="">كل الحالات</option>${stOpts.map(s=>`<option ${s===fil?'selected':''}>${s}</option>`).join('')}</select>`:''}<button class="btn g" onclick="csv('${view}')">⬇ CSV</button></div>
+  <div class="card tw"><table><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr>${rows.map(r=>`<tr>${cols.map(([k,,fn])=>`<td>${fn?fn(r[k],r):esc(r[k]??'—')}</td>`).join('')}<td>${view==='clients'?`<button class="btn s g" onclick="go('clients','${r.id}')">فتح</button> `:''}${view==='tasks'&&r.status!=='تم'?`<button class="btn s" onclick="by('tasks','${r.id}').status='تم';save();render()">✔</button> `:''}<button class="btn s g" onclick="form('${view}','${r.id}')">تعديل</button></td></tr>`).join('')||`<tr><td colspan="9" class="empty">لا توجد بيانات</td></tr>`}</table></div>`;
+}
+
+// ============ Client profile ============
+function vClient(V){
+  const c=by('clients',cur);if(!c){cur=null;return render()}
+  act(`<button class="btn g" onclick="go('clients')">← رجوع</button> <button class="btn" onclick="form('clients','${c.id}')">تعديل</button>`);
+  const ps=db.projects.filter(p=>p.client===c.id),is=db.invoices.filter(i=>i.client===c.id);
+  const tot=is.filter(i=>i.kind==='invoice').reduce((s,i)=>({t:s.t+invCalc(i).total,p:s.p+invCalc(i).paid}),{t:0,p:0});
+  V.innerHTML=`<div class="card" style="margin-bottom:12px"><h2>${esc(c.name)}</h2><p style="color:var(--mut)">${esc(c.contact||'')} · ${wa(c.phone)} · ${esc(c.email||'')} · ${esc(c.industry||'')}</p><p>أكونت: ${nm('team',c.manager)} · عميل من ${c.since||'—'}</p><p style="margin-top:6px">${esc(c.notes||'')}</p></div>
+  <div class="grid"><div class="card kpi"><span>إجمالي الفواتير</span><b>${money(tot.t)}</b></div><div class="card kpi"><span>المدفوع</span><b style="color:var(--ok)">${money(tot.p)}</b></div><div class="card kpi"><span>المتبقي</span><b style="color:var(--warn)">${money(tot.t-tot.p)}</b></div></div>
+  <div class="card tw" style="margin-bottom:12px"><b>المشاريع</b> <button class="btn s" onclick="form('projects',null,{client:'${c.id}'})">+ مشروع</button><table>${ps.map(p=>`<tr><td>${esc(p.name)}</td><td>${tag(p.status)}</td><td>${money(p.budget)}</td><td><button class="btn s g" onclick="form('projects','${p.id}')">تعديل</button></td></tr>`).join('')||'<tr><td class="empty">لا يوجد</td></tr>'}</table></div>
+  <div class="card tw"><b>الفواتير والعروض</b> <button class="btn s" onclick="invForm(null,'${c.id}')">+ فاتورة</button><table>${is.map(i=>`<tr><td>${esc(i.no)}</td><td>${i.kind==='quote'?'عرض':'فاتورة'}</td><td>${money(invCalc(i).total)}</td><td>${tag(invStatus(i))}</td><td><button class="btn s g" onclick="invView('${i.id}')">عرض</button></td></tr>`).join('')||'<tr><td class="empty">لا يوجد</td></tr>'}</table></div>`;
+}
+
+// ============ Invoices ============
+function vInv(V){
+  act(`<button class="btn" onclick="invForm()">+ فاتورة / عرض سعر</button>`);
+  const rows=db.invoices.filter(i=>(!q||(i.no+nm('clients',i.client)).includes(q))&&(!fil||invStatus(i)===fil));
+  V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vInv(document.getElementById('view'))"><select onchange="fil=this.value;vInv(document.getElementById('view'))"><option value="">كل الحالات</option>${['غير مدفوعة','مدفوعة جزئياً','مدفوعة','متأخرة','مرسل','مقبول','مرفوض'].map(s=>`<option ${s===fil?'selected':''}>${s}</option>`).join('')}</select><button class="btn g" onclick="csv('invoices')">⬇ CSV</button></div>
+  <div class="card tw"><table><tr><th>الرقم</th><th>النوع</th><th>العميل</th><th>التاريخ</th><th>الاستحقاق</th><th>الإجمالي</th><th>المتبقي</th><th>الحالة</th><th></th></tr>${rows.map(i=>{const c=invCalc(i);return`<tr><td>${esc(i.no)}</td><td>${i.kind==='quote'?'عرض سعر':'فاتورة'}</td><td>${nm('clients',i.client)}</td><td>${i.date}</td><td>${i.due||'—'}</td><td>${money(c.total)}</td><td>${i.kind==='quote'?'—':money(c.due)}</td><td>${tag(invStatus(i))}</td><td><button class="btn s g" onclick="invView('${i.id}')">فتح</button></td></tr>`}).join('')||'<tr><td colspan="9" class="empty">لا توجد فواتير</td></tr>'}</table></div>`;
+}
+function invForm(id,client){
+  const i=id?by('invoices',id):{kind:'invoice',date:today(),tax:db.settings.tax,client:client||'',items:[],status:'مرسل'};
+  modal(`<h2>${id?'تعديل':'جديد'}</h2><form onsubmit="return saveInv(event,'${id||''}')"><div class="two">
+  <div><label>النوع</label><select name="kind"><option value="invoice" ${i.kind==='invoice'?'selected':''}>فاتورة</option><option value="quote" ${i.kind==='quote'?'selected':''}>عرض سعر</option></select></div>
+  <div><label>العميل *</label><select name="client" required><option value="">—</option>${db.clients.map(c=>`<option value="${c.id}" ${c.id===i.client?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+  <div><label>المشروع</label><select name="project"><option value="">—</option>${db.projects.map(p=>`<option value="${p.id}" ${p.id===i.project?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>
+  <div><label>التاريخ</label><input type="date" name="date" value="${i.date}"></div>
+  <div><label>تاريخ الاستحقاق</label><input type="date" name="due" value="${i.due||''}"></div>
+  <div><label>الضريبة %</label><input type="number" name="tax" value="${i.tax}"></div>
+  <div><label>حالة العرض</label><select name="status">${['مرسل','مقبول','مرفوض'].map(s=>`<option ${s===i.status?'selected':''}>${s}</option>`).join('')}</select></div></div>
+  <label>البنود (سطر لكل بند: الوصف | الكمية | السعر)</label><textarea name="items" rows="5" placeholder="إدارة صفحات شهر يناير | 1 | 5000">${(i.items||[]).map(x=>`${x.desc} | ${x.qty} | ${x.price}`).join('\n')}</textarea>
+  <div class="row"><button class="btn">حفظ</button><button type="button" class="btn g" onclick="modal()">إلغاء</button></div></form>`)}
+function saveInv(e,id){e.preventDefault();const fd=Object.fromEntries(new FormData(e.target));
+  const items=fd.items.split('\n').map(l=>l.split('|').map(s=>s.trim())).filter(a=>a[0]).map(a=>({desc:a[0],qty:+a[1]||1,price:+a[2]||0}));
+  const o={kind:fd.kind,client:fd.client,project:fd.project,date:fd.date,due:fd.due,tax:+fd.tax||0,status:fd.status,items};
+  if(id)Object.assign(by('invoices',id),o);else{const n=db.invoices.filter(x=>x.kind===o.kind).length+1;db.invoices.push(Object.assign({id:uid(),payments:[],no:(o.kind==='quote'?'Q-':'INV-')+String(n).padStart(4,'0')},o))}
+  save();modal();render();return false}
+function invView(id){const i=by('invoices',id),c=invCalc(i),cl=by('clients',i.client)||{};
+  modal(`<div id="print"><h2>${i.kind==='quote'?'عرض سعر':'فاتورة'} ${esc(i.no)}</h2><p style="color:var(--mut)">${esc(db.settings.company)} — ${i.date}${i.due?' · استحقاق '+i.due:''}</p><p style="margin:8px 0">العميل: <b>${esc(cl.name||'—')}</b> ${tag(invStatus(i))}</p>
+  <table><tr><th>البند</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${i.items.map(x=>`<tr><td>${esc(x.desc)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('')}</table>
+  <p style="margin-top:8px">المجموع: ${money(c.sub)} · ضريبة (${i.tax}%): ${money(c.tax)}</p><p><b>الإجمالي: ${money(c.total)}</b></p>
+  ${i.kind==='invoice'?`<p>المدفوع: <span style="color:var(--ok)">${money(c.paid)}</span> · المتبقي: <b style="color:var(--warn)">${money(c.due)}</b></p>${(i.payments||[]).map(p=>`<small style="display:block;color:var(--mut)">${p.date} — ${money(p.amount)} (${esc(p.method||'')})</small>`).join('')}`:''}</div>
+  <div class="row noprint" style="flex-wrap:wrap">${i.kind==='invoice'?`<button class="btn" onclick="addPay('${id}')">+ دفعة</button>`:`<button class="btn" onclick="quoteToInv('${id}')">تحويل لفاتورة</button>`}<button class="btn g" onclick="invForm('${id}')">تعديل</button><button class="btn g" onclick="window.print()">🖨 طباعة</button><button class="btn d" onclick="del('invoices','${id}')">حذف</button></div>`)}
+function addPay(id){const a=prompt('المبلغ المدفوع:');if(!a||isNaN(+a))return;const m=prompt('طريقة الدفع (كاش / تحويل / فودافون كاش...):','كاش')||'';
+  by('invoices',id).payments.push({amount:+a,date:today(),method:m});save();render();invView(id)}
+function quoteToInv(id){const q=by('invoices',id);q.status='مقبول';const n=db.invoices.filter(x=>x.kind==='invoice').length+1;
+  const ni=Object.assign({},JSON.parse(JSON.stringify(q)),{id:uid(),kind:'invoice',payments:[],no:'INV-'+String(n).padStart(4,'0'),date:today()});db.invoices.push(ni);save();render();invView(ni.id)}
+
+// ============ Team & attendance ============
+function vTeam(V){
+  act(`<button class="btn" onclick="form('team')">+ موظف</button>`);
+  const mo=today().slice(0,7);
+  V.innerHTML=`<div class="card tw"><table><tr><th>الموظف</th><th>الوظيفة</th><th>الموبايل</th><th>الحضور اليوم</th><th></th></tr>${db.team.map(t=>{const a=db.attendance.find(x=>x.emp===t.id&&x.date===today());
+   return`<tr><td>${esc(t.name)}</td><td>${esc(t.role)}</td><td>${wa(t.phone)}</td><td>${a?`${a.in}${a.out?' → '+a.out:''}`:'—'}</td><td>${!a?`<button class="btn s" onclick="checkin('${t.id}')">تسجيل حضور</button>`:!a.out?`<button class="btn s g" onclick="checkout('${t.id}')">انصراف</button>`:''} <button class="btn s g" onclick="form('team','${t.id}')">تعديل</button></td></tr>`}).join('')}</table></div>
+  <div class="card tw" style="margin-top:12px"><b>سجل الحضور — الشهر الحالي</b><table><tr><th>الموظف</th><th>أيام الحضور</th></tr>${db.team.map(t=>`<tr><td>${esc(t.name)}</td><td>${db.attendance.filter(x=>x.emp===t.id&&x.date.startsWith(mo)).length}</td></tr>`).join('')}</table></div>`;
+}
+const nowT=()=>new Date().toTimeString().slice(0,5);
+function checkin(id){db.attendance.push({id:uid(),emp:id,date:today(),in:nowT()});save();render()}
+function checkout(id){db.attendance.find(x=>x.emp===id&&x.date===today()).out=nowT();save();render()}
+
+// ============ Reports ============
+function vRep(V){
+  const months=[...Array(6)].map((_,i)=>{const d=new Date();d.setMonth(d.getMonth()-5+i);return d.toISOString().slice(0,7)});
+  const revM=months.map(m=>db.invoices.filter(i=>i.kind==='invoice').reduce((s,i)=>s+(i.payments||[]).filter(p=>p.date.startsWith(m)).reduce((a,p)=>a+p.amount,0),0));
+  const mxR=Math.max(1,...revM);
+  const src=SOURCES.map(s=>({s,n:db.leads.filter(l=>l.source===s).length,w:db.leads.filter(l=>l.source===s&&l.stage==='تم التعاقد').length})).filter(x=>x.n);
+  const mo=today().slice(0,7);
+  V.innerHTML=`<div class="card"><b>الإيرادات المحصّلة — آخر 6 شهور</b><div style="display:flex;gap:10px;align-items:flex-end;height:140px;margin-top:10px">${revM.map((v,i)=>`<div style="flex:1;text-align:center;font-size:11px"><div style="height:${v/mxR*100}px;background:linear-gradient(var(--pri),var(--acc));border-radius:6px 6px 0 0;min-height:2px"></div>${months[i].slice(5)}<br>${v?Math.round(v).toLocaleString('ar-EG'):''}</div>`).join('')}</div></div>
+  <div class="card tw" style="margin-top:12px"><b>أداء مصادر الليدز</b><table><tr><th>المصدر</th><th>ليدز</th><th>تعاقدات</th><th>التحويل</th></tr>${src.map(x=>`<tr><td>${x.s}</td><td>${x.n}</td><td>${x.w}</td><td>${Math.round(x.w/x.n*100)}%</td></tr>`).join('')||'<tr><td class="empty">لا توجد بيانات</td></tr>'}</table></div>
+  <div class="card tw" style="margin-top:12px"><b>أداء الفريق (الشهر الحالي)</b><table><tr><th>الموظف</th><th>ليدز</th><th>تعاقدات</th><th>قيمة التعاقد</th><th>التارجت</th><th>مهام مكتملة</th></tr>${db.team.map(t=>{const ls=db.leads.filter(l=>l.owner===t.id&&(l.created||'').startsWith(mo));const w=db.leads.filter(l=>l.owner===t.id&&l.stage==='تم التعاقد');const v=w.reduce((s,l)=>s+(+l.value||0),0);
+   return`<tr><td>${esc(t.name)}</td><td>${ls.length}</td><td>${w.length}</td><td>${money(v)}</td><td>${t.target?`<div class="bar" style="width:90px"><i style="width:${Math.min(100,v/t.target*100)}%"></i></div>`:'—'}</td><td>${db.tasks.filter(x=>x.assignee===t.id&&x.status==='تم').length}</td></tr>`}).join('')}</table></div>
+  <div class="card tw" style="margin-top:12px"><b>ربحية المشاريع</b><table><tr><th>المشروع</th><th>القيمة</th><th>ميزانية الإعلانات</th><th>الصافي</th></tr>${db.projects.map(p=>`<tr><td>${esc(p.name)}</td><td>${money(p.budget)}</td><td>${money(p.adspend)}</td><td>${money((p.budget||0)-(p.adspend||0))}</td></tr>`).join('')||'<tr><td class="empty">لا توجد بيانات</td></tr>'}</table></div>`;
+}
+
+// ============ Settings / backup ============
+function vSet(V){
+  const s=db.settings;
+  V.innerHTML=`<div class="card" style="max-width:480px"><form onsubmit="return saveSet(event)"><label>اسم الشركة</label><input name="company" value="${esc(s.company)}"><div class="two"><div><label>العملة</label><input name="currency" value="${esc(s.currency)}"></div><div><label>الضريبة الافتراضية %</label><input type="number" name="tax" value="${s.tax}"></div></div><label>كود دخول (PIN) — اتركه فارغ لإلغائه</label><input name="pin" value="${esc(s.pin)}"><div class="row"><button class="btn">حفظ</button></div></form></div>
+  <div class="card" style="max-width:480px;margin-top:12px"><b>نسخة احتياطية</b><p style="color:var(--mut);font-size:13px;margin:6px 0">البيانات محفوظة في المتصفح. نزّل نسخة بشكل دوري.</p><div class="row" style="margin:0"><button class="btn" onclick="backup()">⬇ تنزيل</button><label class="btn g" style="margin:0;color:var(--text)">⬆ استرجاع<input type="file" accept=".json" hidden onchange="restore(this.files[0])"></label></div></div>`;
+}
+function saveSet(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));db.settings={company:f.company,currency:f.currency,tax:+f.tax||0,pin:f.pin};save();render();return false}
+function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
+function backup(){dl(`wav-crm-${today()}.json`,JSON.stringify(db),'application/json')}
+function restore(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();load();render();alert('تم الاسترجاع')}catch(e){alert('ملف غير صالح')}};r.readAsText(f)}
+function csv(col){const rows=db[col];if(!rows.length)return alert('لا توجد بيانات');const keys=Object.keys(rows[0]).filter(k=>typeof rows[0][k]!=='object');
+  dl(`${col}.csv`,'﻿'+[keys.join(','),...rows.map(r=>keys.map(k=>`"${String(r[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n'),'text/csv')}
+function toggleTheme(){document.body.classList.toggle('light');try{localStorage.setItem('wav_theme',document.body.classList.contains('light')?'l':'d')}catch(e){}}
+function logout(){sessionStorage.removeItem('wav_ok');location.reload()}
+
+// ============ Boot ============
+try{if(localStorage.getItem('wav_theme')==='l')document.body.classList.add('light')}catch(e){}
+if(db.settings.pin&&sessionStorage.getItem('wav_ok')!=='1'){
+  document.querySelector('aside').style.display='none';document.querySelector('main').style.display='none';
+  const p=prompt('أدخل كود الدخول:');
+  if(p===db.settings.pin){sessionStorage.setItem('wav_ok','1');location.reload()}else document.body.innerHTML='<h2 style="margin:auto;padding:40px">🔒 كود غير صحيح — حدّث الصفحة</h2>';
+}else render();
+</script>
+</body>
+</html>
