@@ -78,6 +78,11 @@ const PLAT=['فيسبوك','إنستجرام','تيك توك','لينكدإن','
 const POSTST=['فكرة','قيد التصميم','مراجعة','معتمد','منشور'];
 const EXPC=['إعلانات','مرتبات','أدوات واشتراكات','مواصلات','إيجار','أخرى'];
 const ROLES=['مدير','سيلز','مصمم','ميديا باير','كاتب محتوى','مونتير','أكونت مانجر'];
+const ALL=['dashboard','leads','clients','projects','tasks','posts','invoices','retainers','expenses','team','reports','settings'];
+const PERM={'مدير':ALL,'مبيعات':['dashboard','leads','clients','invoices','tasks'],'تنفيذ':['dashboard','clients','projects','tasks','posts'],'محاسب':['dashboard','clients','invoices','retainers','expenses','reports']};
+function me(){if(!CLOUD||!fauth.currentUser)return null;const e=(fauth.currentUser.email||'').toLowerCase();return db.team.find(t=>t.email&&t.email.toLowerCase()===e)}
+function access(){if(!CLOUD)return'مدير';if(!db.team.some(t=>t.email))return'مدير';const m=me();return m?(m.access||'مدير'):'تنفيذ'}
+const canSee=v=>(PERM[access()]||ALL).includes(v);
 const uid=()=>Math.random().toString(36).slice(2,10);
 const today=()=>new Date().toISOString().slice(0,10);
 // ---- Firebase config: الصق إعدادات مشروعك هنا (انظر README). لو سبتها null النظام يشتغل محلي على المتصفح ----
@@ -161,7 +166,7 @@ const E={
   def:()=>({active:'نعم',day:5})},
  team:{label:'موظف',f:[
   {k:'name',l:'الاسم',req:1},{k:'role',l:'الوظيفة',t:'select',o:()=>opt(ROLES)},{k:'phone',l:'الموبايل'},
-  {k:'target',l:'التارجت الشهري (قيمة تعاقدات)',t:'number'}],def:()=>({role:'سيلز'})}
+  {k:'target',l:'التارجت الشهري (قيمة تعاقدات)',t:'number'},{k:'email',l:'إيميل الدخول (نفس حساب Firebase)'},{k:'access',l:'الصلاحية',t:'select',o:()=>opt(Object.keys(PERM))}],def:()=>({role:'سيلز',access:'مبيعات'})}
 };
 
 // ============ Helpers: invoices ============
@@ -177,9 +182,10 @@ const dleft=d=>d?Math.ceil((new Date(d)-new Date(today()))/864e5):null;
 // ============ UI core ============
 let view='dashboard',q='',fil='',cur=null;
 const NAV=[['dashboard','📊','لوحة التحكم'],['leads','🎯','الليدز'],['clients','🤝','العملاء'],['projects','📁','المشاريع والحملات'],['tasks','✅','المهام'],['posts','🗓','كالندر المحتوى'],['invoices','🧾','الفواتير والعروض'],['retainers','🔁','الاشتراكات الشهرية'],['expenses','💸','المصروفات'],['team','👥','الفريق والحضور'],['reports','📈','التقارير'],['settings','⚙️','الإعدادات']];
-function go(v,id){view=v;cur=id||null;q='';fil='';document.getElementById('side').classList.remove('open');render()}
+function go(v,id){if(!canSee(v))v='dashboard';view=v;cur=id||null;q='';fil='';document.getElementById('side').classList.remove('open');render()}
 function render(){
-  document.getElementById('nav').innerHTML=NAV.map(([k,i,l])=>`<div class="nav ${view===k?'on':''}" onclick="go('${k}')">${i} ${l}</div>`).join('');
+  applyBrand();if(!canSee(view))view='dashboard';
+  document.getElementById('nav').innerHTML=NAV.filter(n=>canSee(n[0])).map(([k,i,l])=>`<div class="nav ${view===k?'on':''}" onclick="go('${k}')">${i} ${l}</div>`).join('');
   const t=NAV.find(n=>n[0]===view);document.getElementById('title').textContent=(cur&&view==='clients'?'ملف العميل':t[2]);
   document.getElementById('actions').innerHTML='';
   const V=document.getElementById('view');
@@ -201,6 +207,7 @@ function form(col,id,pre){
 }
 function saveForm(e,col,id){e.preventDefault();const fd=new FormData(e.target);const o={};
   E[col].f.forEach(f=>{let v=fd.get(f.k);if(f.t==='number')v=v===''?0:+v;o[f.k]=v});
+  if(col==='leads'&&o.phone){const d=db.leads.find(x=>x.id!==id&&x.phone&&x.phone.replace(/\D/g,'')===o.phone.replace(/\D/g,''));if(d&&!confirm('الرقم ده موجود قبل كده للّيد "'+d.name+'". تكمل الحفظ؟'))return false}
   if(id)Object.assign(by(col,id),o);else db[col].push(Object.assign({id:uid(),created:today()},o));
   save();modal();render();return false}
 function del(col,id){if(!confirm('متأكد من الحذف؟'))return;db[col]=db[col].filter(x=>x.id!==id);save();modal();cur=null;render()}
@@ -227,7 +234,8 @@ function vDash(V){
 // ============ Leads kanban ============
 function vLeads(V){
   act(`<button class="btn" onclick="form('leads')">+ ليد جديد</button>`);
-  const ls=db.leads.filter(l=>!q||(l.name+l.company+l.phone).includes(q));
+  const mine=access()==='مبيعات'?me()?.id:null;
+  const ls=db.leads.filter(l=>(!mine||l.owner===mine)&&(!q||(l.name+l.company+l.phone).includes(q)));
   V.innerHTML=`<div class="tools"><input placeholder="بحث..." value="${esc(q)}" oninput="q=this.value;vLeads(document.getElementById('view'))" autofocus></div><div class="kan">`+STAGES.map(s=>{
     const items=ls.filter(l=>l.stage===s);
     return `<div class="col" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropLead(event,'${s}')"><h3>${s}<span>${items.length} · ${money(items.reduce((a,l)=>a+(+l.value||0),0))}</span></h3>`+
@@ -316,11 +324,11 @@ function saveInv(e,id){e.preventDefault();const fd=Object.fromEntries(new FormDa
   if(id)Object.assign(by('invoices',id),o);else{const n=db.invoices.filter(x=>x.kind===o.kind).length+1;db.invoices.push(Object.assign({id:uid(),payments:[],no:(o.kind==='quote'?'Q-':'INV-')+String(n).padStart(4,'0')},o))}
   save();modal();render();return false}
 function invView(id){const i=by('invoices',id),c=invCalc(i),cl=by('clients',i.client)||{};
-  modal(`<div id="print"><h2>${i.kind==='quote'?'عرض سعر':'فاتورة'} ${esc(i.no)}</h2><p style="color:var(--mut)">${esc(db.settings.company)} — ${i.date}${i.due?' · استحقاق '+i.due:''}</p><p style="margin:8px 0">العميل: <b>${esc(cl.name||'—')}</b> ${tag(invStatus(i))}</p>
+  modal(`<div id="print">${db.settings.logo?`<img src="${db.settings.logo}" style="height:46px;margin-bottom:6px">`:''}<h2>${i.kind==='quote'?'عرض سعر':'فاتورة'} ${esc(i.no)}</h2><p style="color:var(--mut)">${esc(db.settings.company)} — ${i.date}${i.due?' · استحقاق '+i.due:''}</p><p style="margin:8px 0">العميل: <b>${esc(cl.name||'—')}</b> ${tag(invStatus(i))}</p>
   <table><tr><th>البند</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>${i.items.map(x=>`<tr><td>${esc(x.desc)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('')}</table>
   <p style="margin-top:8px">المجموع: ${money(c.sub)} · ضريبة (${i.tax}%): ${money(c.tax)}</p><p><b>الإجمالي: ${money(c.total)}</b></p>
   ${i.kind==='invoice'?`<p>المدفوع: <span style="color:var(--ok)">${money(c.paid)}</span> · المتبقي: <b style="color:var(--warn)">${money(c.due)}</b></p>${(i.payments||[]).map(p=>`<small style="display:block;color:var(--mut)">${p.date} — ${money(p.amount)} (${esc(p.method||'')})</small>`).join('')}`:''}</div>
-  <div class="row noprint" style="flex-wrap:wrap">${i.kind==='invoice'?`<button class="btn" onclick="addPay('${id}')">+ دفعة</button>`:`<button class="btn" onclick="quoteToInv('${id}')">تحويل لفاتورة</button>`}<button class="btn g" onclick="invForm('${id}')">تعديل</button><button class="btn g" onclick="window.print()">🖨 طباعة</button><button class="btn d" onclick="del('invoices','${id}')">حذف</button></div>`)}
+  <div class="row noprint" style="flex-wrap:wrap">${i.kind==='invoice'?`<button class="btn" onclick="addPay('${id}')">+ دفعة</button>${c.due>0&&cl.phone?`<a class="btn g" style="text-decoration:none" target="_blank" href="https://wa.me/${String(cl.phone).replace(/\D/g,'').replace(/^0/,'20')}?text=${encodeURIComponent('أهلاً '+(cl.contact||cl.name)+'، تذكير بفاتورة '+i.no+' بمبلغ متبقي '+money(c.due)+(i.due?' مستحقة '+i.due:'')+'. شكراً — '+db.settings.company)}">💬 تذكير واتساب</a>`:''}`:`<button class="btn" onclick="quoteToInv('${id}')">تحويل لفاتورة</button>`}<button class="btn g" onclick="invForm('${id}')">تعديل</button><button class="btn g" onclick="window.print()">🖨 طباعة</button><button class="btn d" onclick="del('invoices','${id}')">حذف</button></div>`)}
 function addPay(id){const a=prompt('المبلغ المدفوع:');if(!a||isNaN(+a))return;const m=prompt('طريقة الدفع (كاش / تحويل / فودافون كاش...):','كاش')||'';
   by('invoices',id).payments.push({amount:+a,date:today(),method:m});save();render();invView(id)}
 function quoteToInv(id){const q=by('invoices',id);q.status='مقبول';const n=db.invoices.filter(x=>x.kind==='invoice').length+1;
@@ -353,13 +361,18 @@ function vRep(V){
   <div class="card tw" style="margin-top:12px"><b>ربحية المشاريع</b><table><tr><th>المشروع</th><th>القيمة</th><th>ميزانية الإعلانات</th><th>الصافي</th></tr>${db.projects.map(p=>`<tr><td>${esc(p.name)}</td><td>${money(p.budget)}</td><td>${money(p.adspend)}</td><td>${money((p.budget||0)-(p.adspend||0))}</td></tr>`).join('')||'<tr><td class="empty">لا توجد بيانات</td></tr>'}</table></div>`;
 }
 
+// ============ Branding ============
+function applyBrand(){const st=db.settings;const r=document.documentElement.style;
+  if(st.color&&/^#[0-9a-f]{6}$/i.test(st.color)){r.setProperty('--pri',st.color);r.setProperty('--pri2',st.color)}else{r.removeProperty('--pri');r.removeProperty('--pri2')}
+  const lg=document.querySelector('.logo');if(lg)lg.innerHTML=st.logo?`<img src="${st.logo}" style="max-height:40px;max-width:150px">`:esc(st.company||'WAV')}
+function setLogo(f){if(!f)return;const img=new Image(),u=URL.createObjectURL(f);img.onload=()=>{const k=Math.min(1,240/img.width,120/img.height),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);db.settings.logo=c.toDataURL('image/png');save();render()};img.src=u}
 // ============ Settings / backup ============
 function vSet(V){
   const s=db.settings;
-  V.innerHTML=`<div class="card" style="max-width:480px"><form onsubmit="return saveSet(event)"><label>اسم الشركة</label><input name="company" value="${esc(s.company)}"><div class="two"><div><label>العملة</label><input name="currency" value="${esc(s.currency)}"></div><div><label>الضريبة الافتراضية %</label><input type="number" name="tax" value="${s.tax}"></div></div>${CLOUD?'':`<label>كود دخول (PIN) — اتركه فارغ لإلغائه</label><input name="pin" value="${esc(s.pin)}">`}<div class="row"><button class="btn">حفظ</button></div></form></div>
+  V.innerHTML=`<div class="card" style="max-width:480px"><form onsubmit="return saveSet(event)"><label>اللوجو</label><div class="row" style="margin:0 0 6px;align-items:center">${s.logo?`<img src="${s.logo}" style="height:36px"> <button type="button" class="btn s d" onclick="delete db.settings.logo;save();render()">حذف</button>`:''}<input type="file" accept="image/*" onchange="setLogo(this.files[0])"></div><label>لون النظام</label><input type="color" name="color" value="${s.color||'#6c5ce7'}" style="height:36px;padding:2px"><label>اسم الشركة</label><input name="company" value="${esc(s.company)}"><div class="two"><div><label>العملة</label><input name="currency" value="${esc(s.currency)}"></div><div><label>الضريبة الافتراضية %</label><input type="number" name="tax" value="${s.tax}"></div></div>${CLOUD?'':`<label>كود دخول (PIN) — اتركه فارغ لإلغائه</label><input name="pin" value="${esc(s.pin)}">`}<div class="row"><button class="btn">حفظ</button></div></form></div>
   <div class="card" style="max-width:480px;margin-top:12px"><b>نسخة احتياطية</b><p style="color:var(--mut);font-size:13px;margin:6px 0">${CLOUD?'البيانات على السيرفر ومشتركة مع الفريق.':'البيانات محفوظة في المتصفح. نزّل نسخة بشكل دوري.'} </p><div class="row" style="margin:0"><button class="btn" onclick="backup()">⬇ تنزيل</button><label class="btn g" style="margin:0;color:var(--text)">⬆ استرجاع<input type="file" accept=".json" hidden onchange="restore(this.files[0])"></label></div></div>`;
 }
-function saveSet(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));db.settings={company:f.company,currency:f.currency,tax:+f.tax||0,pin:f.pin||''};save();render();return false}
+function saveSet(e){e.preventDefault();const f=Object.fromEntries(new FormData(e.target));db.settings=Object.assign({},db.settings,{company:f.company,currency:f.currency,tax:+f.tax||0,pin:f.pin||'',color:f.color});save();render();return false}
 function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
 function backup(){dl(`wav-crm-${today()}.json`,JSON.stringify(db),'application/json')}
 function restore(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(CLOUD){COLLS.forEach(c=>db[c]=d[c]||[]);db.settings=Object.assign({},DEFAULT_SET,d.settings)}else db=d;save();if(!CLOUD)load();render();alert('تم الاسترجاع')}catch(e){alert('ملف غير صالح')}};r.readAsText(f)}
